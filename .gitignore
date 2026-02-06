@@ -1,1 +1,8 @@
+#VSCode Specific
 output
+main.code-workspace
+.vscode
+
+#Linux Specific
+main.o
+run.sh
