@@ -6,3 +6,5 @@ main.code-workspace
 #Linux Specific
 main.o
 run.sh
+run_test.sh
+runmatt.sh
