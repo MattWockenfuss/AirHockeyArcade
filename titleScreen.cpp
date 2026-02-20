@@ -1,6 +1,6 @@
 #include "title.hpp"
 
-int titleWindow() {
+int titleWindow(sf::RenderWindow &window) {
 	/*
 		Monitor Sizes for 16:9
 		1280x720 (720p)
@@ -8,10 +8,10 @@ int titleWindow() {
 		2560x1440 (2k)
 		3840x2160 (4k)
 	*/
+
+	window.clear();
 	
 	const auto start{std::chrono::steady_clock::now()};
-
-	sf::RenderWindow window( sf::VideoMode( { 1920, 1080 } ), "Air Hockey Arcade" );
 	
 	sf::Font title_font, give_money_font;
 	title_font.loadFromFile("assets/fonts/TECHNOID.TTF");

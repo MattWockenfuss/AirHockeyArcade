@@ -7,6 +7,6 @@
     #include <math.h>
     #include <SFML/Graphics.hpp>
     
-    int titleWindow();
+    int titleWindow(sf::RenderWindow &window);
     
 #endif //TITLE_HPP

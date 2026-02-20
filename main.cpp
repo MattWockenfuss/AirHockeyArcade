@@ -9,8 +9,24 @@
 int main() {
 	//Begin primary game loop
 	//Load any necessary assets to mem
+
+	//Define window object to use throughout system
+	std::vector<sf::VideoMode> modes = sf::VideoMode::getFullscreenModes();
+	//Iterate through all available modes, print to console
+	/*
+	for (std::size_t i = 0; i < modes.size(); i++) {
+		sf::VideoMode mode = modes[i];
+		std::cout << "Mode #: " << i << std::endl
+		<< "    Mode Size: " << mode.width << ", " << mode.height << std::endl
+		<< "    Mode bpp : " << mode.bitsPerPixel << std::endl;
+	}
+	*/
+
+	//Chooses largest resolution and highest bpp, makes window fullscreen
+	sf::RenderWindow window(modes[0], "Arcade", sf::Style::Fullscreen);
 	
-	titleWindow();
-	
+	//Pass window to titlescreen, wait
+	titleWindow(window);
+
 	return 0;
 }
