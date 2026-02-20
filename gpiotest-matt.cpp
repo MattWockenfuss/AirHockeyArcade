@@ -1,10 +1,6 @@
-#include <gpiod.h>
-#include <unistd.h>
-#include <iostream>
-#include <cerrno>
-#include <cstring>
+#include "gpiotest-matt.hpp"
 
-int main() {
+int led_test() {
     const char* chip_path = "/dev/gpiochip0";
     const unsigned int offset = 27; // BCM GPIO 27 (physical pin 13)
 
