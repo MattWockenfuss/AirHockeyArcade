@@ -1,9 +1,6 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <iostream>
-#include <gpiod.hpp>
+#include "gpio_test.hpp"
 
-int main() 
+int test_chip() 
 {
     //Path for Pi5 to gpiochip device. Should be the same for the others is running PiOS
     const std::filesystem::path path = "/dev/gpiochip0";
