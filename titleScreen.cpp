@@ -18,11 +18,14 @@ int titleWindow(sf::RenderWindow &window) {
 	give_money_font.loadFromFile("assets/fonts/square_sans_serif_7.ttf");
 
 	sf::Text title_text("Air Hockey Arcade", title_font, 75);
-	title_text.setPosition(window.getSize().x/5.5, window.getSize().y/5);
-	title_text.setStyle(sf::Text::Bold);
+	const sf::FloatRect titleRect = title_text.getLocalBounds();
+	title_text.setOrigin((titleRect.left + titleRect.width / 2.0f), (titleRect.top + titleRect.height / 2.0f));
+	title_text.setPosition(window.getSize().x / 2.0f, window.getSize().y / 5.0f);
 
 	sf::Text play_text("Insert Coin to Play!", give_money_font, 35);
-	play_text.setPosition(window.getSize().x/3, window.getSize().y/1.2);
+	const sf::FloatRect textRect = play_text.getLocalBounds();
+	play_text.setOrigin((textRect.left + textRect.width / 2.0f), (textRect.top + textRect.height / 2.0f));
+	play_text.setPosition(window.getSize().x / 2.0f, window.getSize().y / 1.2f);
 
 	while ( window.isOpen() ) {
 		sf::Event event;
