@@ -5,6 +5,7 @@
     #include <stdio.h>
     #include <chrono>
     #include <math.h>
+    #include <optional>
     #include <SFML/Graphics.hpp>
     
     int titleWindow(sf::RenderWindow &window);
