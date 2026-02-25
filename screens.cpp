@@ -1,4 +1,4 @@
-#include "title.hpp"
+#include "screens.hpp"
 
 //This function displays the main title window for players while the machine is waiting.
 //It displays the title, some screensaver animation, and a prompt to insert a coin (or payment method) to begin play.
@@ -36,8 +36,13 @@ int titleWindow(sf::RenderWindow &window) {
 	while ( window.isOpen() ) {
 		//Takes the stack and pops each event. We only care about the window closing for now.
 		while (std::optional event = window.pollEvent()) {
+			// close window
 			if (event->is<sf::Event::Closed>() || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) {
 				window.close();
+			}
+			// other events
+			if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter)){
+				return 1;
 			}
 		}
 
@@ -59,4 +64,121 @@ int titleWindow(sf::RenderWindow &window) {
 	}
 
     return 1;
+}
+
+int gameSelectWindow(sf::RenderWindow &window){
+	window.clear();
+	
+	//Start clock to monitor elapsed time. It is MONOTONIC, does not go by system clock.
+	auto start{std::chrono::steady_clock::now()};
+	
+	// images
+	sf::Texture arrows[4];
+	arrows[0].loadFromFile("assets/images/gameSelectArrow_L1.png");
+	arrows[1].loadFromFile("assets/images/gameSelectArrow_L2.png");
+	arrows[2].loadFromFile("assets/images/gameSelectArrow_R1.png");
+	arrows[3].loadFromFile("assets/images/gameSelectArrow_R2.png");
+	
+	sf::Texture demos[1];
+	demos[0].loadFromFile("assets/images/gameSelectImage_AH.png");
+	
+	std::vector<int> indexes = getIndexes(0,1);
+	
+	sf::Sprite sprite(arrows[0]); // sprites cannot be created without a texture
+	double screenRatio = (double)(window.getSize().x) / 320.0;
+	
+	// font
+	sf::Font title_font;
+	if (!title_font.openFromFile("assets/fonts/square_sans_serif_7.ttf")) { std::perror("File not found!"); }
+	
+	sf::Text title_text(title_font, "Air Hockey", 80);
+	const sf::FloatRect textRect = title_text.getLocalBounds();
+	title_text.setOrigin(textRect.getCenter());
+	title_text.setPosition(sf::Vector2f(window.getSize().x / 2.0f, window.getSize().y / 7.0f));
+	
+	//Main window loop
+	while ( window.isOpen() ) {
+		while (std::optional event = window.pollEvent()) {
+			// close window
+			if (event->is<sf::Event::Closed>() || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) {
+				window.close();
+			}
+			// other events
+		}
+
+		window.clear();
+		window.draw(title_text);
+
+		//Takes the elapsed time set at the beginning of function, and subtracts it from the time now.
+		//Takes mod of the difference, and chooses to display the text based on whether time is even or odd
+		const auto end{std::chrono::steady_clock::now()};
+		const auto elapsed_time{end - start};
+		const auto ms{std::chrono::duration_cast<std::chrono::milliseconds>(elapsed_time)};
+		long long milliSec = ms.count();
+
+		if ((milliSec = static_cast<unsigned int>(milliSec)) < 500 ) { // alternate frames every 0.5s
+			// left arrow
+			sprite.setTexture(arrows[0], true); // true to reset the sprite rectangle to the size of the new texture
+			sprite.setPosition((sf::Vector2f){48.0*screenRatio,64.0*screenRatio});
+			sprite.setScale((sf::Vector2f){screenRatio,screenRatio});
+			window.draw(sprite);
+			// right arrow
+			sprite.setTexture(arrows[2], true); // true to reset the sprite rectangle to the size of the new texture
+			sprite.setPosition((sf::Vector2f){240.0*screenRatio,64.0*screenRatio});
+			sprite.setScale((sf::Vector2f){screenRatio,screenRatio});
+			window.draw(sprite);
+		}
+		else{
+			// left arrow
+			sprite.setTexture(arrows[1], true); // true to reset the sprite rectangle to the size of the new texture
+			sprite.setPosition((sf::Vector2f){48.0*screenRatio,64.0*screenRatio});
+			sprite.setScale((sf::Vector2f){screenRatio,screenRatio});
+			window.draw(sprite);
+			// right arrow
+			sprite.setTexture(arrows[3], true); // true to reset the sprite rectangle to the size of the new texture
+			sprite.setPosition((sf::Vector2f){240.0*screenRatio,64.0*screenRatio});
+			sprite.setScale((sf::Vector2f){screenRatio,screenRatio});
+			window.draw(sprite);
+			
+			if ((milliSec = static_cast<unsigned int>(milliSec)) >= 1000 ) { // reset counter after 1s so the numbers don't get massive
+				start = std::chrono::steady_clock::now();
+			}
+		}
+
+		window.display();
+	}
+	
+	return 1;
+}
+
+int nameSelectWindow(sf::RenderWindow &window, std::string *name){
+	window.clear();
+	
+	//Start clock to monitor elapsed time. It is MONOTONIC, does not go by system clock.
+	const auto start{std::chrono::steady_clock::now()};
+	
+	
+	return 1;
+}
+
+int loadingWindow(sf::RenderWindow &window, std::string name){
+	window.clear();
+	
+	//Start clock to monitor elapsed time. It is MONOTONIC, does not go by system clock.
+	const auto start{std::chrono::steady_clock::now()};
+	
+	
+	return 1;
+}
+
+std::vector<int> getIndexes(int center, int size){
+	// create indexes
+	std::vector<int> indexes = {center-1,center,center+1};
+	// wrap around if needed
+	if(indexes[0]<0)
+		indexes[0] = size-1;
+	if(indexes[2]>=size)
+		indexes[2] = 0;
+	
+	return indexes;
 }
