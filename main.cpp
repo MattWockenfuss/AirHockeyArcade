@@ -4,7 +4,7 @@
 #include <chrono>
 #include <math.h>
 #include <SFML/Graphics.hpp>
-#include "title.hpp"
+#include "screens.hpp"
 
 int main() {
 	//Begin primary game loop

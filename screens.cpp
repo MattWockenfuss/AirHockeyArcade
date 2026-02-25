@@ -36,7 +36,7 @@ int titleWindow(sf::RenderWindow &window) {
 	while ( window.isOpen() ) {
 		//Takes the stack and pops each event. We only care about the window closing for now.
 		while (std::optional event = window.pollEvent()) {
-			if (event->is<sf::Event::Closed>()) {
+			if (event->is<sf::Event::Closed>() || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) {
 				window.close();
 			}
 		}
