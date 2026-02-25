@@ -14,7 +14,9 @@ int titleWindow(sf::RenderWindow &window) {
 	window.clear();
 	
 	//Start clock to monitor elapsed time. It is MONOTONIC, does not go by system clock.
-	const auto start{std::chrono::steady_clock::now()};
+	sf::Clock clock;
+	sf::Time time;
+	float dt;
 	
 	sf::Font title_font, give_money_font;
 	if (!title_font.openFromFile("assets/fonts/TECHNOID.TTF")) { std::perror("File not found!"); }
@@ -34,6 +36,8 @@ int titleWindow(sf::RenderWindow &window) {
 
 	//Main window loop
 	while ( window.isOpen() ) {
+		time = clock.getElapsedTime();
+		dt = time.asSeconds();
 		//Takes the stack and pops each event. We only care about the window closing for now.
 		while (std::optional event = window.pollEvent()) {
 			// close window
@@ -49,14 +53,7 @@ int titleWindow(sf::RenderWindow &window) {
 		window.clear();
 		window.draw(title_text);
 
-		//Takes the elapsed time set at the beginning of function, and subtracts it from the time now.
-		//Takes mod of the difference, and chooses to display the text based on whether time is even or odd
-		const auto end{std::chrono::steady_clock::now()};
-		const auto elapsed_time{end - start};
-		const auto sc{std::chrono::duration_cast<std::chrono::seconds>(elapsed_time)};
-		long long sec = sc.count();
-
-		if ((sec = static_cast<unsigned int>(sec)) % 2 == 0) {
+		if ((int)dt % 2 == 0) {
 			window.draw(play_text);
 		}
 
@@ -70,7 +67,9 @@ int gameSelectWindow(sf::RenderWindow &window){
 	window.clear();
 	
 	//Start clock to monitor elapsed time. It is MONOTONIC, does not go by system clock.
-	auto start{std::chrono::steady_clock::now()};
+	sf::Clock clock;
+	sf::Time time;
+	float dt_Arrow;
 	
 	// images
 	sf::Texture arrows[4];
@@ -98,6 +97,9 @@ int gameSelectWindow(sf::RenderWindow &window){
 	
 	//Main window loop
 	while ( window.isOpen() ) {
+		time = clock.getElapsedTime();
+		dt_Arrow = time.asSeconds();
+		
 		while (std::optional event = window.pollEvent()) {
 			// close window
 			if (event->is<sf::Event::Closed>() || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) {
@@ -109,14 +111,7 @@ int gameSelectWindow(sf::RenderWindow &window){
 		window.clear();
 		window.draw(title_text);
 
-		//Takes the elapsed time set at the beginning of function, and subtracts it from the time now.
-		//Takes mod of the difference, and chooses to display the text based on whether time is even or odd
-		const auto end{std::chrono::steady_clock::now()};
-		const auto elapsed_time{end - start};
-		const auto ms{std::chrono::duration_cast<std::chrono::milliseconds>(elapsed_time)};
-		long long milliSec = ms.count();
-
-		if ((milliSec = static_cast<unsigned int>(milliSec)) < 500 ) { // alternate frames every 0.5s
+		if(dt_Arrow<0.5){ // alternate frames every 0.5s
 			// left arrow
 			sprite.setTexture(arrows[0], true); // true to reset the sprite rectangle to the size of the new texture
 			sprite.setPosition((sf::Vector2f){48.0*screenRatio,64.0*screenRatio});
@@ -140,8 +135,8 @@ int gameSelectWindow(sf::RenderWindow &window){
 			sprite.setScale((sf::Vector2f){screenRatio,screenRatio});
 			window.draw(sprite);
 			
-			if ((milliSec = static_cast<unsigned int>(milliSec)) >= 1000 ) { // reset counter after 1s so the numbers don't get massive
-				start = std::chrono::steady_clock::now();
+			if(dt_Arrow>=1){ // reset counter after 1s so the numbers don't get massive
+				clock.restart();
 			}
 		}
 

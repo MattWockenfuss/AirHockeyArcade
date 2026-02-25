@@ -1,7 +1,6 @@
 #include <iostream>
 #include <stdlib.h>
 #include <stdio.h>
-#include <chrono>
 #include <math.h>
 #include <SFML/Graphics.hpp>
 #include "screens.hpp"
