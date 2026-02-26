@@ -1,6 +1,6 @@
 #include "gpiotest-matt.hpp"
 
-int led_test() {
+int main() {
     const char* chip_path = "/dev/gpiochip0";
     const unsigned int offset = 27; // BCM GPIO 27 (physical pin 13)
 
@@ -43,7 +43,19 @@ int led_test() {
     if (gpiod_line_request_set_value(req, offset, GPIOD_LINE_VALUE_ACTIVE) < 0) {
         std::cerr << "set_value(ON) failed: " << std::strerror(errno) << "\n";
     }
-    sleep(3);
+    sleep(1);
+
+    // OFF
+    if (gpiod_line_request_set_value(req, offset, GPIOD_LINE_VALUE_INACTIVE) < 0) {
+        std::cerr << "set_value(OFF) failed: " << std::strerror(errno) << "\n";
+    }
+
+    sleep(1);
+
+    if (gpiod_line_request_set_value(req, offset, GPIOD_LINE_VALUE_ACTIVE) < 0) {
+        std::cerr << "set_value(ON) failed: " << std::strerror(errno) << "\n";
+    }
+    sleep(1);
 
     // OFF
     if (gpiod_line_request_set_value(req, offset, GPIOD_LINE_VALUE_INACTIVE) < 0) {
