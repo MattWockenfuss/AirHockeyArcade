@@ -12,7 +12,7 @@ std::vector<int> getIndexes(int center, int size){
 	return indexes;
 }
 	
-std::vector<double> getAnimXYZ(float frame){
+std::vector<double> getGameAnimXYZ(float frame){
 	// 0s   -> (-192,56,80)
 	// 0.5s -> (-96,48,96)
 	// 1.5s -> (96,32,128)
@@ -27,4 +27,16 @@ std::vector<double> getAnimXYZ(float frame){
 	double z = 128 - 32*sqrt( pow(1.5-frame,2.0));
 	std::vector<double> xyz = {x,y,z};
 	return xyz;
+}
+
+double getLoadAnimY(float frame){
+	double y = 0;
+	if(frame>=0 && frame <= 0.1)
+		y = 200*frame*frame;
+	if(frame>0.1 && frame<=1.1)
+		y = (44*pow(frame-0.6,2) )-9;
+	if(frame>1.1 && frame<=1.4)
+		y = (83*pow(frame-1.29,2) )-1;
+	
+	return round(y);
 }

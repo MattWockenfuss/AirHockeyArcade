@@ -9,6 +9,8 @@
 
 	std::vector<int> getIndexes(int center, int size);
 	
-	std::vector<double> getAnimXYZ(float frame);
+	std::vector<double> getGameAnimXYZ(float frame);
+	
+	double getLoadAnimY(float frame);
 	
 #endif //FCNS_HPP
