@@ -12,7 +12,7 @@ int main() {
 
 	//Define window object to use throughout system
 	std::vector<sf::VideoMode> modes = sf::VideoMode::getFullscreenModes();
-	std::string name;
+	sf::String name = "";
 	
 	//Iterate through all available modes, print to console
 	//Uncomment these lines to test your local machine's available fullscreen options.

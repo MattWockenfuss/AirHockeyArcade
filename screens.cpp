@@ -32,7 +32,7 @@ int titleWindow(sf::RenderWindow &window) {
 	title_text.setPosition(sf::Vector2f(window.getSize().x / 2.0f, window.getSize().y / 5.0f));
 
 	//Insert coin to be displayed at bottom of screen. Flashes.
-	sf::Text play_text(give_money_font, "Insert Coin to Play!", 35);
+	sf::Text play_text(give_money_font, "Press Enter To Go To Next Screen!", 35);
 	const sf::FloatRect textRect = play_text.getLocalBounds();
 	play_text.setOrigin(textRect.getCenter());
 	play_text.setPosition(sf::Vector2f(window.getSize().x / 2.0f, window.getSize().y / 1.2f));
@@ -73,6 +73,8 @@ int gameSelectWindow(sf::RenderWindow &window){
 	window.clear();
 	// make sure we do not automatically skip window
 	bool enterUnPressed = false;
+	// get scale of window relative to resolution of assets
+	double screenRatio = (double)(window.getSize().x) / 320.0;
 	
 	//Start clock to monitor elapsed time. It is MONOTONIC, does not go by system clock.
 	sf::Clock clock;
@@ -93,7 +95,6 @@ int gameSelectWindow(sf::RenderWindow &window){
 	demos[2].loadFromFile("assets/images/logo.png");
 	
 	sf::Sprite sprite(arrows[0]); // sprites cannot be created without a texture
-	double screenRatio = (double)(window.getSize().x) / 320.0;
 	
 	// animation vars
 	int animate = 0;
@@ -106,10 +107,10 @@ int gameSelectWindow(sf::RenderWindow &window){
 	sf::Font title_font;
 	if (!title_font.openFromFile("assets/fonts/square_sans_serif_7.ttf")) { std::perror("File not found!"); }
 	
-	sf::Text title_text(title_font, "Air Hockey", 80);
+	sf::Text title_text(title_font, "Air Hockey", 24.0*screenRatio);
 	const sf::FloatRect textRect = title_text.getLocalBounds();
 	title_text.setOrigin(textRect.getCenter());
-	title_text.setPosition(sf::Vector2f(window.getSize().x / 2.0f, window.getSize().y / 7.0f));
+	title_text.setPosition(sf::Vector2f(window.getSize().x / 2.0f, 14.0*screenRatio));
 	
 	//Main window loop
 	while ( window.isOpen() ) {
@@ -123,7 +124,7 @@ int gameSelectWindow(sf::RenderWindow &window){
 				window.close();
 			}
 			// other events
-			if(!sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && !enterUnPressed){
+			if(!sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && !enterUnPressed){ // prepare to go to next screen
 				enterUnPressed = true;
 			}
 			if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && enterUnPressed){ // go to next screen
@@ -204,8 +205,8 @@ int gameSelectWindow(sf::RenderWindow &window){
 			sprite.setScale((sf::Vector2f){screenRatio,screenRatio});
 			window.draw(sprite);
 			
-			if(lap_Arrow>1.5) // prevent total time from getting too big
-				lap_Arrow -= 1.5;
+			if(lap_Arrow>=1.5) // prevent total time from getting too big
+				lap_Arrow = 0;
 		}
 		
 		// draw images
@@ -223,22 +224,175 @@ int gameSelectWindow(sf::RenderWindow &window){
 	return 1;
 }
 
-int nameSelectWindow(sf::RenderWindow &window, std::string *name){
+int nameSelectWindow(sf::RenderWindow &window, sf::String *name){
 	window.clear();
+	// make sure we do not automatically skip window
+	bool enterUnPressed = false;
+	bool letterUnPressed = false;
+	// get scale of window relative to resolution of assets
+	double screenRatio = (double)(window.getSize().x) / 320.0;
 	
-	//Start clock to monitor elapsed time. It is MONOTONIC, does not go by system clock.
-	const auto start{std::chrono::steady_clock::now()};
+	// font
+	sf::Font font;
+	if (!font.openFromFile("assets/fonts/square_sans_serif_7.ttf")) { std::perror("File not found!"); }
 	
+	sf::Text title_text(font, "Enter Your Name", 24.0*screenRatio);
+	sf::FloatRect rect = title_text.getLocalBounds();
+	title_text.setOrigin(rect.getCenter());
+	title_text.setPosition(sf::Vector2f(window.getSize().x / 2.0f, 30.0*screenRatio));
+	
+	sf::Text name_text(font, *name, 24.0*screenRatio);
+	rect = name_text.getLocalBounds();
+	name_text.setOrigin(rect.getCenter());
+	name_text.setPosition(sf::Vector2f(window.getSize().x / 2.0f, 80.0*screenRatio));
+	
+	std::string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	std::vector<std::vector<float>> coords = { {28,122},{50,122},{72,122},{94,122},{116,122},{138,122},{160,122},{182,122},{204,122},{226,122},{248,122},{270,122},{292,122} , {28,144},{50,144},{72,144},{94,144},{116,144},{138,144},{160,144},{182,144},{204,144},{226,144},{248,144},{270,144},{292,144} };
+	sf::Text letter(font,"Default Text",14*screenRatio); // cannot create empty text
+	
+	// rectangle
+	sf::RectangleShape selectRect( (sf::Vector2f){20*screenRatio,20*screenRatio});
+	rect = selectRect.getLocalBounds();
+	selectRect.setOrigin(rect.getCenter());
+	int selectLoc = 0;
+	selectRect.setPosition( (sf::Vector2f){coords[selectLoc][0]*screenRatio , coords[selectLoc][1]*screenRatio} );
+	selectRect.setOutlineColor(sf::Color::White);
+	selectRect.setFillColor(sf::Color::Transparent);
+	selectRect.setOutlineThickness(1*screenRatio);
+	
+	//Main window loop
+	while ( window.isOpen() ) {
+		while (std::optional event = window.pollEvent()) {
+			// close window
+			if (event->is<sf::Event::Closed>() || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) {
+				window.close();
+			}
+			// other events
+			if(!sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && !enterUnPressed){ // prepare to go to next screen
+				enterUnPressed = true;
+			}
+			if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && enterUnPressed){ // go to next screen
+				return 1;
+			}
+			if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)){ // move selection left
+				selectLoc -= 1;
+				if(selectLoc<0)
+					selectLoc = 0;
+				if(selectLoc==12)
+					selectLoc = 13;
+				selectRect.setPosition( (sf::Vector2f){coords[selectLoc][0]*screenRatio , coords[selectLoc][1]*screenRatio} );
+			}
+			if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)){ // move selection right
+				selectLoc += 1;
+				if(selectLoc>25)
+					selectLoc = 25;
+				if(selectLoc==13)
+					selectLoc = 12;
+				selectRect.setPosition( (sf::Vector2f){coords[selectLoc][0]*screenRatio , coords[selectLoc][1]*screenRatio} );
+			}
+			if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)){ // move selection up
+				selectLoc -= 13;
+				if(selectLoc<0)
+					selectLoc += 13;
+				selectRect.setPosition( (sf::Vector2f){coords[selectLoc][0]*screenRatio , coords[selectLoc][1]*screenRatio} );
+			}
+			if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down)){ // move selection down
+				selectLoc += 13;
+				if(selectLoc>25)
+					selectLoc -= 13;
+				selectRect.setPosition( (sf::Vector2f){coords[selectLoc][0]*screenRatio , coords[selectLoc][1]*screenRatio} );
+			}
+			if(!sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) && !sf::Keyboard::isKeyPressed(sf::Keyboard::Key::B) && !letterUnPressed){ // make sure no keys are pressed before regestering a press
+				letterUnPressed = true;
+			}
+			if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) && letterUnPressed){ // add letter
+				*name = name_text.getString();
+				if(name->getSize()<3){
+					*name += alphabet[selectLoc];
+					name_text.setString(*name);
+					// reposition after adding letter
+					rect = name_text.getLocalBounds();
+					name_text.setOrigin(rect.getCenter());
+					name_text.setPosition(sf::Vector2f(window.getSize().x / 2.0f, 80.0*screenRatio));
+				}
+				letterUnPressed = false;
+			}
+			if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::B) && letterUnPressed){ // remove letter
+				*name = name_text.getString();
+				*name = name->substring(0, name->getSize()-1);
+				name_text.setString(*name);
+				// reposition after adding letter
+				rect = name_text.getLocalBounds();
+				name_text.setOrigin(rect.getCenter());
+				name_text.setPosition(sf::Vector2f(window.getSize().x / 2.0f, 80.0*screenRatio));
+				letterUnPressed = false;
+			}
+		}
+		
+		window.clear();
+		window.draw(title_text);
+		window.draw(name_text);
+		for(int i = 0; i<26; i++){
+			letter.setString(alphabet[i]);
+			rect = letter.getLocalBounds();
+			letter.setOrigin(rect.getCenter());
+			letter.setPosition( (sf::Vector2f){coords[i][0]*screenRatio , coords[i][1]*screenRatio} );
+			window.draw(letter);
+		}
+		window.draw(selectRect);
+		window.display();
+	}
 	
 	return 1;
 }
 
-int loadingWindow(sf::RenderWindow &window, std::string name){
+int loadingWindow(sf::RenderWindow &window, sf::String name){
 	window.clear();
+	// make sure we do not automatically skip window
+	bool enterUnPressed = false;
+	// get scale of window relative to resolution of assets
+	double screenRatio = (double)(window.getSize().x) / 320.0;
 	
 	//Start clock to monitor elapsed time. It is MONOTONIC, does not go by system clock.
-	const auto start{std::chrono::steady_clock::now()};
+	sf::Clock clock;
+	sf::Time time;
+	float dt;
+	float lap_Arrow;
 	
+	// font
+	sf::Font title_font;
+	if (!title_font.openFromFile("assets/fonts/square_sans_serif_7.ttf")) { std::perror("File not found!"); }
+	
+	sf::Text title_text(title_font, "Air Hockey", 80);
+	const sf::FloatRect textRect = title_text.getLocalBounds();
+	title_text.setOrigin(textRect.getCenter());
+	title_text.setPosition(sf::Vector2f(window.getSize().x / 2.0f, window.getSize().y / 7.0f));
+	
+	//Main window loop
+	while ( window.isOpen() ) {
+		time = clock.restart();
+		dt = time.asSeconds();
+		lap_Arrow += dt;
+		
+		while (std::optional event = window.pollEvent()) {
+			// close window
+			if (event->is<sf::Event::Closed>() || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape)) {
+				window.close();
+			}
+			// other events
+			if(!sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && !enterUnPressed){ // prepare to go to next screen
+				enterUnPressed = true;
+			}
+			if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && enterUnPressed){ // go to next screen
+				return 1;
+			}
+		}
+		
+		window.clear();
+		window.draw(title_text);
+		
+		window.display();
+	}
 	
 	return 1;
 }

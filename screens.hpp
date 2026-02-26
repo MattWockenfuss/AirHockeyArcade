@@ -11,8 +11,8 @@
 	
     int gameSelectWindow(sf::RenderWindow &window);
 	
-    int nameSelectWindow(sf::RenderWindow &window, std::string *name);
+    int nameSelectWindow(sf::RenderWindow &window, sf::String *name);
 	
-    int loadingWindow(sf::RenderWindow &window, std::string name);
+    int loadingWindow(sf::RenderWindow &window, sf::String name);
     
 #endif //SCREENS_HPP
