@@ -3,6 +3,10 @@
 #include <cmath>
 #include <sstream>
 
+#include "../Context.hpp"
+#include "../AssetManager.hpp"
+#include "../KeyManager.hpp"
+
 
 
 AirHockeyGameState::AirHockeyGameState(Context& ctx)
@@ -49,8 +53,15 @@ void AirHockeyGameState::tick() {
     float logValue = std::log(std::abs(sinT) + 1.0f);  //log is ln
     float log10Value = std::log10(std::abs(cosT) + 1.0f);
 
-    square.setPosition(sf::Vector2f(x, y));
-    square.setSize(sf::Vector2f(w, h));
+    if(ctx.keys -> F1){
+        square.setPosition(sf::Vector2f(500.0f, 500.0f));
+        square.setSize(sf::Vector2f(50.0f, 50.0f));
+    } else {
+        square.setPosition(sf::Vector2f(x, y));
+        square.setSize(sf::Vector2f(w, h));
+    }
+
+
 
     int r = abs(sinT) * 256;
     int g = abs(cosT) * 256;

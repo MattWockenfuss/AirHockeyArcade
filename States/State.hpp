@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Context.hpp"
+class Context;
 
 namespace sf {
     class RenderWindow;

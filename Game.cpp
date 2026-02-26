@@ -10,6 +10,8 @@ Game::Game()
 {
     ctx.window = &window;
     ctx.assets = &assetManager;
+    ctx.keys = &keyManager;
+    ctx.gsm = &gsm;
 }
 
 void Game::initialization(){
@@ -20,7 +22,7 @@ void Game::initialization(){
 	//Chooses largest resolution and highest bpp, makes window fullscreen
 	window.create(modes[0], "Arcade", sf::State::Fullscreen);
 
-    gsm.changeState(States::AirHockey);
+    gsm.changeState(States::Menu);
 }
 
 
@@ -41,16 +43,27 @@ void Game::tick(){
         an event if one is available. For each event, it checks whether the event is of type sf::Event::Closed using the templated is<>()
         function. If the user has clicked the window’s close button, it sets running to false, which causes the main game loop to exit cleanly.
 
-        This comment was written by ChatGPT
+        window.pollEvent() returns a std::optional<sf::Event>, which means it may or may not contain an event. The loop only runs when the 
+        optional actually contains an sf::Event, so inside the loop we know it is safe to access it. We use the dereference operator *event to 
+        extract the actual sf::Event object from the optional so it can be passed to handleEvent.
+
+        Thess comment was written by ChatGPT
     */
 
     while (const std::optional event = window.pollEvent()) {
         if (event -> is<sf::Event::Closed>()) {
             running = false;
         }
+
+        keyManager.handleEvent(*event);
+
     }
+    ctx.keys -> tick();
 
     gsm.getCurrentState() -> tick();
+    if(ctx.keys -> ESC){
+        running = false;
+    }
 
 }
 void Game::render(){

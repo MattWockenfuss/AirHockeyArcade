@@ -1,7 +1,8 @@
 #pragma once
 
 #include "State.hpp"
-#include "../Context.hpp"
+
+class Context;
 
 enum class States {
     Menu, AirHockey
@@ -10,6 +11,7 @@ enum class States {
 class GameStateManager {
     public:
         GameStateManager(Context& ctx);
+        ~GameStateManager();
         
         void changeState(States s);
         State* getCurrentState();

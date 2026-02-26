@@ -2,8 +2,9 @@
 
 #include <SFML/Graphics.hpp>
 #include "Context.hpp"
-#include "States\GameStateManager.hpp"
+#include "States/GameStateManager.hpp"
 #include "AssetManager.hpp"
+#include "KeyManager.hpp"
 
 class Game {
     public:
@@ -20,7 +21,9 @@ class Game {
         
         sf::RenderWindow window;
         AssetManager assetManager;
+        KeyManager keyManager;
+        
 
         Context ctx;
-        GameStateManager gsm;   
+        GameStateManager gsm;
 };

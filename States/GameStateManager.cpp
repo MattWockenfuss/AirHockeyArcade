@@ -11,14 +11,29 @@ GameStateManager::GameStateManager(Context& ctx)
 
 void GameStateManager::changeState(States s){
     //this function takes the States enum s, and changes to that state
+    if(currentState != nullptr){
+        delete currentState;
+        currentState = nullptr;
+    }
     switch(s){
         case States::Menu:
             currentState = new MenuState(ctx);
+            break;
         case States::AirHockey:
             currentState = new AirHockeyGameState(ctx);
+            break;
     }
 }
 
 State* GameStateManager::getCurrentState(){
     return currentState;
+}
+
+
+
+GameStateManager::~GameStateManager(){
+    if (currentState != nullptr){
+        delete currentState;
+        currentState = nullptr;
+    }
 }
