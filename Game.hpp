@@ -5,6 +5,7 @@
 #include "States/GameStateManager.hpp"
 #include "AssetManager.hpp"
 #include "KeyManager.hpp"
+#include "GPIOManager.hpp"
 
 class Game {
     public:
@@ -22,6 +23,7 @@ class Game {
         sf::RenderWindow window;
         AssetManager assetManager;
         KeyManager keyManager;
+        GPIOManager GPIOmanager;
         
 
         Context ctx;

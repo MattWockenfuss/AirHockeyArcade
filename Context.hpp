@@ -7,6 +7,7 @@ namespace sf {
 class AssetManager;
 class KeyManager;
 class GameStateManager;
+class GPIOManager;
 
 
 
@@ -15,9 +16,9 @@ struct Context {
     AssetManager* assets = nullptr;
     KeyManager* keys = nullptr;
     GameStateManager* gsm = nullptr;
+    GPIOManager* gpio = nullptr;
 
     //audio manager
-    //pin manager
     //etc
 };
 

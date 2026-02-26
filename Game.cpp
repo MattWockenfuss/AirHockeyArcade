@@ -12,6 +12,7 @@ Game::Game()
     ctx.assets = &assetManager;
     ctx.keys = &keyManager;
     ctx.gsm = &gsm;
+    ctx.gpio = &GPIOmanager;
 }
 
 void Game::initialization(){
@@ -61,6 +62,8 @@ void Game::tick(){
     ctx.keys -> tick();
 
     gsm.getCurrentState() -> tick();
+    GPIOmanager.tick();
+
     if(ctx.keys -> ESC){
         running = false;
     }
@@ -70,6 +73,7 @@ void Game::render(){
     window.clear();
 
     gsm.getCurrentState() -> render(window);
+    GPIOmanager.render(window);
 
     window.display();
 }
