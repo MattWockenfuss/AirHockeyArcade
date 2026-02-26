@@ -4,6 +4,7 @@
 #include <math.h>
 #include <SFML/Graphics.hpp>
 #include "screens.hpp"
+#include "fcns.hpp"
 
 int main() {
 	//Begin primary game loop

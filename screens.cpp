@@ -1,4 +1,5 @@
 #include "screens.hpp"
+#include "fcns.hpp"
 
 //This function displays the main title window for players while the machine is waiting.
 //It displays the title, some screensaver animation, and a prompt to insert a coin (or payment method) to begin play.
@@ -12,6 +13,8 @@ int titleWindow(sf::RenderWindow &window) {
 	*/
 
 	window.clear();
+	// make sure window is not automatically skipped
+	bool enterUnPressed = false;
 	
 	//Start clock to monitor elapsed time. It is MONOTONIC, does not go by system clock.
 	sf::Clock clock;
@@ -45,7 +48,10 @@ int titleWindow(sf::RenderWindow &window) {
 				window.close();
 			}
 			// other events
-			if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter)){
+			if(!sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && !enterUnPressed){
+				enterUnPressed = true;
+			}
+			if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && enterUnPressed){ // go to next screen
 				return 1;
 			}
 		}
@@ -65,11 +71,14 @@ int titleWindow(sf::RenderWindow &window) {
 
 int gameSelectWindow(sf::RenderWindow &window){
 	window.clear();
+	// make sure we do not automatically skip window
+	bool enterUnPressed = false;
 	
 	//Start clock to monitor elapsed time. It is MONOTONIC, does not go by system clock.
 	sf::Clock clock;
 	sf::Time time;
-	float dt_Arrow;
+	float dt;
+	float lap_Arrow;
 	
 	// images
 	sf::Texture arrows[4];
@@ -78,13 +87,20 @@ int gameSelectWindow(sf::RenderWindow &window){
 	arrows[2].loadFromFile("assets/images/gameSelectArrow_R1.png");
 	arrows[3].loadFromFile("assets/images/gameSelectArrow_R2.png");
 	
-	sf::Texture demos[1];
+	sf::Texture demos[3];
 	demos[0].loadFromFile("assets/images/gameSelectImage_AH.png");
-	
-	std::vector<int> indexes = getIndexes(0,1);
+	demos[1].loadFromFile("assets/images/icon.png");
+	demos[2].loadFromFile("assets/images/logo.png");
 	
 	sf::Sprite sprite(arrows[0]); // sprites cannot be created without a texture
 	double screenRatio = (double)(window.getSize().x) / 320.0;
+	
+	// animation vars
+	int animate = 0;
+	int centerFrame = 0;
+	std::vector<int> indexes = getIndexes(centerFrame,3);
+	std::vector<float> frames = {0.5,1.5,2.5};
+	std::vector<double> xyz;
 	
 	// font
 	sf::Font title_font;
@@ -97,8 +113,9 @@ int gameSelectWindow(sf::RenderWindow &window){
 	
 	//Main window loop
 	while ( window.isOpen() ) {
-		time = clock.getElapsedTime();
-		dt_Arrow = time.asSeconds();
+		time = clock.restart();
+		dt = time.asSeconds();
+		lap_Arrow += dt;
 		
 		while (std::optional event = window.pollEvent()) {
 			// close window
@@ -106,12 +123,64 @@ int gameSelectWindow(sf::RenderWindow &window){
 				window.close();
 			}
 			// other events
+			if(!sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && !enterUnPressed){
+				enterUnPressed = true;
+			}
+			if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && enterUnPressed){ // go to next screen
+				return 1;
+			}
+			if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left) && animate==0){ // animate forward
+				animate = 1;
+			}
+			if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right) && animate==0){ // animate backward
+				animate = -1;
+			}
 		}
-
+		
+		if(animate==1){
+			for(int i = 0; i<3; i++){
+				frames[i] += dt;
+				// wrap around
+				if(frames[i]>3)
+					frames[i] -= 3;
+				// pause animation
+				if(frames[0]>=1.5 && frames[0]-dt<1.5){
+					frames[0] = 0.5;
+					frames[1] = 1.5;
+					frames[2] = 2.5;
+					animate = 0;
+					centerFrame -= 1;
+					if(centerFrame<0)
+						centerFrame = 2;
+					indexes = getIndexes(centerFrame,3);
+				}
+			}
+		}
+		if(animate==-1){
+			for(int i = 0; i<3; i++){
+				frames[i] -= dt;
+				// wrap around
+				if(frames[i]<0)
+					frames[i] += 3;
+				// pause animation
+				if(frames[2]<=1.5 && frames[2]+dt>1.5){
+					frames[0] = 0.5;
+					frames[1] = 1.5;
+					frames[2] = 2.5;
+					animate = 0;
+					centerFrame += 1;
+					if(centerFrame>2)
+						centerFrame = 0;
+					indexes = getIndexes(centerFrame,3);
+				}
+			}
+		}
+		
 		window.clear();
 		window.draw(title_text);
-
-		if(dt_Arrow<0.5){ // alternate frames every 0.5s
+		
+		// draw arrows
+		if(lap_Arrow<=0.75){ // alternate frames every 0.75s
 			// left arrow
 			sprite.setTexture(arrows[0], true); // true to reset the sprite rectangle to the size of the new texture
 			sprite.setPosition((sf::Vector2f){48.0*screenRatio,64.0*screenRatio});
@@ -135,11 +204,19 @@ int gameSelectWindow(sf::RenderWindow &window){
 			sprite.setScale((sf::Vector2f){screenRatio,screenRatio});
 			window.draw(sprite);
 			
-			if(dt_Arrow>=1){ // reset counter after 1s so the numbers don't get massive
-				clock.restart();
-			}
+			if(lap_Arrow>1.5) // prevent total time from getting too big
+				lap_Arrow -= 1.5;
 		}
-
+		
+		// draw images
+		for(int i = 0; i<3; i++){
+			xyz = getAnimXYZ(frames[i]);
+			sprite.setTexture(demos[indexes[i]],true);
+			sprite.setPosition((sf::Vector2f){ xyz[0]*screenRatio , xyz[1]*screenRatio });
+			sprite.setScale((sf::Vector2f){ xyz[2]/128*screenRatio , xyz[2]/128*screenRatio });
+			window.draw(sprite);
+		}
+		
 		window.display();
 	}
 	
@@ -164,16 +241,4 @@ int loadingWindow(sf::RenderWindow &window, std::string name){
 	
 	
 	return 1;
-}
-
-std::vector<int> getIndexes(int center, int size){
-	// create indexes
-	std::vector<int> indexes = {center-1,center,center+1};
-	// wrap around if needed
-	if(indexes[0]<0)
-		indexes[0] = size-1;
-	if(indexes[2]>=size)
-		indexes[2] = 0;
-	
-	return indexes;
 }
