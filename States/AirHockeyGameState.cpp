@@ -25,7 +25,7 @@ AirHockeyGameState::AirHockeyGameState(Context& ctx)
     text.setPosition(sf::Vector2f(20.0f, 20.0f));
     
     label.setFillColor(sf::Color::Yellow);
-    label.setPosition(sf::Vector2f(1600.0f, 1200.0f));
+    label.setPosition(sf::Vector2f(100.0f, 100.0f));
     label.setString("AirHockeyGameState State");
 
 }
@@ -53,13 +53,13 @@ void AirHockeyGameState::tick() {
     float logValue = std::log(std::abs(sinT) + 1.0f);  //log is ln
     float log10Value = std::log10(std::abs(cosT) + 1.0f);
 
-    if(ctx.keys -> F1){
-        square.setPosition(sf::Vector2f(500.0f, 500.0f));
-        square.setSize(sf::Vector2f(50.0f, 50.0f));
-    } else {
-        square.setPosition(sf::Vector2f(x, y));
-        square.setSize(sf::Vector2f(w, h));
-    }
+    // if(ctx.keys -> F1){
+    //     square.setPosition(sf::Vector2f(500.0f, 500.0f));
+    //     square.setSize(sf::Vector2f(50.0f, 50.0f));
+    // } else {
+    //     square.setPosition(sf::Vector2f(x, y));
+    //     square.setSize(sf::Vector2f(w, h));
+    // }
 
 
 
@@ -90,7 +90,7 @@ void AirHockeyGameState::tick() {
         << "b = " << b << std::endl;
 
     text.setString(ss.str());
-    square.setFillColor(sf::Color(r, g, b));
+    square.setFillColor(sf::Color(120, 120, 120));
 
 }
 

@@ -7,4 +7,6 @@ main.code-workspace
 main.o
 run.sh
 run_test.sh
+runLatestOnPi-mattw.sh
 runmatt.sh
+build/
