@@ -64,6 +64,9 @@ void Game::tick(){
     gsm.getCurrentState() -> tick();
     GPIOmanager.tick();
 
+    if(ctx.keys -> F1) ctx.gpio -> overlay = true;
+    else ctx.gpio -> overlay = false;
+
     if(ctx.keys -> ESC){
         running = false;
     }

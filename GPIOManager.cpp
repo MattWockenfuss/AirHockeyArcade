@@ -1,5 +1,7 @@
 #include "GPIOManager.hpp"
 #include <iostream>
+#include "Context.hpp"
+#include <sstream>
 
 /*
     The GPIO Manager is responsible for reading and writing GPIO pins
@@ -8,9 +10,12 @@
 */
 
 
-GPIOManager::GPIOManager(){
-    //probably pass through ctx at some point? hmmm
+GPIOManager::GPIOManager(Context& ctx){
     std::cout << "[GPIOManager] New GPIOManager Created!" << std::endl;
+
+    pinout_text = sf::Text(ctx.assets -> getFont("Consolas"), "", 24);
+    pinout_text.setFillColor(sf::Color::Yellow);
+    square_background.setPosition(sf::Vector2f(350.f, 250.f)); // center-ish
 
     square_background = sf::RectangleShape(sf::Vector2f(300.f, 800.f));
     square_background.setFillColor(sf::Color::Green);
@@ -115,9 +120,22 @@ void GPIOManager::tick(){
 void GPIOManager::render(sf::RenderWindow& window){
     if(overlay){
 
+        std::ostringstream ss;
+        ss  << "P1A = " << P1A << std::endl
+            << "P1B = " << P1B << std::endl
+            << "P1X = " << P1X << std::endl
+            << "P1Y = " << P1Y << std::endl
+
+            << "P2A = " << P2A << std::endl
+            << "P2B = " << P2B << std::endl
+            << "P2X = " << P2X << std::endl
+            << "P2Y = " << P2Y << std::endl
+
+        pinout_text.setString(ss.str());
+        window.draw(square_background);
+        window.draw(pinout_text);
     }
 
-    window.draw(square_background);
 
 
 

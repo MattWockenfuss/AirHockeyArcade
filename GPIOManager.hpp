@@ -7,9 +7,11 @@ namespace sf{
     class RenderWindow;
 }
 
+class Context;
+
 class GPIOManager {
     public:
-        GPIOManager();
+        GPIOManager(Context& ctx);
         ~GPIOManager();
         void tick();
         void render(sf::RenderWindow& window);
@@ -24,6 +26,7 @@ class GPIOManager {
 
     private:
         //Graphics Stuff
+        sf::Text pinout_text;
         sf::RectangleShape square_background;
 
         //Non Graphics Stuff
