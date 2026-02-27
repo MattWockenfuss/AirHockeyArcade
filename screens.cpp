@@ -1,5 +1,5 @@
-#include "screens.hpp"
 #include "fcns.hpp"
+#include "screens.hpp"
 
 //This function displays the main title window for players while the machine is waiting.
 //It displays the title, some screensaver animation, and a prompt to insert a coin (or payment method) to begin play.
@@ -71,7 +71,7 @@ int titleWindow(sf::RenderWindow &window) {
     return 1;
 }
 
-int gameSelectWindow(sf::RenderWindow &window){ // arrows don't always animate, not sure why
+int gameSelectWindow(sf::RenderWindow &window, std::vector<GameOption*> gameOptions){ // arrows don't always animate, not sure why
 	window.clear();
 	// make sure we do not automatically skip window
 	bool enterUnPressed = false;
@@ -96,20 +96,12 @@ int gameSelectWindow(sf::RenderWindow &window){ // arrows don't always animate, 
 	loadImage = arrows[3].loadFromFile("assets/images/gameSelectArrow_R2.png");
 	if(!loadImage) {std::perror("File not found!"); }
 	
-	sf::Texture demos[3];
-	loadImage = demos[0].loadFromFile("assets/images/gameSelectImage_AH.png");
-	if(!loadImage) {std::perror("File not found!"); }
-	loadImage = demos[1].loadFromFile("assets/images/icon.png");
-	if(!loadImage) {std::perror("File not found!"); }
-	loadImage = demos[2].loadFromFile("assets/images/logo.png");
-	if(!loadImage) {std::perror("File not found!"); }
-	
 	sf::Sprite sprite(arrows[0]); // sprites cannot be created without a texture
 	
 	// animation vars
 	int animate = 0;
-	int centerFrame = 0;
-	std::vector<int> indexes = getIndexes(centerFrame,3);
+	int selection = 0;
+	std::vector<int> indexes = getIndexes(selection,3);
 	std::vector<float> frames = {0.5,1.5,2.5};
 	std::vector<double> xyz;
 	
@@ -117,10 +109,8 @@ int gameSelectWindow(sf::RenderWindow &window){ // arrows don't always animate, 
 	sf::Font title_font;
 	if (!title_font.openFromFile("assets/fonts/square_sans_serif_7.ttf")) { std::perror("File not found!"); }
 	
-	sf::Text title_text(title_font, "Air Hockey", 24.0*screenRatio);
-	const sf::FloatRect textRect = title_text.getLocalBounds();
-	title_text.setOrigin(textRect.getCenter());
-	title_text.setPosition(sf::Vector2f(window.getSize().x / 2.0f, 14.0*screenRatio));
+	sf::Text title_text(title_font, "", 24.0*screenRatio);
+	sf::FloatRect rect;
 	
 	//Main window loop
 	while ( window.isOpen() ) {
@@ -138,7 +128,7 @@ int gameSelectWindow(sf::RenderWindow &window){ // arrows don't always animate, 
 				enterUnPressed = true;
 			}
 			if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && enterUnPressed){ // go to next screen
-				return 1;
+				return selection;
 			}
 			if(sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left) && animate==0){ // animate forward
 				animate = 1;
@@ -160,10 +150,10 @@ int gameSelectWindow(sf::RenderWindow &window){ // arrows don't always animate, 
 					frames[1] = 1.5;
 					frames[2] = 2.5;
 					animate = 0;
-					centerFrame -= 1;
-					if(centerFrame<0)
-						centerFrame = 2;
-					indexes = getIndexes(centerFrame,3);
+					selection -= 1;
+					if(selection<0)
+						selection = 2;
+					indexes = getIndexes(selection,3);
 				}
 			}
 		}
@@ -179,15 +169,27 @@ int gameSelectWindow(sf::RenderWindow &window){ // arrows don't always animate, 
 					frames[1] = 1.5;
 					frames[2] = 2.5;
 					animate = 0;
-					centerFrame += 1;
-					if(centerFrame>2)
-						centerFrame = 0;
-					indexes = getIndexes(centerFrame,3);
+					selection += 1;
+					if(selection>2)
+						selection = 0;
+					indexes = getIndexes(selection,3);
 				}
 			}
 		}
 		
 		window.clear();
+		
+		// draw title
+		title_text.setString(gameOptions[selection]->name);
+		rect = title_text.getLocalBounds();
+		title_text.setOrigin(rect.getCenter());
+		
+		title_text.setPosition(sf::Vector2f( (window.getSize().x/2)+screenRatio , (14+1)*screenRatio ));
+		title_text.setFillColor(gameOptions[selection]->backColor);
+		window.draw(title_text);
+		
+		title_text.setPosition(sf::Vector2f( window.getSize().x/2 , 14*screenRatio ));
+		title_text.setFillColor(gameOptions[selection]->foreColor);
 		window.draw(title_text);
 		
 		// draw arrows
@@ -222,7 +224,7 @@ int gameSelectWindow(sf::RenderWindow &window){ // arrows don't always animate, 
 		// draw images
 		for(int i = 0; i<3; i++){
 			xyz = getGameAnimXYZ(frames[i]);
-			sprite.setTexture(demos[indexes[i]],true);
+			sprite.setTexture(gameOptions[indexes[i]]->image,true);
 			sprite.setPosition(sf::Vector2f( xyz[0]*screenRatio , xyz[1]*screenRatio ));
 			sprite.setScale(sf::Vector2f( xyz[2]/128*screenRatio , xyz[2]/128*screenRatio ));
 			window.draw(sprite);
@@ -231,10 +233,10 @@ int gameSelectWindow(sf::RenderWindow &window){ // arrows don't always animate, 
 		window.display();
 	}
 	
-	return 1;
+	return selection;
 }
 
-int nameSelectWindow(sf::RenderWindow &window, sf::String *name){
+int nameSelectWindow(sf::RenderWindow &window, sf::String *name, GameOption* game){
 	window.clear();
 	// make sure we do not automatically skip window
 	bool enterUnPressed = false;
@@ -249,12 +251,10 @@ int nameSelectWindow(sf::RenderWindow &window, sf::String *name){
 	sf::Text title_text(font, "Enter Your Name", 24.0*screenRatio);
 	sf::FloatRect rect = title_text.getLocalBounds();
 	title_text.setOrigin(rect.getCenter());
-	title_text.setPosition(sf::Vector2f(window.getSize().x / 2.0f, 30.0*screenRatio));
 	
 	sf::Text name_text(font, *name, 24.0*screenRatio);
 	rect = name_text.getLocalBounds();
 	name_text.setOrigin(rect.getCenter());
-	name_text.setPosition(sf::Vector2f(window.getSize().x / 2.0f, 80.0*screenRatio));
 	
 	std::string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	std::vector<std::vector<float>> coords = { {28,122},{50,122},{72,122},{94,122},{116,122},{138,122},{160,122},{182,122},{204,122},{226,122},{248,122},{270,122},{292,122} , {28,144},{50,144},{72,144},{94,144},{116,144},{138,144},{160,144},{182,144},{204,144},{226,144},{248,144},{270,144},{292,144} };
@@ -265,8 +265,6 @@ int nameSelectWindow(sf::RenderWindow &window, sf::String *name){
 	rect = selectRect.getLocalBounds();
 	selectRect.setOrigin(rect.getCenter());
 	int selectLoc = 0;
-	selectRect.setPosition(sf::Vector2f(coords[selectLoc][0]*screenRatio , coords[selectLoc][1]*screenRatio));
-	selectRect.setOutlineColor(sf::Color::White);
 	selectRect.setFillColor(sf::Color::Transparent);
 	selectRect.setOutlineThickness(1*screenRatio);
 	
@@ -340,23 +338,56 @@ int nameSelectWindow(sf::RenderWindow &window, sf::String *name){
 		}
 		
 		window.clear();
+		
+		// draw title
+		title_text.setPosition(sf::Vector2f( (window.getSize().x/2)+screenRatio, (30+1)*screenRatio ));
+		title_text.setFillColor(game->backColor);
 		window.draw(title_text);
+		
+		title_text.setPosition(sf::Vector2f(window.getSize().x/2, 30*screenRatio));
+		title_text.setFillColor(game->foreColor);
+		window.draw(title_text);
+		
+		// draw name
+		name_text.setPosition(sf::Vector2f( (window.getSize().x/2)+screenRatio, (80+1)*screenRatio ));
+		name_text.setFillColor(game->backColor);
 		window.draw(name_text);
+		
+		name_text.setPosition(sf::Vector2f(window.getSize().x/2, 80*screenRatio));
+		name_text.setFillColor(game->foreColor);
+		window.draw(name_text);
+		
+		// draw letters
 		for(int i = 0; i<26; i++){
 			letter.setString(alphabet[i]);
 			rect = letter.getLocalBounds();
 			letter.setOrigin(rect.getCenter());
-			letter.setPosition(sf::Vector2f(coords[i][0]*screenRatio , coords[i][1]*screenRatio));
+			
+			letter.setPosition(sf::Vector2f( (coords[i][0]+1)*screenRatio , (coords[i][1]+1)*screenRatio ));
+			letter.setFillColor(game->backColor);
+			window.draw(letter);
+			
+			letter.setPosition(sf::Vector2f( coords[i][0]*screenRatio , coords[i][1]*screenRatio ));
+			letter.setFillColor(game->foreColor);
 			window.draw(letter);
 		}
+		
+		// draw selection rectangle
+		selectRect.setPosition(sf::Vector2f( (coords[selectLoc][0]+1)*screenRatio , (coords[selectLoc][1]+1)*screenRatio ));
+		selectRect.setOutlineColor(game->backColor);
 		window.draw(selectRect);
+		
+		selectRect.setPosition(sf::Vector2f( coords[selectLoc][0]*screenRatio , coords[selectLoc][1]*screenRatio ));
+		selectRect.setOutlineColor(game->foreColor);
+		window.draw(selectRect);
+		
 		window.display();
 	}
 	
 	return 1;
 }
 
-int loadingWindow(sf::RenderWindow &window, sf::String name){
+int loadingWindow(sf::RenderWindow &window, sf::String name, GameOption* game){
 	window.clear();
 	// make sure we do not automatically skip window
 	bool enterUnPressed = false;
@@ -370,19 +401,17 @@ int loadingWindow(sf::RenderWindow &window, sf::String name){
 	float dt;
 	
 	// texture
-	sf::Texture dot("assets/images/ahmDot.png");
-	sf::Sprite dotSprite(dot);
-	dotSprite.setScale(sf::Vector2f(screenRatio,screenRatio));
-	std::vector<float> frames = {0.7,0.5,0.3};
+	sf::Sprite dotSprite(game->dot);
 	
 	// animation vars
+	std::vector<float> frames = {0.7,0.5,0.3};
 	std::vector<int> nameLoads = {0,0,0};
 	
 	// font
 	sf::Font font;
 	if (!font.openFromFile("assets/fonts/square_sans_serif_7.ttf")) { std::perror("File not found!"); }
 	
-	sf::Text title_text(font, "Air Hockey", 24*screenRatio);
+	sf::Text title_text(font, game->name, 24*screenRatio);
 	sf::FloatRect rect = title_text.getLocalBounds();
 	title_text.setOrigin(rect.getCenter());
 	title_text.setPosition(sf::Vector2f(window.getSize().x / 2.0f, 30*screenRatio));
@@ -390,18 +419,15 @@ int loadingWindow(sf::RenderWindow &window, sf::String name){
 	sf::Text vs_text(font, "V.S.", 24*screenRatio);
 	rect = vs_text.getLocalBounds();
 	vs_text.setOrigin(rect.getCenter());
-	vs_text.setPosition(sf::Vector2f(window.getSize().x / 2.0f, 94*screenRatio));
 	
 	sf::Text plr_text(font,name,24*screenRatio);
 	rect = plr_text.getLocalBounds();
 	plr_text.setOrigin(sf::Vector2f(rect.size.x, rect.getCenter().y)); // origin on center vertically to align vertically, on right side horizontally to maintain proper spacing on screen
-	plr_text.setPosition(sf::Vector2f(107*screenRatio, 94*screenRatio));
 	
 	sf::String comName("");
 	sf::Text com_text(font,"COM",24*screenRatio);
 	rect = com_text.getLocalBounds();
 	com_text.setOrigin(sf::Vector2f(0, rect.getCenter().y)); // origin on center vertically to align vertically, on left side horizontally to maintain proper spacing on screen
-	com_text.setPosition(sf::Vector2f(208*screenRatio, 94*screenRatio));
 	com_text.setString("");
 	
 	//Main window loop
@@ -450,22 +476,60 @@ int loadingWindow(sf::RenderWindow &window, sf::String name){
 		
 		// draw
 		window.clear();
+		
+		// draw title
+		title_text.setPosition(sf::Vector2f( (window.getSize().x/2)+screenRatio, (30+1)*screenRatio ));
+		title_text.setFillColor(game->backColor);
 		window.draw(title_text);
+		
+		title_text.setPosition(sf::Vector2f(window.getSize().x/2, 30*screenRatio));
+		title_text.setFillColor(game->foreColor);
+		window.draw(title_text);
+		
+		// draw vs
+		vs_text.setPosition(sf::Vector2f( (window.getSize().x/2)+screenRatio, (94+1)*screenRatio ));
+		vs_text.setFillColor(game->backColor);
 		window.draw(vs_text);
+		
+		vs_text.setPosition(sf::Vector2f( window.getSize().x/2, 94*screenRatio ));
+		vs_text.setFillColor(game->foreColor);
+		window.draw(vs_text);
+		
+		// draw plr name
+		plr_text.setPosition(sf::Vector2f( (107+1)*screenRatio, (94+1)*screenRatio));
+		plr_text.setFillColor(game->backColor);
 		window.draw(plr_text);
+		
+		plr_text.setPosition(sf::Vector2f( 107*screenRatio, 94*screenRatio));
+		plr_text.setFillColor(game->foreColor);
+		window.draw(plr_text);
+		
+		// draw com name
+		com_text.setPosition(sf::Vector2f( (208+1)*screenRatio, (94+1)*screenRatio));
+		com_text.setFillColor(game->foreColor);
+		window.draw(com_text);
+		
+		com_text.setPosition(sf::Vector2f( 208*screenRatio, 94*screenRatio));
+		com_text.setFillColor(game->backColor);
 		window.draw(com_text);
 		
 		// draw loading dots
 		if(nameLoads[0]!=2){
+			dotSprite.setTexture(game->dot, true); // true to reset the sprite rectangle to the size of the new texture
 			dotSprite.setPosition(sf::Vector2f(212*screenRatio, (92 + getLoadAnimY(frames[0]) )*screenRatio ));
+			dotSprite.setScale(sf::Vector2f(screenRatio,screenRatio));
 			window.draw(dotSprite);
 		}
 		if(nameLoads[1]!=2){
+			dotSprite.setTexture(game->dot, true); // true to reset the sprite rectangle to the size of the new texture
 			dotSprite.setPosition(sf::Vector2f(232*screenRatio, (92 + getLoadAnimY(frames[1]) )*screenRatio ));
+			dotSprite.setScale(sf::Vector2f(screenRatio,screenRatio));
 			window.draw(dotSprite);
 		}
 		if(nameLoads[2]!=2){
+			dotSprite.setTexture(game->dot, true); // true to reset the sprite rectangle to the size of the new texture
 			dotSprite.setPosition(sf::Vector2f(252*screenRatio, (92 + getLoadAnimY(frames[2]) )*screenRatio ));
+			dotSprite.setScale(sf::Vector2f(screenRatio,screenRatio));
 			window.draw(dotSprite);
 		}
 		

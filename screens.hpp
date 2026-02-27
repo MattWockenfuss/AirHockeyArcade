@@ -9,10 +9,10 @@
     
     int titleWindow(sf::RenderWindow &window);
 	
-    int gameSelectWindow(sf::RenderWindow &window);
+    int gameSelectWindow(sf::RenderWindow &window, std::vector<GameOption*> gameOptions);
 	
-    int nameSelectWindow(sf::RenderWindow &window, sf::String *name);
+    int nameSelectWindow(sf::RenderWindow &window, sf::String *name, GameOption* game);
 	
-    int loadingWindow(sf::RenderWindow &window, sf::String name);
+    int loadingWindow(sf::RenderWindow &window, sf::String name, GameOption* game);
     
 #endif //SCREENS_HPP

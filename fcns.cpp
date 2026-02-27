@@ -1,5 +1,19 @@
 #include "fcns.hpp"
 
+GameOption::GameOption(sf::String name, std::string imgPath, std::string dotPath, sf::Color foreColor, sf::Color backColor){
+	this->name = name;
+	
+	bool loadImage;
+	loadImage = (this->image).loadFromFile(imgPath);
+	if(!loadImage) {std::perror("File not found!"); }
+	
+	loadImage = (this->dot).loadFromFile(dotPath);
+	if(!loadImage) {std::perror("File not found!"); }
+	
+	this->foreColor = foreColor;
+	this->backColor = backColor;
+}
+
 std::vector<int> getIndexes(int center, int size){
 	// create indexes
 	std::vector<int> indexes = {center-1,center,center+1};
