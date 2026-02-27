@@ -6,7 +6,7 @@
 
 
 Game::Game()
-    : gsm(ctx), GPIOmanager(ctx)
+    : gsm(ctx)
 {
     ctx.window = &window;
     ctx.assets = &assetManager;

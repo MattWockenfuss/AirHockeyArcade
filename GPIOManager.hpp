@@ -11,7 +11,7 @@ class Context;
 
 class GPIOManager {
     public:
-        init(Context& ctx);
+        void init(Context& ctx);
         GPIOManager();
         ~GPIOManager();
         void tick();

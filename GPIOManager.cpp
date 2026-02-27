@@ -11,9 +11,11 @@
 */
 
 GPIOManager::GPIOManager(){}
-GPIOManager::init(Context& ctx)
-    :pinout_text(ctx.assets -> getFont("Consolas"), "", 24)
-{
+void GPIOManager::init(Context& ctx){
+    pinout_text.setFont(ctx.assets -> getFont("Consolas"));
+    pinout_text.setCharacterSize(24);
+
+
     std::cout << "[GPIOManager] New GPIOManager Created! FINALLY" << std::endl;
 
     pinout_text.setFillColor(sf::Color::Yellow);
