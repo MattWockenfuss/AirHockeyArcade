@@ -10,10 +10,10 @@
     it also has a render to display the information for easy view
 */
 
-
-GPIOManager::GPIOManager(Context& ctx)
-    : pinout_text(ctx.assets -> getFont("Consolas"), "", 24)
-    {
+GPIOManager::GPIOManager(){}
+GPIOManager::init(Context& ctx)
+    :pinout_text(ctx.assets -> getFont("Consolas"), "", 24)
+{
     std::cout << "[GPIOManager] New GPIOManager Created! FINALLY" << std::endl;
 
     pinout_text.setFillColor(sf::Color::Yellow);
@@ -101,6 +101,8 @@ GPIOManager::GPIOManager(Context& ctx)
     gpiod_line_config_free(outConfig);
     gpiod_line_settings_free(outSettings);
 }
+
+
 
 
 GPIOManager::~GPIOManager() {

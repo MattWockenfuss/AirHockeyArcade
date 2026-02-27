@@ -30,6 +30,7 @@ void Game::initialization(){
 void Game::start(){
     //called when we want to start the game
     running = true;
+    ctx.gpio -> init(ctx);
     run();
 }
 void Game::stop(){

@@ -11,7 +11,8 @@ class Context;
 
 class GPIOManager {
     public:
-        GPIOManager(Context& ctx);
+        init(Context& ctx);
+        GPIOManager();
         ~GPIOManager();
         void tick();
         void render(sf::RenderWindow& window);
