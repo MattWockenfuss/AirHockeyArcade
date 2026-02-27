@@ -24,7 +24,7 @@ KeyManager::KeyManager(){
     F4 = false;
     ESC = false;
 
-    std::cout << "[KeyManager] A KeyManager was created!" << std::endl;
+    std::cout << "[KeyManager] A KeyManager was created! FINALLY" << std::endl;
 }
 
 void KeyManager::handleEvent(const sf::Event& event){

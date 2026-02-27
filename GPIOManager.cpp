@@ -1,6 +1,7 @@
 #include "GPIOManager.hpp"
 #include <iostream>
 #include "Context.hpp"
+#include "AssetManager.hpp"
 #include <sstream>
 
 /*
@@ -10,10 +11,11 @@
 */
 
 
-GPIOManager::GPIOManager(Context& ctx){
-    std::cout << "[GPIOManager] New GPIOManager Created!" << std::endl;
+GPIOManager::GPIOManager(Context& ctx)
+    : pinout_text(ctx.assets -> getFont("Consolas"), "", 24)
+    {
+    std::cout << "[GPIOManager] New GPIOManager Created! FINALLY" << std::endl;
 
-    pinout_text = sf::Text(ctx.assets -> getFont("Consolas"), "", 24);
     pinout_text.setFillColor(sf::Color::Yellow);
     square_background.setPosition(sf::Vector2f(350.f, 250.f)); // center-ish
 
@@ -43,10 +45,13 @@ GPIOManager::GPIOManager(Context& ctx){
 
     
     chip = gpiod_chip_open("/dev/gpiochip0");
+    if(!chip){
+        std::cerr << " Failed to Open Chip!" << std::endl;
+        std::abort();
+    }
 
-
-    inPins  = { 4, 5, 6, 12, 13, 16, 17, 27 };     // 8 button GPIOs (BCM)
-    outPins = { 18, 19, 20, 21, 22, 23, 24, 25 };   // 8 LED GPIOs (BCM)
+    inPins  = { 2, 3, 4, 17, 27, 22, 10, 9 };     // 8 button GPIOs (BCM)
+    outPins = { 14, 15, 18, 23, 24, 25, 28, 7 };   // 8 LED GPIOs (BCM)
 
     // ---------- INPUT REQUEST (all 8 lines at once) ----------
     auto* inSettings = gpiod_line_settings_new();
@@ -65,6 +70,10 @@ GPIOManager::GPIOManager(Context& ctx){
     gpiod_request_config_set_consumer(inReqCfg, "buttons");
 
     inReq = gpiod_chip_request_lines(chip, inReqCfg, inConfig);
+    if(!inReq){
+        std::cerr << "Failed to request the input lines!" << std::endl;
+        std::abort();
+    }
 
     gpiod_request_config_free(inReqCfg);
     gpiod_line_config_free(inConfig);
@@ -82,6 +91,11 @@ GPIOManager::GPIOManager(Context& ctx){
     gpiod_request_config_set_consumer(outReqCfg, "leds");
 
     outReq = gpiod_chip_request_lines(chip, outReqCfg, outConfig);
+    if(!outReq){
+        std::cerr << "Failed to request the output lines!" << std::endl;
+        std::abort();
+    }
+
 
     gpiod_request_config_free(outReqCfg);
     gpiod_line_config_free(outConfig);
@@ -89,7 +103,7 @@ GPIOManager::GPIOManager(Context& ctx){
 }
 
 
-~GPIOManager::GPIOManager() {
+GPIOManager::~GPIOManager() {
     if (outReq) gpiod_line_request_release(outReq);
     if (inReq)  gpiod_line_request_release(inReq);
     if (chip)   gpiod_chip_close(chip);
@@ -129,7 +143,7 @@ void GPIOManager::render(sf::RenderWindow& window){
             << "P2A = " << P2A << std::endl
             << "P2B = " << P2B << std::endl
             << "P2X = " << P2X << std::endl
-            << "P2Y = " << P2Y << std::endl
+            << "P2Y = " << P2Y << std::endl;
 
         pinout_text.setString(ss.str());
         window.draw(square_background);
