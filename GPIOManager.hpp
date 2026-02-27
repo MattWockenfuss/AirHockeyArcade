@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <gpiod.h>
+#include <memory>
 
 namespace sf{
     class RenderWindow;
@@ -27,7 +28,7 @@ class GPIOManager {
 
     private:
         //Graphics Stuff
-        sf::Text pinout_text;
+        std::unique_ptr<sf::Text> pinout_text;
         sf::RectangleShape square_background;
 
         //Non Graphics Stuff

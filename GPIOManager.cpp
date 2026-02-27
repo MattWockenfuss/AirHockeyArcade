@@ -11,14 +11,18 @@
 */
 
 GPIOManager::GPIOManager(){}
-void GPIOManager::init(Context& ctx){
-    pinout_text.setFont(ctx.assets -> getFont("Consolas"));
-    pinout_text.setCharacterSize(24);
+GPIOManager::init(Context& ctx){
 
+    auto& font = ctx.assets -> getFont("Consolas");
+
+    pinout_text = std::make_unique<sf::Text>(font);
+    pinout_text -> setCharacterSize(18);
+    pinout_text -> setPosition({10.f, 10.f});
+    pinout_text -> setFillColor(sf::Color::Yellow);
 
     std::cout << "[GPIOManager] New GPIOManager Created! FINALLY" << std::endl;
 
-    pinout_text.setFillColor(sf::Color::Yellow);
+    
     square_background.setPosition(sf::Vector2f(350.f, 250.f)); // center-ish
 
     square_background = sf::RectangleShape(sf::Vector2f(300.f, 800.f));
@@ -149,7 +153,7 @@ void GPIOManager::render(sf::RenderWindow& window){
             << "P2X = " << P2X << std::endl
             << "P2Y = " << P2Y << std::endl;
 
-        pinout_text.setString(ss.str());
+        pinout_text -> setString(ss.str());
         window.draw(square_background);
         window.draw(pinout_text);
     }
