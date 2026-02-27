@@ -20,12 +20,15 @@ class Game {
         bool running = false;
         bool shouldRender = false;
         
+        Context ctx;
+
         sf::RenderWindow window;
         AssetManager assetManager;
         KeyManager keyManager;
-        GPIOManager GPIOmanager;
+        
         
 
-        Context ctx;
+        
+        GPIOManager GPIOmanager;
         GameStateManager gsm;
 };
