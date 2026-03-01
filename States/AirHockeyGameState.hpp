@@ -2,18 +2,20 @@
 
 #include "State.hpp"
 #include <SFML/Graphics.hpp>
+#include <optional>
 
 
 class AirHockeyGameState : public State {
     public:
-        AirHockeyGameState(Context& ctx);
+        void init(Context* ctx) override;
 
         void tick() override;
         void render(sf::RenderWindow& window) override;
 
+        AirHockeyGameState();
         ~AirHockeyGameState() override = default;
     private:
-        sf::Text text, label;
+        std::optional<sf::Text> text, label;
 
         sf::RectangleShape square;
         float x, y;

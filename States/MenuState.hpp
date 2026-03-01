@@ -3,18 +3,21 @@
 #include "State.hpp"
 #include <SFML/Graphics.hpp>
 #include <chrono>
+#include <optional>
 
 
 class MenuState : public State {
     public:
-        MenuState(Context& ctx);
+        void init(Context* ctx) override;
 
         void tick() override;
         void render(sf::RenderWindow& window) override;
-
+        
+        MenuState();
         ~MenuState() override = default;
     private:
-        sf::Text title_text, play_text, seconds_counter;
+        long long sec;
+        std::optional<sf::Text> title_text, play_text, seconds_counter;
 
         sf::RectangleShape square;
         float x, y;

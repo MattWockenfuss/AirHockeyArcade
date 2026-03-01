@@ -25,10 +25,6 @@ class Game {
         sf::RenderWindow window;
         AssetManager assetManager;
         KeyManager keyManager;
-        
-        
-
-        
         GPIOManager GPIOmanager;
         GameStateManager gsm;
 };

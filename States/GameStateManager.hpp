@@ -10,12 +10,11 @@ enum class States {
 
 class GameStateManager {
     public:
-        GameStateManager(Context& ctx);
-        ~GameStateManager();
+        void init(Context* ctx);
         
         void changeState(States s);
         State* getCurrentState();
     private:
         State* currentState;
-        Context& ctx;
+        Context* ctx;
 };

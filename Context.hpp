@@ -12,11 +12,11 @@ class GPIOManager;
 
 
 struct Context {
-    sf::RenderWindow* window = nullptr;
-    AssetManager* assets = nullptr;
-    KeyManager* keys = nullptr;
-    GameStateManager* gsm = nullptr;
-    GPIOManager* gpio = nullptr;
+    sf::RenderWindow*   window = nullptr;
+    AssetManager*       assets = nullptr;
+    KeyManager*         keys = nullptr;
+    GameStateManager*   gsm = nullptr;
+    GPIOManager*        gpio = nullptr;
 
     //audio manager
     //etc

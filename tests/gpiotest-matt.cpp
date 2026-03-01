@@ -1,5 +1,20 @@
 #include "gpiotest-matt.hpp"
 
+
+void write(gpiod_line_request* req, int GPIOPIN, bool onOff){
+    if(onOff){
+        if (gpiod_line_request_set_value(req, GPIOPIN, GPIOD_LINE_VALUE_ACTIVE) < 0) {
+            std::cerr << "set_value(ON) failed: " << std::strerror(errno) << "\n";
+        }
+    }else{
+        if (gpiod_line_request_set_value(req, GPIOPIN, GPIOD_LINE_VALUE_INACTIVE) < 0) {
+            std::cerr << "set_value(OFF) failed: " << std::strerror(errno) << "\n";
+        }
+    }
+
+}
+
+
 int main() {
     const char* chip_path = "/dev/gpiochip0";
     const unsigned int offset = 27; // BCM GPIO 27 (physical pin 13)
@@ -40,15 +55,14 @@ int main() {
     }
 
     // ON
-    if (gpiod_line_request_set_value(req, offset, GPIOD_LINE_VALUE_ACTIVE) < 0) {
-        std::cerr << "set_value(ON) failed: " << std::strerror(errno) << "\n";
+    for(int u = 0; u < 5; u++){
+        write(req, 27, true);
+        sleep(1);
+        write(req, 27, false);
+        sleep(1);
     }
-    sleep(3);
-
     // OFF
-    if (gpiod_line_request_set_value(req, offset, GPIOD_LINE_VALUE_INACTIVE) < 0) {
-        std::cerr << "set_value(OFF) failed: " << std::strerror(errno) << "\n";
-    }
+
 
     gpiod_line_request_release(req);
     gpiod_chip_close(chip);
