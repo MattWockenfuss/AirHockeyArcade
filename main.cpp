@@ -2,7 +2,46 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include <SFML/Graphics.hpp>
+#include <SFML/Graphics.hpp> // I believe <vector.h> is included here
+
+struct Fruit{
+	sf::Texture tileSet;
+	int x;
+	double y;
+	int w;
+	int h;
+	double vy;
+	int frame;
+	float time;
+	
+	Fruit(sf::Texture tileSet, int x, int w, int h){
+		this->tileSet = tileSet;
+		this->x = x;
+		this->y = -h;
+		this->w = w;
+		this->h = h;
+		this->vy = 0;
+		this->frame = 0;
+		this->time = 0.0;
+	}
+	void move(float dt){
+		time += dt;
+		int n = round(time/0.075f); // account for lag where dt may be larger than the 0.075 time step we want
+		for(int i = 0; i<n; i++){
+			vy += 0.1;
+			y += vy;
+		}
+		frame = (frame + n)%6;
+		time = std::remainder(time,0.075); // bring time back down while including any carry over between time steps
+	}
+	void draw(sf::RenderWindow* window, double screenRatio){
+		sf::Sprite sprite(tileSet);
+		sprite.setScale(sf::Vector2f(screenRatio,screenRatio));
+		sprite.setTextureRect(sf::IntRect( sf::Vector2(w*frame,0), sf::Vector2(w,h) )); // change this will change image we draw from tile set
+		sprite.setPosition(sf::Vector2f( ((19-(w/2))+(38*x))*screenRatio , y*screenRatio ));
+		window->draw(sprite);
+	}
+};
 
 int main()
 {
@@ -24,6 +63,7 @@ int main()
 	sf::Texture appleTex("assets/images/apple_tileSet.png");
 	sf::Texture orangeTex("assets/images/orange_tileSet.png");
 	sf::Texture lemonTex("assets/images/lemon_tileSet.png");
+	std::vector<sf::Texture> fruitTexs = {mellonTex,appleTex,orangeTex,lemonTex};
 	
 	sf::Sprite back(backTex);
 	back.setScale(sf::Vector2f(screenRatio,screenRatio));
@@ -42,6 +82,11 @@ int main()
 	float guyTime = 0.0;
 	
 	// objects
+	std::vector<Fruit*> fruits;
+	int fallenFruit;
+	float fruitTime = 0;
+	int fruitType = 0;
+	int x = 0;
 	
 	while ( window.isOpen() )
 	{
@@ -91,13 +136,13 @@ int main()
 		// animate guy
 		if(guySwing){
 			guyTime += dt;
-			if(guyTime>=0.075){ // change frames every 0.075s
-				guyTime = 0;
-				if(++guyFrame == 4){ // stop animation
-					guySwing = false;
-					guyFacing = (guyFacing+1)%2; // will alternate between 0 and 1
-					guyFrame = 0;
-				}
+			int n = round(guyTime/0.075f); // change frames every 0.075s (also account for lag that may cause a frame to be longer than 0.075s
+			guyTime = std::remainder(guyTime,0.075f); // reset guyTime while retaining any overflow
+			guyFrame += n;
+			if(guyFrame >= 4){ // stop animation
+				guySwing = false;
+				guyFacing = (guyFacing+1)%2; // will alternate between o and 1
+				guyFrame = 0;
 			}
 		}
 		if(guyMove!=0){
@@ -110,13 +155,58 @@ int main()
 		}
 		
 		// update objects
+		// guy
 		guy.setTextureRect(sf::IntRect( sf::Vector2(48*guyFrame,48*guyFacing), sf::Vector2(48,48) )); // change this will change image we draw from tile set
 		guy.setPosition(sf::Vector2f( (3+(38*(guyX + (guyMove*guyStep/0.2) )))*screenRatio , window.getSize().y-(58*screenRatio) ));
+		// spawn fruit
+		if(fruitTime <= 0){
+			fruitType = rand()%4;
+			if(fruitType==0){
+				fruits.push_back( new Fruit(fruitTexs[fruitType],x,20,16) ); // drop mellon
+			}
+			else{
+				fruits.push_back( new Fruit(fruitTexs[fruitType],x,8,8) ); // drop other fruit (they are all the same size)
+			}
+			
+			fruitTime = rand()%2; // choose whether the new fruit will fall to the left or to the right
+			if(fruitTime==0){ // move the fruit a ranom number of columns (stay close enough that it is reachable within time)
+				fruitTime = rand()&10; // random column movement between 0 and 9
+				x += fruitTime;
+				if(x>7)
+					x = 7;
+			}
+			else{ // move in the other direction
+				fruitTime = rand()&10; // random column movement between 0 and 9
+				x -= fruitTime;
+				if(x<0)
+					x = 0;
+			}
+			fruitTime = (fruitTime+1)*0.3; // turn random column movement into random time spacing between fruits of 0.3s (same column) to 3.0s (any column plus a pause)
+		}
+		fruitTime -= dt;
+		// move fruit
+		fallenFruit = -1;
+		for(int i = 0; i<fruits.size(); i++){
+			fruits[i]->move(dt);
+			if(fruits[i]->y >= 180*screenRatio){
+				fallenFruit = i;
+			}
+		}
+		// remove fallen fruit
+		if(fallenFruit!=-1){
+			fruits.erase(fruits.begin()+fallenFruit);
+		}
 		
 		// draw
 		window.clear();
+		// background
 		window.draw(back);
+		// guy
 		window.draw(guy);
+		// fruit
+		for(int i = 0; i<fruits.size(); i++){
+			fruits[i]->draw(&window, screenRatio);
+		}
 		window.display();
 	}
 	return 0;
