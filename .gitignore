@@ -9,4 +9,6 @@ run.sh
 run_test.sh
 runLatestOnPi-mattw.sh
 runmatt.sh
+runmatt-test2.sh
+run-audio.sh
 build/
