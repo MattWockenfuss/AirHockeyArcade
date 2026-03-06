@@ -235,6 +235,7 @@ int main()
 				//fruitTime = rand()&10; // random column movement between 0 and 9
 				fruitX += fruitTime;
 				if(fruitX>7)
+					fruitX = ((fruitX-7)*-1)+7; // reflect off of walls
 					fruitX = 7;
 			}
 			else{ // move in the other direction
@@ -242,7 +243,7 @@ int main()
 				//fruitTime = rand()&10; // random column movement between 0 and 9
 				fruitX -= fruitTime;
 				if(fruitX<0)
-					fruitX = 0;
+					fruitX = fruitX*-1; // reflect off of walls
 			}
 			if(guyRed){ // original movement style
 				fruitTime = (fruitTime+1)*0.4; // turn random column movement into random time spacing between fruits of 0.4s (same column) to 4.0s (any column plus a pause)
