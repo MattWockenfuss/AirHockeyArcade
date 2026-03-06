@@ -9,25 +9,25 @@
 
 
 
-AirHockeyGameState::AirHockeyGameState(Context& ctx)
-    : 
-        State(ctx), 
-        text(ctx.assets -> getFont("Consolas"), "", 24), 
-        label(ctx.assets -> getFont("ST-SimpleSquare"), "", 96)
-    {
+AirHockeyGameState::AirHockeyGameState(){}
+
+void AirHockeyGameState::init(Context* ctx){
+    State::init(ctx);
+
+    text.emplace(ctx -> assets -> getFont("Consolas"), "", 24);
+    label.emplace(ctx -> assets -> getFont("ST-SimpleSquare"), "", 96);
     std::cout << "AirHockeyGameState Created!" << std::endl;
 
     square = sf::RectangleShape(sf::Vector2f(100.f, 100.f));
     square.setFillColor(sf::Color::Green);
     square.setPosition(sf::Vector2f(350.f, 250.f)); // center-ish
 
-    text.setFillColor(sf::Color::White);
-    text.setPosition(sf::Vector2f(20.0f, 20.0f));
+    text -> setFillColor(sf::Color::White);
+    text -> setPosition(sf::Vector2f(20.0f, 20.0f));
     
-    label.setFillColor(sf::Color::Yellow);
-    label.setPosition(sf::Vector2f(100.0f, 100.0f));
-    label.setString("AirHockeyGameState State");
-
+    label -> setFillColor(sf::Color::Yellow);
+    label -> setPosition(sf::Vector2f(100.0f, 100.0f));
+    label -> setString("AirHockeyGameState State");
 }
 
 void AirHockeyGameState::tick() {
@@ -89,13 +89,16 @@ void AirHockeyGameState::tick() {
         << "g = " << g << std::endl
         << "b = " << b << std::endl;
 
-    text.setString(ss.str());
+
+    square.setPosition(sf::Vector2f(x, y)); // center-ish
+
+    text -> setString(ss.str());
     square.setFillColor(sf::Color(120, 120, 120));
 
 }
 
 void AirHockeyGameState::render(sf::RenderWindow& window) {
     window.draw(square);
-    window.draw(text);
-    window.draw(label);
+    window.draw(*text);
+    window.draw(*label);
 }

@@ -5,18 +5,22 @@
 
 
 
-Game::Game()
-    : gsm(ctx)
-{
+Game::Game(){
     ctx.window = &window;
     ctx.assets = &assetManager;
     ctx.keys = &keyManager;
-    ctx.gsm = &gsm;
     ctx.gpio = &GPIOmanager;
     ctx.audio = &audioManager;
+    ctx.gsm = &gsm;
 }
 
 void Game::initialization(){
+    ctx.gsm -> init(&ctx);
+    ctx.gpio -> init(&ctx);
+
+
+
+
     //this function is called at the beginning of the game to create all of the objects that we will need
     std::vector<sf::VideoMode> modes = sf::VideoMode::getFullscreenModes();
 	
@@ -31,7 +35,6 @@ void Game::initialization(){
 void Game::start(){
     //called when we want to start the game
     running = true;
-    ctx.gpio -> init(ctx);
     run();
 }
 void Game::stop(){
@@ -65,9 +68,6 @@ void Game::tick(){
 
     gsm.getCurrentState() -> tick();
     GPIOmanager.tick();
-
-    if(ctx.keys -> F1) ctx.gpio -> overlay = true;
-    else ctx.gpio -> overlay = false;
 
     if(ctx.keys -> ESC){
         running = false;

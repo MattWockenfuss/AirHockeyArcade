@@ -8,12 +8,11 @@ namespace sf {
 
 class State {
     public:
-        State(Context& ctx);
-
+        virtual void init(Context* ctx) = 0;
         virtual void tick() = 0;
         virtual void render(sf::RenderWindow& window) = 0;
 
         virtual ~State()  = default;
     protected:
-        Context& ctx;
+        Context* ctx;
 };

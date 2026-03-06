@@ -1,8 +1,7 @@
 #include "State.hpp"
 #include <iostream>
 
-State::State(Context& ctx)
-: ctx(ctx)
-{
+void State::init(Context* ctx){
+    this -> ctx = ctx;
     std::cout << "New State Created!" << std::endl;
 }

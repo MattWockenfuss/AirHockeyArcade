@@ -3,10 +3,11 @@
 #include "AirHockeyGameState.hpp"
 #include "../Context.hpp"
 
-GameStateManager::GameStateManager(Context& ctx)
-:ctx(ctx), currentState(nullptr)
-{
-    //Created the GameStateManager
+
+
+void GameStateManager::init(Context* ctx){
+    this -> ctx = ctx;     //ctx is a memory address so no need to dereference, just keep track of the memory address for everyone
+    this -> currentState = nullptr;
 }
 
 void GameStateManager::changeState(States s){
@@ -17,23 +18,16 @@ void GameStateManager::changeState(States s){
     }
     switch(s){
         case States::Menu:
-            currentState = new MenuState(ctx);
+            currentState = new MenuState();
+            currentState -> init(ctx);
             break;
         case States::AirHockey:
-            currentState = new AirHockeyGameState(ctx);
+            currentState = new AirHockeyGameState();
+            currentState -> init(ctx);
             break;
     }
 }
 
 State* GameStateManager::getCurrentState(){
     return currentState;
-}
-
-
-
-GameStateManager::~GameStateManager(){
-    if (currentState != nullptr){
-        delete currentState;
-        currentState = nullptr;
-    }
 }
