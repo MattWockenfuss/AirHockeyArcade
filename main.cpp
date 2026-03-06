@@ -94,7 +94,7 @@ int main()
 	int fallenFruit;
 	float fruitTime = 0;
 	int fruitType = 0;
-	int x = 0;
+	int fruitX = 0;
 	std::vector<int> fruitDist = {0,0,0,0,1,1,1,1,1,1,2,2,2,2,2,2,3,3,3,3,3,4,4,4,4,5,5,5,6,6,7};
 	
 	while ( window.isOpen() )
@@ -120,17 +120,41 @@ int main()
 				guyCanChange = false;
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)){ // move left
-				if(guyX>0 && !guySwing && guyMove==0){
+				if(guyRed && guyX>0 && !guySwing && guyMove==0){
 					guyMove = -1;
 					guyFrame = 6;
 					guyStep = 0;
+				} else {
+					int x = guyX;
+					int y = -1;
+					for(int i = 0; i<fruits.size(); i++){
+						if(fruits[i]->y > y && fruits[i]->y < 133 && fruits[i]->state==0){
+							x = fruits[i]->x/38;
+							y = fruits[i]->y;
+						}
+					}
+					if(!guyRed && !guySwing && guyX>0 && x<guyX){
+						guyX = x;
+					}
 				}
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)){ // move right
-				if(guyX<7 && !guySwing && guyMove==0){
+				if(guyRed && guyX<7 && !guySwing && guyMove==0){
 					guyMove = 1;
 					guyFrame = 5;
 					guyStep = 0;
+				} else {
+					int x = guyX;
+					int y = -1;
+					for(int i = 0; i<fruits.size(); i++){
+						if(fruits[i]->y > y && fruits[i]->y < 133 && fruits[i]->state==0){
+							x = fruits[i]->x/38;
+							y = fruits[i]->y;
+						}
+					}
+					if(!guyRed && !guySwing && guyX<7 && x>guyX){
+						guyX = x;
+					}
 				}
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space)){ // swing sword
@@ -151,7 +175,7 @@ int main()
 			if(guyFrame==2 && !cutFruit){
 				int i;
 				for(i = 0; i<fruits.size(); i++){
-					if(fruits[i]->y+fruits[i]->h > 122 && fruits[i]->y+fruits[i]->h <= 133 && fruits[i]->state==0){
+					if(fruits[i]->x/38==guyX && fruits[i]->y+fruits[i]->h > 122 && fruits[i]->y+fruits[i]->h <= 133 && fruits[i]->state==0){
 						cutFruit = true;
 						break;
 					}
@@ -199,28 +223,32 @@ int main()
 		if(fruitTime <= 0){
 			fruitType = rand()%4;
 			if(fruitType==0){
-				fruits.push_back( new Fruit(fruitTexs[fruitType],fruitType,0,x*38,-16,20,16,0,0) ); // drop mellon
+				fruits.push_back( new Fruit(fruitTexs[fruitType],fruitType,0,fruitX*38,-16,20,16,0,0) ); // drop mellon
 			}
 			else{
-				fruits.push_back( new Fruit(fruitTexs[fruitType],fruitType,0,x*38,-8,8,8,0,0) ); // drop other fruit (they are all the same size)
+				fruits.push_back( new Fruit(fruitTexs[fruitType],fruitType,0,fruitX*38,-8,8,8,0,0) ); // drop other fruit (they are all the same size)
 			}
 			
 			fruitTime = rand()%2; // choose whether the new fruit will fall to the left or to the right
 			if(fruitTime==0){ // move the fruit a ranom number of columns (stay close enough that it is reachable within time)
 				fruitTime = fruitDist[ rand()%( fruitDist.size() ) ];
 				//fruitTime = rand()&10; // random column movement between 0 and 9
-				x += fruitTime;
-				if(x>7)
-					x = 7;
+				fruitX += fruitTime;
+				if(fruitX>7)
+					fruitX = 7;
 			}
 			else{ // move in the other direction
 				fruitTime = fruitDist[ rand()%( fruitDist.size() ) ];
 				//fruitTime = rand()&10; // random column movement between 0 and 9
-				x -= fruitTime;
-				if(x<0)
-					x = 0;
+				fruitX -= fruitTime;
+				if(fruitX<0)
+					fruitX = 0;
 			}
-			fruitTime = (fruitTime+1)*0.4; // turn random column movement into random time spacing between fruits of 0.4s (same column) to 4.0s (any column plus a pause)
+			if(guyRed){ // original movement style
+				fruitTime = (fruitTime+1)*0.4; // turn random column movement into random time spacing between fruits of 0.4s (same column) to 4.0s (any column plus a pause)
+			} else { // alternate movement style
+				fruitTime = ((rand()%3)+1)*0.4;
+			}
 		}
 		fruitTime -= dt;
 		// move fruit
