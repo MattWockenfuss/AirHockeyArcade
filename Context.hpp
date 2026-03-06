@@ -8,6 +8,7 @@ class AssetManager;
 class KeyManager;
 class GameStateManager;
 class GPIOManager;
+class AudioManager;
 
 
 
@@ -17,8 +18,8 @@ struct Context {
     KeyManager* keys = nullptr;
     GameStateManager* gsm = nullptr;
     GPIOManager* gpio = nullptr;
+    AudioManager* audio = nullptr;
 
-    //audio manager
     //etc
 };
 

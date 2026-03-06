@@ -13,6 +13,7 @@ Game::Game()
     ctx.keys = &keyManager;
     ctx.gsm = &gsm;
     ctx.gpio = &GPIOmanager;
+    ctx.audio = &audioManager;
 }
 
 void Game::initialization(){

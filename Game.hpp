@@ -6,6 +6,7 @@
 #include "AssetManager.hpp"
 #include "KeyManager.hpp"
 #include "GPIOManager.hpp"
+#include "AudioManager.hpp"
 
 class Game {
     public:
@@ -25,7 +26,7 @@ class Game {
         sf::RenderWindow window;
         AssetManager assetManager;
         KeyManager keyManager;
-        
+        AudioManager audioManager;
         
 
         

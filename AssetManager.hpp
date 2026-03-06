@@ -3,6 +3,7 @@
 #include <string>
 #include <unordered_map>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
 
 class AssetManager {
@@ -11,10 +12,13 @@ class AssetManager {
 
         sf::Texture& getAsset(std::string key);
         sf::Font& getFont(std::string key);
+        sf::SoundBuffer& getSound(std::string key);
     private:
         std::unordered_map<std::string, sf::Texture> assets;
         std::unordered_map<std::string, sf::Font> fonts;
+        std::unordered_map<std::string, sf::SoundBuffer> sounds;
         
         void loadFont(std::string key, std::string pathname);
+        void loadSound(std::string key, std::string pathname);
         //void loadAsset(std::string name);
 };
