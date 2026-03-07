@@ -330,6 +330,82 @@ struct Paddle{
     }
 };
 
+void puckFriction(double *vx, double *vy, float dt){
+	// base puck velocity should be 930 (~1s to travel down the field (750) and ~1s to travel across the field (550) )
+    double v;
+    double angle;
+    double fric;
+	double fricConst = 4000; // the larger this is, the lower the friction
+    // change velocity
+    if(*vx==0){
+		if(*vy>0){
+			fric = (dt/((-1*fricConst) / *vy))+1; // scale friction based on dt and velocity
+			if(fric<0)
+				fric = 0;
+			*vy *= fric;
+			if(*vy<930)
+				*vy = 930;
+		}
+		else if(*vy<0){
+			fric = (dt/(fricConst/ *vy))+1; // scale friction based on dt and velocity
+			if(fric<0)
+				fric = 0;
+			*vy *= fric;
+			if(*vy>-930)
+				*vy = -930;
+		}
+    }
+    else if(*vy==0){
+        if(*vx>0){
+			fric = (dt/((-1*fricConst) / *vx))+1; // scale friction based on dt and velocity
+			if(fric<0)
+				fric = 0;
+			*vx *= fric;
+			if(*vx<930)
+				*vx = 930;
+		}
+		else if(*vx<0){
+			fric = (dt/(fricConst/ *vx))+1; // scale friction based on dt and velocity
+			if(fric<0)
+				fric = 0;
+			*vx *= fric;
+			if(*vx>-930)
+				*vx = -930;
+		}
+    }
+    else{
+		// make all values positive to simplify math
+		bool xNeg = *vx<0;
+		if(xNeg)
+			*vx *= -1;
+		bool yNeg = *vy<0;
+		if(yNeg)
+			*vy *= -1;
+		// math
+        v = hypot(*vx,*vy);
+        angle = atan(*vy/ *vx);
+		if(v>0){
+			fric = (dt/((-1*fricConst) / v))+1; // scale friction based on dt and velocity
+			if(fric<0)
+				fric = 0;
+			v *= fric;
+			if(v<930)
+				v = 930;
+		}
+		else if(v<0){
+			fric = (dt/(fricConst/ v))+1; // scale friction based on dt and velocity
+			if(fric<0)
+				fric = 0;
+			v *= fric;
+			if(v>-930)
+				v = -930;
+		}
+		// restore values
+        *vx = v*cos(angle)*(xNeg?-1:1);
+        *vy = v*sin(angle)*(yNeg?-1:1);
+    }
+	return;
+}
 void movePuck(Puck* puck, float dt){
     // field is 600x800
     double x = puck->x;
@@ -355,84 +431,148 @@ void movePuck(Puck* puck, float dt){
      *   5. return to start of loop
     */
     
-    // base puck velocity should be 12 (~1s to travel down the field)
-    //double v;
-    //double angle;
-    //double fric = 0.9;
-    //// change velocity
-    //if(vx==0){
-    //    vy *= fric;
-    //    if(vy<12)
-    //        vy = 12;
-    //}
-    //else if(vy==0){
-    //    vx *= fric;
-    //    if(vx<12)
-    //        vx = 12;
-    //}
-    //else{
-    //    v = hypot(vx,vy);
-    //    angle = atan(vy/vx);
-    //    v *= fric;
-    //    if(v<12)
-    //        v = 12;
-    //    vx = v*cos(angle);
-    //    vy = v*sin(angle);
-    //}
-    //// change position
-    //x' += vx;
-    //y' += vy;
-    //
-    //bool collision = true;
-    //while(collision){
-    //    // wall collisions
-    //    if(x<diam/2){ // left wall
-    //        
-    //    }
-    //}
+    // change velocity
+    puckFriction(&vx,&vy,dt);
+	// change position
+    x_ += vx*dt;
+    y_ += vy*dt;
     
-    x += vx*dt;
-    if(x<diam/2){
-        x += 2*((diam/2)-x); // bounce the puck out to avoid losing distance on collision frames
-        if(vx<0) // make sure velocity points away from the wall
-            vx *= -1;
-        if(x>600-(diam/2)){ // if we bounced out to the other side of the field, keep us in bounds
-            x = 600-(diam/2);
-            vx = -550; // give the puck a reasonable velocity to recover with
+    bool collision = true;
+	double m, pA, pB, pC, wA, wB, wC, interX, interY;
+    while(collision){
+		collision = false;
+		// wall collisions
+		if(x_ < diam/2){ // left wall
+			collision = true;
+			// find standard equation of line that the puck travels
+				// note that we will shift the entire line to the left by 25 units so that we are following the left side of the puck and set the exact intersection point
+			// calculate puck line like this to avoid errors with moving vertically
+			m = x_ - x;
+			if(m==0){
+				pA = 1;
+				pB = 0;
+				pC = -(x-25);
+			} else {
+				m = (y_ - y) / m; // the slope is not affected by shifting the line, so we don't bother here
+				pA = m;
+				pB = 1;
+				pC = m*(x-25) - y;
+			}
+			// wall equation (vertical line on origin)
+			wA = 1;
+			wB = 0;
+			wC = 0;
+			// intersection point
+			interX = (pB*wC - wB*pC) / (pA*wB - wA*pB);
+			interY = (wA*pC - pA*wC) / (pA*wB - wA*pB);
+			// move puck
+			x = interX + 25; // move the puck so that only its edge is touching the wall
+			y = interY;
+			// reflect x_ across x coord of puck for correct bounce
+			x_ += 2*(x - x_);
+			vx *= -1;
+			// do not fuck with walls slowing down the puck
+			continue;
         }
-    }
-    if(x>600-(diam/2)){
-        x -= 2*(x-(600-(diam/2)) );
-        if(vx>0) // make sure velocity points away from the wall
-            vx *= -1;
-        if(x<diam/2){ // if we bounced out to the other side of the field, keep us in bounds
-            x = diam/2;
-            vx = 550; // give the puck a reasonable velocity to recover with
+		if(x_ > 600 - diam/2){ // right wall
+			collision = true;
+			// find standard equation of line that the puck travels
+				// note that we will shift the entire line to the right by 25 units so that we are following the right side of the puck and set the exact intersection point
+			// calculate puck line like this to avoid errors with moving vertically
+			m = x_ - x;
+			if(m==0){
+				pA = 1;
+				pB = 0;
+				pC = -(x+25);
+			} else {
+				m = (y_ - y) / m; // the slope is not affected by shifting the line, so we don't bother here
+				pA = m;
+				pB = 1;
+				pC = m*(x+25) - y;
+			}
+			// wall equation (vertical line on origin)
+			wA = 1;
+			wB = 0;
+			wC = -600;
+			// intersection point
+			interX = (pB*wC - wB*pC) / (pA*wB - wA*pB);
+			interY = (wA*pC - pA*wC) / (pA*wB - wA*pB);
+			// move puck
+			x = interX - 25; // move the puck so that only its edge is touching the wall
+			y = interY;
+			// reflect x_ across x coord of puck for correct bounce
+			x_ += 2*(x - x_);
+			vx *= -1;
+			// do not fuck with walls slowing down the puck
+			continue;
+        }
+		if(y_ < diam/2){ // top wall
+			collision = true;
+			// find standard equation of line that the puck travels
+				// note that we will shift the entire line up by 25 units so that we are following the top side of the puck and set the exact intersection point
+			// calculate puck line like this to avoid errors with moving vertically
+			m = x_ - x;
+			if(m==0){
+				interX = x;
+				interY = 0;
+			} else {
+				m = (y_ - y) / m; // the slope is not affected by shifting the line, so we don't bother here
+				pA = m;
+				pB = 1;
+				pC = m*x - (y-25);
+				// wall equation (horizontal line on origin)
+				wA = 0;
+				wB = 1;
+				wC = 0;
+				// intersection point
+				interX = (pB*wC - wB*pC) / (pA*wB - wA*pB);
+				interY = (wA*pC - pA*wC) / (pA*wB - wA*pB);
+			}
+			// move puck
+			x = interX;
+			y = interY + 25; // move the puck so that only its edge is touching the wall
+			// reflect y_ across y coord of puck for correct bounce
+			y_ += 2*(y - y_);
+			vy *= -1;
+			//printf("\nPUCK TW VY: %lf\n",vy);
+			// do not fuck with walls slowing down the puck
+			continue;
+        }
+		if(y_ > 800 - diam/2){ // bottom wall
+			collision = true;
+			// find standard equation of line that the puck travels
+				// note that we will shift the entire line down by 25 units so that we are following the bottom side of the puck and set the exact intersection point
+			// calculate puck line like this to avoid errors with moving vertically
+			m = x_ - x;
+			if(m==0){
+				interX = x;
+				interY = 800;
+			} else {
+				m = (y_ - y) / m; // the slope is not affected by shifting the line, so we don't bother here
+				pA = m;
+				pB = 1;
+				pC = m*x - (y-25);
+				// wall equation (horizontal line on origin)
+				wA = 0;
+				wB = 1;
+				wC = -800;
+				// intersection point
+				interX = (pB*wC - wB*pC) / (pA*wB - wA*pB);
+				interY = (wA*pC - pA*wC) / (pA*wB - wA*pB);
+			}
+			// move puck
+			x = interX;
+			y = interY - 25; // move the puck so that only its edge is touching the wall
+			// reflect x_ across y coord of puck for correct bounce
+			y_ += 2*(y - y_);
+			vy *= -1;
+			// do not fuck with walls slowing down the puck
+			continue;
         }
     }
     
-    y += vy*dt;
-    if(y<diam/2){
-        y += 2*((diam/2)-y); // bounce the puck out to avoid losing distance on collision frames
-        if(vy<0) // make sure velocity points away from the wall
-            vy *= -1;
-        if(y>800-(diam/2)){ // if we bounced out to the other side of the field, keep us in bounds
-            y = 800-(diam/2);
-            vy = -750; // give the puck a reasonable velocity to recover with
-        }
-    }
-    if(y>800-(diam/2)){
-        y -= 2*(y-(800-(diam/2)));
-        if(vy>0) // make sure velocity points away from the wall
-            vy *= -1;
-        if(y<diam/2){ // if we bounced out to the other side of the field, keep us in bounds
-            y = diam/2;
-            vy = 750; // give the puck a reasonable velocity to recover with
-        }
-    }
-    
-    puck->x = x;
-    puck->y = y;
+    puck->x = x_;
+    puck->y = y_;
     puck->vx = vx;
     puck->vy = vy;
 }
@@ -540,9 +680,28 @@ int main()
 				puck.vx = -775;
 				puck.vy = -750;
 			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num6)){
+				puck.x = 300;
+				puck.y = 200;
+				puck.vx = -550;
+				puck.vy = 0;
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num7)){
+				puck.x = 300;
+				puck.y = 400;
+				puck.vx = -550;
+				puck.vy = 0;
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num8)){
+				puck.x = 300;
+				puck.y = 600;
+				puck.vx = -550;
+				puck.vy = 0;
+			}
+			// speed up / slow down
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num9)){
-				puck.vx *= 1.25;
-				puck.vy *= 1.25;
+				puck.vx *= 2;
+				puck.vy *= 2;
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num0)){
 				puck.vx  = puck.vx/1.25;
