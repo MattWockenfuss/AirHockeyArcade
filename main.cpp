@@ -423,6 +423,7 @@ void movePuck(Puck* puck, float dt){
      *   1. move pointA of line segment to point of collision
      *   2. mirror pointB of line segment across pointA, parallel to the given wall
      *   3. return to start of loop
+	 // DONE UP TO HERE
      * 3. detect/handle paddle collisions
      *   1. find distance from point(paddle) to line(path of puck). If this distance is less than 59, there is a collision
      *   2. move pointA of line segment to point of collision
