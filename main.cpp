@@ -520,24 +520,9 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
     double pd2_vx = paddle2->vx;
     double pd2_vy = paddle2->vy;
     double pd2_diam = paddle2->diam;
-    
-    /* PUCK COLLISION HANDLING IDEA
-     * 1. create line segment from current position to new position at end of frame
-     * repeat until no collisions:
-     * 2. detect/handle wall collisions
-     *   1. move pointA of line segment to point of collision
-     *   2. mirror pointB of line segment across pointA, parallel to the given wall
-     *   3. return to start of loop
-	 // DONE UP TO HERE
-     * 3. detect/handle paddle collisions
-     *   1. find the distance between the path of the puck and the path of the paddle at time ddt
-	 *   2. if this distance indicates there is a collision, find the point of time of the collision using a binary search
-	 *   3. calculate the point of collision at the time of collision and move pointA of the puck's path to the POC
-     *   4. assume Tangent Of Collision is a wall, find pointB using components parallel and perpendicular to the TOC
-     *   5. negate pointB's perpendicular components to reflect pointB across the TOC
-     *   6. return to start of loop
-	 * 4. move paddles, only need to worry about wall collisions
-    */
+	// physics vars
+	bool collision;
+	double m, pA, pB, pC, wA, wB, wC, interX, interY, ddt, minDDT, maxDDT, dist, minDist, maxDist, difX, difY, difVX, difVY;
     
     // change velocity
     puckFriction(&pk_vx,&pk_vy,dt);
@@ -559,10 +544,164 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
 	pd2_vy = paddle2->vy;
 	pd2_x_ = pd2_x + pd2_vx*dt;
 	pd2_y_ = pd2_y + pd2_vy*dt;
+	
+	// paddle collisions
+	/* PADDLE COLLISION HANDLING IDEA
+	 * 1. if the paddle acts as a second simultaneous object that can bounce off walls, then there are edge cases for missed collisions if its physics are handled before or after the puck
+	 * 2. to get around this, we are going to be lazy and just cut off the paddle's path and reverse its velocity when it hits a wall
+	 * 3. this way, we won't have edge cases to worry about, and *hopefully* the player will not notice too much (the frame rate should be high enough to minimize errors)
+	 */
+	collision = true;
+	while(collision){
+		collision = false;
+		// wall collisions
+		if(pd1_x_ < pd1_diam/2){ // left wall
+			collision = true;
+			// find standard equation of line that the paddle travels
+				// note that we will shift the entire line to the left by half the width so that we are following the left side of the paddle and set the exact intersection point
+			// calculate paddle line like this to avoid errors with moving vertically
+			m = pd1_x_ - pd1_x;
+			if(m==0){
+				pA = 1;
+				pB = 0;
+				pC = -( pd1_x-(pd1_diam/2) );
+			}
+			else{
+				m = (pd1_y_ - pd1_y) / m; // the slope is not affected by shifting the line, so we don't bother here
+				pA = m;
+				pB = 1;
+				pC = m*( pd1_x-(pd1_diam/2) ) - pd1_y;
+			}
+			// wall equation (vertical line on origin)
+			wA = 1;
+			wB = 0;
+			wC = 0;
+			// intersection point
+			interX = (pB*wC - wB*pC) / (pA*wB - wA*pB);
+			interY = (wA*pC - pA*wC) / (pA*wB - wA*pB);
+			// move paddle
+			pd1_x_ = interX + (pd1_diam/2); // move the paddle so that only its edge is touching the wall
+			pd1_y_ = interY;
+			// reflect vx for correct bounce
+			pd1_vx *= -1;
+			// do not fuck with walls slowing down the paddle
+			continue;
+        }
+		if(pd1_x_ > 600 - pd1_diam/2){ // right wall
+			collision = true;
+			// find standard equation of line that the paddle travels
+				// note that we will shift the entire line to the right by half the width so that we are following the right side of the paddle and set the exact intersection point
+			// calculate paddle line like this to avoid errors with moving vertically
+			m = pd1_x_ - pd1_x;
+			if(m==0){
+				pA = 1;
+				pB = 0;
+				pC = -( pd1_x+(pd1_diam/2) );
+			}
+			else{
+				m = (pd1_y_ - pd1_y) / m; // the slope is not affected by shifting the line, so we don't bother here
+				pA = m;
+				pB = 1;
+				pC = m*( pd1_x+(pd1_diam/2) ) - pd1_y;
+			}
+			// wall equation (vertical line on origin)
+			wA = 1;
+			wB = 0;
+			wC = -600;
+			// intersection point
+			interX = (pB*wC - wB*pC) / (pA*wB - wA*pB);
+			interY = (wA*pC - pA*wC) / (pA*wB - wA*pB);
+			// move puck
+			pd1_x_ = interX - (pd1_diam/2); // move the paddle so that only its edge is touching the wall
+			pd1_y_ = interY;
+			// reflect vx for correct bounce
+			pd1_vx *= -1;
+			// do not fuck with walls slowing down the paddle
+			continue;
+        }
+		if(pd1_y_ < pd1_diam/2){ // top wall
+			collision = true;
+			// find standard equation of line that the paddle travels
+				// note that we will shift the entire line up by 25 units so that we are following the top side of the paddle and set the exact intersection point
+			// calculate paddle line like this to avoid errors with moving vertically
+			m = pd1_x_ - pd1_x;
+			if(m==0){
+				interX = pd1_x;
+				interY = 0;
+			}
+			else{
+				m = (pd1_y_ - pd1_y) / m; // the slope is not affected by shifting the line, so we don't bother here
+				pA = m;
+				pB = 1;
+				pC = m*pd1_x - ( pd1_y-(pd1_diam/2) );
+				// wall equation (horizontal line on origin)
+				wA = 0;
+				wB = 1;
+				wC = 0;
+				// intersection point
+				interX = (pB*wC - wB*pC) / (pA*wB - wA*pB);
+				interY = (wA*pC - pA*wC) / (pA*wB - wA*pB);
+			}
+			// move paddle
+			pd1_x_ = interX;
+			pd1_y_ = interY + (pd1_diam/2); // move the paddle so that only its edge is touching the wall
+			// reflect vy for correct bounce
+			pd1_vy *= -1;
+			// do not fuck with walls slowing down the paddle
+			continue;
+        }
+		if(pd1_y_ > 800 - pd1_diam/2){ // bottom wall
+			collision = true;
+			// find standard equation of line that the paddle travels
+				// note that we will shift the entire line down by 25 units so that we are following the bottom side of the paddle and set the exact intersection point
+			// calculate paddle line like this to avoid errors with moving vertically
+			m = pd1_x_ - pd1_x;
+			if(m==0){
+				interX = pd1_x;
+				interY = 800;
+			}
+			else{
+				m = (pd1_y_ - pd1_y) / m; // the slope is not affected by shifting the line, so we don't bother here
+				pA = m;
+				pB = 1;
+				pC = m*pd1_x - ( pd1_y-(pd1_diam/2) );
+				// wall equation (horizontal line on origin)
+				wA = 0;
+				wB = 1;
+				wC = -800;
+				// intersection point
+				interX = (pB*wC - wB*pC) / (pA*wB - wA*pB);
+				interY = (wA*pC - pA*wC) / (pA*wB - wA*pB);
+			}
+			// move paddle
+			pd1_x_ = interX;
+			pd1_y_ = interY - (pk_diam/2); // move the paddle so that only its edge is touching the wall
+			// reflect vy for correct bounce
+			pd1_vy *= -1;
+			// do not fuck with walls slowing down the paddle
+			continue;
+        }
+	}
     
 	// puck collisions
-    bool collision = true;
-	double m, pA, pB, pC, wA, wB, wC, interX, interY, ddt, minDDT, maxDDT, dist, minDist, maxDist, difX, difY, difVX, difVY;
+	/* PUCK COLLISION HANDLING IDEA
+     * 1. create line segment from current position to new position at end of frame
+     * repeat until no collisions:
+     * 2. detect/handle wall collisions
+     *   1. move pointA of line segment to point of collision
+     *   2. mirror pointB of line segment across pointA, parallel to the given wall
+     *   3. return to start of loop
+	 // DONE UP TO HERE
+     * 3. detect/handle paddle collisions
+     *   1. find the distance between the path of the puck and the path of the paddle at time ddt
+	 *   2. if this distance indicates there is a collision, find the point of time of the collision using a binary search
+	 *   3. calculate the point of collision at the time of collision and move pointA of the puck's path to the POC
+     *   4. assume Tangent Of Collision is a wall, find pointB using components parallel and perpendicular to the TOC
+     *   5. negate pointB's perpendicular components to reflect pointB across the TOC
+     *   6. return to start of loop
+	 * 4. move paddles, only need to worry about wall collisions
+    */
+    collision = true;
     while(collision){
 		collision = false;
 		// do paddle collisions first, because in most cases, the puck will hit the paddle before the wall, and checking for the paddle first in the other cases will not mess anything up
@@ -687,7 +826,7 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
 		}
 		
 		// wall collisions
-		if(pk_x_ < diam/2){ // left wall
+		if(pk_x_ < pk_diam/2){ // left wall
 			collision = true;
 			// find standard equation of line that the puck travels
 				// note that we will shift the entire line to the left by 25 units so that we are following the left side of the puck and set the exact intersection point
@@ -696,13 +835,13 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
 			if(m==0){
 				pA = 1;
 				pB = 0;
-				pC = -(pk_x-25);
+				pC = -( pk_x-(pk_diam/2) );
 			}
 			else{
 				m = (pk_y_ - pk_y) / m; // the slope is not affected by shifting the line, so we don't bother here
 				pA = m;
 				pB = 1;
-				pC = m*(pk_x-25) - pk_y;
+				pC = m*( pk_x-(pk_diam/2) ) - pk_y;
 			}
 			// wall equation (vertical line on origin)
 			wA = 1;
@@ -712,7 +851,7 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
 			interX = (pB*wC - wB*pC) / (pA*wB - wA*pB);
 			interY = (wA*pC - pA*wC) / (pA*wB - wA*pB);
 			// move puck
-			pk_x = interX + 25; // move the puck so that only its edge is touching the wall
+			pk_x = interX + (pk_diam/2); // move the puck so that only its edge is touching the wall
 			pk_y = interY;
 			// reflect x_ across x coord of puck for correct bounce
 			pk_x_ += 2*(pk_x - pk_x_);
@@ -720,7 +859,7 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
 			// do not fuck with walls slowing down the puck
 			continue;
         }
-		if(pk_x_ > 600 - diam/2){ // right wall
+		if(pk_x_ > 600 - pk_diam/2){ // right wall
 			collision = true;
 			// find standard equation of line that the puck travels
 				// note that we will shift the entire line to the right by 25 units so that we are following the right side of the puck and set the exact intersection point
@@ -729,13 +868,13 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
 			if(m==0){
 				pA = 1;
 				pB = 0;
-				pC = -(pk_x+25);
+				pC = -( pk_x+(pk_diam/2) );
 			}
 			else{
 				m = (pk_y_ - pk_y) / m; // the slope is not affected by shifting the line, so we don't bother here
 				pA = m;
 				pB = 1;
-				pC = m*(pk_x+25) - pk_y;
+				pC = m*( pk_x+(pk_diam/2) ) - pk_y;
 			}
 			// wall equation (vertical line on origin)
 			wA = 1;
@@ -745,7 +884,7 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
 			interX = (pB*wC - wB*pC) / (pA*wB - wA*pB);
 			interY = (wA*pC - pA*wC) / (pA*wB - wA*pB);
 			// move puck
-			pk_x = interX - 25; // move the puck so that only its edge is touching the wall
+			pk_x = interX - (pk_diam/2); // move the puck so that only its edge is touching the wall
 			pk_y = interY;
 			// reflect x_ across x coord of puck for correct bounce
 			pk_x_ += 2*(pk_x - pk_x_);
@@ -753,7 +892,7 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
 			// do not fuck with walls slowing down the puck
 			continue;
         }
-		if(pk_y_ < diam/2){ // top wall
+		if(pk_y_ < pk_diam/2){ // top wall
 			collision = true;
 			// find standard equation of line that the puck travels
 				// note that we will shift the entire line up by 25 units so that we are following the top side of the puck and set the exact intersection point
@@ -767,7 +906,7 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
 				m = (pk_y_ - pk_y) / m; // the slope is not affected by shifting the line, so we don't bother here
 				pA = m;
 				pB = 1;
-				pC = m*pk_x - (pk_y-25);
+				pC = m*pk_x - ( pk_y-(pk_diam/2) );
 				// wall equation (horizontal line on origin)
 				wA = 0;
 				wB = 1;
@@ -778,14 +917,14 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
 			}
 			// move puck
 			pk_x = interX;
-			pk_y = interY + 25; // move the puck so that only its edge is touching the wall
+			pk_y = interY + (pk_diam/2); // move the puck so that only its edge is touching the wall
 			// reflect y_ across y coord of puck for correct bounce
 			pk_y_ += 2*(pk_y - pk_y_);
 			pk_vy *= -1;
 			// do not fuck with walls slowing down the puck
 			continue;
         }
-		if(pk_y_ > 800 - diam/2){ // bottom wall
+		if(pk_y_ > 800 - pk_diam/2){ // bottom wall
 			collision = true;
 			// find standard equation of line that the puck travels
 				// note that we will shift the entire line down by 25 units so that we are following the bottom side of the puck and set the exact intersection point
@@ -799,7 +938,7 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
 				m = (pk_y_ - pk_y) / m; // the slope is not affected by shifting the line, so we don't bother here
 				pA = m;
 				pB = 1;
-				pC = m*pk_x - (pk_y-25);
+				pC = m*pk_x - ( pk_y-(pk_diam/2) );
 				// wall equation (horizontal line on origin)
 				wA = 0;
 				wB = 1;
@@ -810,7 +949,7 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
 			}
 			// move puck
 			pk_x = interX;
-			pk_y = interY - 25; // move the puck so that only its edge is touching the wall
+			pk_y = interY - (pk_diam/2); // move the puck so that only its edge is touching the wall
 			// reflect x_ across y coord of puck for correct bounce
 			pk_y_ += 2*(pk_y - pk_y_);
 			pk_vy *= -1;
@@ -823,6 +962,18 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
     puck->y = pk_y_;
     puck->vx = pk_vx;
     puck->vy = pk_vy;
+	
+	paddle1->x = pd1_x_;
+	paddle1->y = pd1_y_;
+	paddle1->vx = pd1_vx_;
+	paddle1->vy = pd1_vy_;
+	
+	paddle2->x = pd2_x_;
+	paddle2->y = pd2_y_;
+	paddle2->vx = pd2_vx_;
+	paddle2->vy = pd2_vy_;
+	
+	return;
 }
 void movePaddle(Paddle* paddle, float dt){
     int xPos = paddle->xPos;
