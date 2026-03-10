@@ -336,41 +336,123 @@ void puckFriction(double *vx, double *vy, float dt){
     double angle;
     double fric;
 	double fricConst = 4000; // the larger this is, the lower the friction
+	doubel speedConst = 930;
     // change velocity
     if(*vx==0){
-		if(*vy>0){
-			fric = (dt/((-1*fricConst) / *vy))+1; // scale friction based on dt and velocity
-			if(fric<0)
-				fric = 0;
-			*vy *= fric;
-			if(*vy<930)
-				*vy = 930;
-		}
-		else if(*vy<0){
-			fric = (dt/(fricConst/ *vy))+1; // scale friction based on dt and velocity
-			if(fric<0)
-				fric = 0;
-			*vy *= fric;
-			if(*vy>-930)
-				*vy = -930;
+		//if(*vy>0){
+		//	fric = ((dt* *vy) / (-1*fricConst))+1; // scale friction based on dt and velocity
+		//	if(fric<0)
+		//		fric = 0;
+		//	*vy *= fric;
+		//	if(*vy<speedConst)
+		//		*vy = speedConst;
+		//}
+		//else if(*vy<0){
+		//	fric = ((dt* *vy) / (1*fricConst))+1; // scale friction based on dt and velocity
+		//	if(fric<0)
+		//		fric = 0;
+		//	*vy *= fric;
+		//	if(*vy>-1*speedConst)
+		//		*vy = -1*speedConst;
+		//}
+		fric = ( ((dt* *vy) / fricConst)+1 )*(*vy>0?-1:1); // scale friction based on dt and velocity
+		if(fric<0) // handle extreme friction values if game lags for a long time
+			fric = 0.1; // don't set to zero or else puck will stop mid-game
+		*vy *= fric;
+		if(pow(*vy,2)<pow(speedConst,2) && *vy!=0)
+			*vy = speedConst*(*vy>=0?1:-1); // make sure to account for velocity being pos or neg
+    }
+    else if(*vy==0){
+        //if(*vx>0){
+		//	fric = ((dt* *vx) / (-1*fricConst))+1; // scale friction based on dt and velocity
+		//	if(fric<0)
+		//		fric = 0;
+		//	*vx *= fric;
+		//	if(*vx<speedConst)
+		//		*vx = speedConst;
+		//}
+		//else if(*vx<0){
+		//	fric = ((dt* *vy) / (1*fricConst))+1; // scale friction based on dt and velocity
+		//	if(fric<0)
+		//		fric = 0;
+		//	*vx *= fric;
+		//	if(*vx>-1*speedConst)
+		//		*vx = -1*speedConst;
+		//}
+		fric = ( ((dt* *vx) / fricConst)+1 )*(*vx>0?-1:1); // scale friction based on dt and velocity
+		if(fric<0) // handle extreme friction values if game lags for a long time
+			fric = 0.1; // don't set to zero or else puck will stop mid-game
+		*vx *= fric;
+		if(pow(*vx,2)<pow(speedConst,2) && *vy!=0)
+			*vx = speedConst*(*vx>=0?1:-1); // make sure to account for velocity being pos or neg
+    }
+    else{
+		// make all values positive to simplify math
+		bool xNeg = *vx<0;
+		if(xNeg)
+			*vx *= -1;
+		bool yNeg = *vy<0;
+		if(yNeg)
+			*vy *= -1;
+		// math
+        v = hypot(*vx,*vy);
+        angle = atan(*vy/ *vx);
+		fric = ((dt*v) / (-1*fricConst))+1; // scale friction based on dt and velocity
+		if(fric<0)
+			fric = 0.1;
+		v *= fric;
+		if(v<speedConst && v!=0)
+			v = speedConst;
+		// restore values
+        *vx = v*cos(angle)*(xNeg?-1:1);
+        *vy = v*sin(angle)*(yNeg?-1:1);
+    }
+	return;
+}
+void paddleFriction(Paddle* paddle, float dt){
+	int xPos = paddle->xPos;
+    int yPos = paddle->yPos;
+    double x = paddle->x;
+    double y = paddle->y;
+    double vx = paddle->vx;
+    double vy = paddle->vy;
+    double diam = paddle->diam;
+	double v;
+	double angle;
+    double acc;
+    double accConst = 1;
+	double fric;
+	double fricConst = 4000; // the larger this is, the lower the friction
+	double jitterConst = 1; // the smaller this is, the more jittering
+	// change velocity
+	
+	// xACC
+	acc = ((xPos*100)-x)*accCost*dt;
+	vx += acc;
+	// yACC
+	acc = ((yPos*diam)-(diam/2)-y)*accCost*dt;
+	vy += acc;
+	// friction
+	if(*vx==0){
+		fric = ( ((dt*vy) / fricConst)+1 )*(vy>0?-1:1); // scale friction based on dt and velocity
+		if(fric<0)
+			fric = 0;
+		vy *= fric;
+		// stabilize jittering
+		if(pow( ((yPos*diam)-(diam/2)-y),2 )<jitterConst && pow(vy*dt,2)<jitterConst){
+			y = (yPos*diam)-(diam/2);
+			vy = 0;
 		}
     }
     else if(*vy==0){
-        if(*vx>0){
-			fric = (dt/((-1*fricConst) / *vx))+1; // scale friction based on dt and velocity
-			if(fric<0)
-				fric = 0;
-			*vx *= fric;
-			if(*vx<930)
-				*vx = 930;
-		}
-		else if(*vx<0){
-			fric = (dt/(fricConst/ *vx))+1; // scale friction based on dt and velocity
-			if(fric<0)
-				fric = 0;
-			*vx *= fric;
-			if(*vx>-930)
-				*vx = -930;
+        fric = ( ((dt*vx) / fricConst)+1 )*(vx>0?-1:1); // scale friction based on dt and velocity
+		if(fric<0)
+			fric = 0;
+		vx *= fric;
+		// stabilize jittering
+		if(pow( ((xPos*100)-x),2 )<jitterConst && pow(vx*dt,2)<jitterConst){
+			x = xPos*100;
+			vx = 0;
 		}
     }
     else{
@@ -384,27 +466,33 @@ void puckFriction(double *vx, double *vy, float dt){
 		// math
         v = hypot(*vx,*vy);
         angle = atan(*vy/ *vx);
-		if(v>0){
-			fric = (dt/((-1*fricConst) / v))+1; // scale friction based on dt and velocity
-			if(fric<0)
-				fric = 0;
-			v *= fric;
-			if(v<930)
-				v = 930;
-		}
-		else if(v<0){
-			fric = (dt/(fricConst/ v))+1; // scale friction based on dt and velocity
-			if(fric<0)
-				fric = 0;
-			v *= fric;
-			if(v>-930)
-				v = -930;
+		fric = ( ((dt*v) / fricConst)+1 )*(v>0?-1:1); // scale friction based on dt and velocity
+		if(fric<0)
+			fric = 0;
+		v *= fric;
+		// stabilize jittering
+		if(pow( ((xPos*100)-x),2 )<jitterConst && pow(vx*dt,2)<jitterConst){
+			x = xPos*100;
+			vx = 0;
 		}
 		// restore values
-        *vx = v*cos(angle)*(xNeg?-1:1);
-        *vy = v*sin(angle)*(yNeg?-1:1);
+        vx = v*cos(angle)*(xNeg?-1:1);
+        vy = v*sin(angle)*(yNeg?-1:1);
+		// stabilize jittering
+		if(pow( ((xPos*100)-x),2 )<jitterConst && pow(vx*dt,2)<jitterConst){
+			x = xPos*100;
+			vx = 0;
+		}
+		if(pow( ((yPos*diam)-(diam/2)-y),2 )<jitterConst && pow(vy*dt,2)<jitterConst){
+			y = (yPos*diam)-(diam/2);
+			vy = 0;
+		}
     }
-	return;
+	// restore values to puck
+	paddle->x = x;
+	paddle->y = y;
+	paddle->vx = vx;
+	paddle->vy = vy;
 }
 void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int iter){
     // field is 600x800
@@ -433,7 +521,7 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
     double pd2_vy = paddle2->vy;
     double pd2_diam = paddle2->diam;
     
-    /* COLLISION HANDLING IDEA
+    /* PUCK COLLISION HANDLING IDEA
      * 1. create line segment from current position to new position at end of frame
      * repeat until no collisions:
      * 2. detect/handle wall collisions
@@ -453,12 +541,28 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
     
     // change velocity
     puckFriction(&pk_vx,&pk_vy,dt);
+	paddleFriction(paddle1,dt);
+	paddleFriction(paddle2,dt);
 	// change position
     pk_x_ += pk_vx*dt;
     pk_y_ += pk_vy*dt;
+	// puck friction doesn't change these values
+	pd1_x = paddle1->x;
+	pd1_y = paddle1->y;
+	pd1_vx = paddle1->vx;
+	pd1_vy = paddle1->vy;
+	pd1_x_ = pd1_x + pd1_vx*dt;
+	pd1_y_ = pd1_y + pd1_vy*dt;
+	pd2_x = paddle2->x;
+	pd2_y = paddle2->y;
+	pd2_vx = paddle2->vx;
+	pd2_vy = paddle2->vy;
+	pd2_x_ = pd2_x + pd2_vx*dt;
+	pd2_y_ = pd2_y + pd2_vy*dt;
     
+	// puck collisions
     bool collision = true;
-	double m, pA, pB, pC, wA, wB, wC, interX, interY, ddt, minDDT, maxDDT, dist, minDist, maxDist;
+	double m, pA, pB, pC, wA, wB, wC, interX, interY, ddt, minDDT, maxDDT, dist, minDist, maxDist, difX, difY, difVX, difVY;
     while(collision){
 		collision = false;
 		// do paddle collisions first, because in most cases, the puck will hit the paddle before the wall, and checking for the paddle first in the other cases will not mess anything up
@@ -528,7 +632,6 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
 			pd1_x = pd1_x + ddt*(pd1_x_ - pd1_x);
 			pd1_y = pd1_y + ddt*(pd1_y_ - pd1_y);
 			// now, to make the math easier, we need to create a reference frame where the paddle is not moving
-			double difX,difY,difVX,difVY;
 			difX = pd1_x_ - pd1_x;
 			difY = pd1_y_ - pd1_y;
 			pd1_x_ -= difX;
@@ -582,7 +685,6 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
 			// house keeping, I don't think we need anything here
 			continue;
 		}
-		
 		
 		// wall collisions
 		if(pk_x_ < diam/2){ // left wall
