@@ -336,26 +336,10 @@ void puckFriction(double *vx, double *vy, float dt){
     double angle;
     double fric;
 	double fricConst = 4000; // the larger this is, the lower the friction
-	doubel speedConst = 930;
+	double speedConst = 930;
     // change velocity
     if(*vx==0){
-		//if(*vy>0){
-		//	fric = ((dt* *vy) / (-1*fricConst))+1; // scale friction based on dt and velocity
-		//	if(fric<0)
-		//		fric = 0;
-		//	*vy *= fric;
-		//	if(*vy<speedConst)
-		//		*vy = speedConst;
-		//}
-		//else if(*vy<0){
-		//	fric = ((dt* *vy) / (1*fricConst))+1; // scale friction based on dt and velocity
-		//	if(fric<0)
-		//		fric = 0;
-		//	*vy *= fric;
-		//	if(*vy>-1*speedConst)
-		//		*vy = -1*speedConst;
-		//}
-		fric = ( ((dt* *vy) / fricConst)+1 )*(*vy>0?-1:1); // scale friction based on dt and velocity
+		fric = ((dt* *vy) / fricConst)*(*vy>0?-1:1)+1; // scale friction based on dt and velocity
 		if(fric<0) // handle extreme friction values if game lags for a long time
 			fric = 0.1; // don't set to zero or else puck will stop mid-game
 		*vy *= fric;
@@ -363,27 +347,11 @@ void puckFriction(double *vx, double *vy, float dt){
 			*vy = speedConst*(*vy>=0?1:-1); // make sure to account for velocity being pos or neg
     }
     else if(*vy==0){
-        //if(*vx>0){
-		//	fric = ((dt* *vx) / (-1*fricConst))+1; // scale friction based on dt and velocity
-		//	if(fric<0)
-		//		fric = 0;
-		//	*vx *= fric;
-		//	if(*vx<speedConst)
-		//		*vx = speedConst;
-		//}
-		//else if(*vx<0){
-		//	fric = ((dt* *vy) / (1*fricConst))+1; // scale friction based on dt and velocity
-		//	if(fric<0)
-		//		fric = 0;
-		//	*vx *= fric;
-		//	if(*vx>-1*speedConst)
-		//		*vx = -1*speedConst;
-		//}
-		fric = ( ((dt* *vx) / fricConst)+1 )*(*vx>0?-1:1); // scale friction based on dt and velocity
+        fric = ((dt* *vx) / fricConst)*(*vx>0?-1:1)+1; // scale friction based on dt and velocity
 		if(fric<0) // handle extreme friction values if game lags for a long time
 			fric = 0.1; // don't set to zero or else puck will stop mid-game
 		*vx *= fric;
-		if(pow(*vx,2)<pow(speedConst,2) && *vy!=0)
+		if(pow(*vx,2)<pow(speedConst,2) && *vx!=0)
 			*vx = speedConst*(*vx>=0?1:-1); // make sure to account for velocity being pos or neg
     }
     else{
@@ -420,21 +388,22 @@ void paddleFriction(Paddle* paddle, float dt){
 	double v;
 	double angle;
     double acc;
-    double accConst = 1;
+    double accConst = 1000; // scaled for average friction value of 0.99 // average dt seems to be around 0.0025
 	double fric;
-	double fricConst = 4000; // the larger this is, the lower the friction
-	double jitterConst = 1; // the smaller this is, the more jittering
+	double fricConst = 55; // the larger this is, the lower the friction
+	double jitterConst = 0.01; // the smaller this is, the more jittering
 	// change velocity
 	
 	// xACC
-	acc = ((xPos*100)-x)*accCost*dt;
+	acc = ((xPos*100)-x)*accConst*dt;
 	vx += acc;
 	// yACC
-	acc = ((yPos*diam)-(diam/2)-y)*accCost*dt;
+	acc = ((yPos*diam)-(diam/2)-y)*accConst*dt;
 	vy += acc;
+	
 	// friction
-	if(*vx==0){
-		fric = ( ((dt*vy) / fricConst)+1 )*(vy>0?-1:1); // scale friction based on dt and velocity
+	if(vx==0){
+		fric = ((dt*vy) / fricConst)*(vy>0?-1:1)+1; // scale friction based on dt and velocity
 		if(fric<0)
 			fric = 0;
 		vy *= fric;
@@ -443,9 +412,14 @@ void paddleFriction(Paddle* paddle, float dt){
 			y = (yPos*diam)-(diam/2);
 			vy = 0;
 		}
+		// return
+		if(y>=(yPos*diam)-(diam/2)-1 && yPos==3)
+			yPos = 2;
+		if(y<=(yPos*diam)-(diam/2)+1 && yPos==10)
+			yPos = 11;
     }
-    else if(*vy==0){
-        fric = ( ((dt*vx) / fricConst)+1 )*(vx>0?-1:1); // scale friction based on dt and velocity
+    else if(vy==0){
+        fric = ((dt*vx) / fricConst)*(vx>0?-1:1)+1; // scale friction based on dt and velocity
 		if(fric<0)
 			fric = 0;
 		vx *= fric;
@@ -457,24 +431,19 @@ void paddleFriction(Paddle* paddle, float dt){
     }
     else{
 		// make all values positive to simplify math
-		bool xNeg = *vx<0;
+		bool xNeg = vx<0;
 		if(xNeg)
-			*vx *= -1;
-		bool yNeg = *vy<0;
+			vx *= -1;
+		bool yNeg = vy<0;
 		if(yNeg)
-			*vy *= -1;
+			vy *= -1;
 		// math
-        v = hypot(*vx,*vy);
-        angle = atan(*vy/ *vx);
-		fric = ( ((dt*v) / fricConst)+1 )*(v>0?-1:1); // scale friction based on dt and velocity
+        v = hypot(vx,vy);
+        angle = atan(vy/vx);
+		fric = ((dt*v) / fricConst)*(v>0?-1:1)+1; // scale friction based on dt and velocity
 		if(fric<0)
 			fric = 0;
 		v *= fric;
-		// stabilize jittering
-		if(pow( ((xPos*100)-x),2 )<jitterConst && pow(vx*dt,2)<jitterConst){
-			x = xPos*100;
-			vx = 0;
-		}
 		// restore values
         vx = v*cos(angle)*(xNeg?-1:1);
         vy = v*sin(angle)*(yNeg?-1:1);
@@ -487,12 +456,19 @@ void paddleFriction(Paddle* paddle, float dt){
 			y = (yPos*diam)-(diam/2);
 			vy = 0;
 		}
+		// return
+		if(y>=(yPos*diam)-(diam/2)-1 && yPos==3)
+			yPos = 2;
+		if(y<=(yPos*diam)-(diam/2)+1 && yPos==10)
+			yPos = 11;
     }
-	// restore values to puck
+	// restore values to paddle
 	paddle->x = x;
 	paddle->y = y;
 	paddle->vx = vx;
 	paddle->vy = vy;
+	paddle->yPos = yPos;
+	return;
 }
 void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int iter){
     // field is 600x800
@@ -710,8 +686,9 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
 		maxDist = hypot(pk_x_-pd1_x_,pk_y_-pd1_y_);
 		dist = hypot( ((pk_x+pk_x_)/2) - ((pd1_x+pd1_x_)/2) , ((pk_y+pk_y_)/2) - ((pd1_y+pd1_y_)/2) );
 		// if distance at beginning/end shows a collision, or if the middle distance is less than either end (showing the distance fcn passed through zero), we have a collision
-		if( minDist < pk_diam/2 + pd1_diam/2 || maxDist < pk_daim/2 + pd1_diam/2 || (ddt<minDist && ddt<maxDist) ){
+		if( minDist < pk_diam/2 + pd1_diam/2 || maxDist < pk_diam/2 + pd1_diam/2 || (dist<minDist && dist<maxDist) ){
 			collision = true;
+			
 			if(minDist<pk_diam/2 + pd1_diam/2){ // we are colliding at the first point (highly unlikely)
 				ddt = 0; // after this step, ddt will be the best guess time of collision
 			}
@@ -812,7 +789,7 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
 				pk_vy += perp*sin(angle);
 				// reconstruct where the final position of the puck should be according to these adjusted velocities
 				pk_x_ = pk_x + pk_vx*dt*(1-ddt);
-				pk_y_ = pk_y + pk_yx*dt*(1-ddt);
+				pk_y_ = pk_y + pk_vy*dt*(1-ddt);
 				// leave reference frame where paddle is not moving
 				pd1_x_ += difX;
 				pd1_y_ += difY;
@@ -958,70 +935,25 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
         }
     }
     
-    puck->x = pk_x_;
+	puck->x = pk_x_;
     puck->y = pk_y_;
     puck->vx = pk_vx;
     puck->vy = pk_vy;
 	
 	paddle1->x = pd1_x_;
 	paddle1->y = pd1_y_;
-	paddle1->vx = pd1_vx_;
-	paddle1->vy = pd1_vy_;
+	paddle1->vx = pd1_vx;
+	paddle1->vy = pd1_vy;
 	
 	paddle2->x = pd2_x_;
 	paddle2->y = pd2_y_;
-	paddle2->vx = pd2_vx_;
-	paddle2->vy = pd2_vy_;
+	paddle2->vx = pd2_vx;
+	paddle2->vy = pd2_vy;
 	
 	return;
 }
-void movePaddle(Paddle* paddle, float dt){
-    int xPos = paddle->xPos;
-    int yPos = paddle->yPos;
-    double x = paddle->x;
-    double y = paddle->y;
-    double vx = paddle->vx;
-    double vy = paddle->vy;
-    double diam = paddle->diam;
-    double acc;
-    double accConst = 4;
-    double fricConst = 5;
-    
-    // x
-	acc = ((xPos*100)-x)/accConst;
-	vx += acc;
-	vx -= vx*fricConst*dt;
-	x += vx*dt;
-	// stabilize jittering
-	if( ((xPos*100)-x)*((xPos*100)-x)<0.1 && vx*vx*dt*dt<0.1 ){
-		x = xPos*100;
-		vx = 0;
-	}
-    paddle->vx = vx;
-    paddle->x = x;
-    
-    // y
-	acc = ((yPos*diam)-(diam/2)-y)/accConst;
-	vy += acc;
-	vy -= vy*fricConst*dt;
-	y += vy*dt;
-	// return
-	if(y>=(yPos*diam)-(diam/2)-1 && yPos==3)
-		yPos = 2;
-	if(y<=(yPos*diam)-(diam/2)+1 && yPos==10)
-		yPos = 11;
-	// stabilize jittering
-	if( ((yPos*diam)-(diam/2)-y)*((yPos*diam)-(diam/2)-y)<0.1 && vy*vy*dt*dt<0.1 ){
-		y = (yPos*diam)-(diam/2);
-		vy = 0;
-	}
-    paddle->vy = vy;
-    paddle->y = y;
-    paddle->yPos = yPos;
-}
 
-int main()
-{
+int main(){
 	sf::RenderWindow window( sf::VideoMode( { 1280, 720 } ), "Air Hockey Arcade Game" );
 	sf::Clock clock;
 	sf::Time time;
@@ -1051,19 +983,19 @@ int main()
 			// puck movement
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num1)){
 				puck.x = 100;
-				puck.y = 775;
+				puck.y = 400;
 				puck.vx = 0;
 				puck.vy = -750;
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num2)){
 				puck.x = 300;
-				puck.y = 775;
+				puck.y = 400;
 				puck.vx = 0;
 				puck.vy = -750;
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num3)){
 				puck.x = 500;
-				puck.y = 775;
+				puck.y = 400;
 				puck.vx = 0;
 				puck.vy = -750;
 			}
@@ -1141,10 +1073,7 @@ int main()
 			}
 		}
 		
-		//movePuck(&puck,dt);
-        //movePaddle(&p1paddle,dt);
-        //movePaddle(&p2paddle,dt);
-		moveObjects(&puck,&p1paddle,&p2paddle,dt,10);
+		moveObjects(&puck,&p1paddle,&p2paddle,dt,2);
 		
 		window.clear();
 		window.draw(field);
