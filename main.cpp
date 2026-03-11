@@ -625,8 +625,8 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
 					i--;
 					ddt = (minDDT+maxDDT)/2;
 				}
-				// after that loop, we are probably not entirely accurate. Odds are, that the correct point of collision is between the min and max we've set
-				ddt = (minDDT+maxDDT)/2;
+				// we now, hopefully, have the closest non-collision value stored in minDDT
+				ddt = minDDT;//(minDDT+maxDDT)/2;
 			}
 			// here, ddt will hold our best guess of when the point of collision was
 			// set puck position to the point of collision
@@ -644,6 +644,7 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
 			pk_y_ -= difY;
 			difVX = pd1_vx;
 			difVY = pd1_vy;
+			// we don't bother changing paddle velocity because it won't be used in the calculations
 			pk_vx -= difVX;
 			pk_vy -= difVY;
 			// we now have a reference frame where the paddle is not moving and the puck is moving into the paddle
@@ -846,6 +847,8 @@ int main(){
 	sf::Clock clock;
 	sf::Time time;
 	float dt;
+	int counter = 0;
+	float timer = 0;
 	
 	sf::Texture fieldTex("assets/images/field.png");
 	sf::Texture fieldBackTex("assets/images/field_back.png");
@@ -860,12 +863,25 @@ int main(){
     Paddle p1paddle(3,11,0,0,67);
     Paddle p2paddle(3,2,0,0,67);
 	
+	sf::Font fps_font;
+	if (!fps_font.openFromFile("assets/fonts/square_sans_serif_7.ttf")) { std::perror("File not found!"); }
+	sf::Text fps_text(fps_font, "--", 5*screenRatio);
+	fps_text.setPosition(sf::Vector2f(16*screenRatio, 16*screenRatio));
+	
 	bool Up = true, Down = true, Left = true, Right = true, W = true, S = true, A = true, D = true;
 	
 	while ( window.isOpen() )
 	{
 		time = clock.restart();
 		dt = time.asSeconds();
+		timer += dt;
+		counter ++;
+		if(timer>=1){
+			// set fps_text = counter
+			fps_text.setString(std::to_string(counter));
+			timer = 0;
+			counter = 0;
+		}
 		while ( const std::optional event = window.pollEvent() )
 		{
 			if ( event->is<sf::Event::Closed>() || sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
@@ -995,7 +1011,7 @@ int main(){
 			}
 		}
 		
-		moveObjects(&puck,&p1paddle,&p2paddle,dt,2);
+		moveObjects(&puck,&p1paddle,&p2paddle,dt,10);
 		
 		window.clear();
 		window.draw(field);
@@ -1016,6 +1032,7 @@ int main(){
 			p1paddle.draw(&window);
 		}
 		window.draw(fieldBack);
+		window.draw(fps_text);
 		window.display();
 	}
 }
