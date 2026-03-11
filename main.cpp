@@ -549,16 +549,21 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
 	 * 4. move paddles, only need to worry about wall collisions
     */
     collision = true;
-    while(collision){
+	bool Pad1Col = false;
+	bool Pad2Col = false;
+	bool WalCol = false;
+	
+    while(collision && !((Pad1Col||Pad2Col) && WalCol) ){
 		collision = false;
 		// do paddle collisions first, because in most cases, the puck will hit the paddle before the wall, and checking for the paddle first in the other cases will not mess anything up
+		
+		// paddle 1 collision
 		// calculate distance
 		minDist = hypot(pk_x-pd1_x,pk_y-pd1_y);
 		maxDist = hypot(pk_x_-pd1_x_,pk_y_-pd1_y_);
 		dist = hypot( ((pk_x+pk_x_)/2) - ((pd1_x+pd1_x_)/2) , ((pk_y+pk_y_)/2) - ((pd1_y+pd1_y_)/2) );
 		// if distance at beginning/end shows a collision, or if the middle distance is less than either end (showing the distance fcn passed through zero), we have a collision
-		if( minDist < pk_diam/2 + pd1_diam/2 || maxDist < pk_diam/2 + pd1_diam/2 ){ // cannot detect collisions at speeds where the puck passes entirely through the paddle in one frame, but seems to not be an issue at this fps
-			printf("\nCOLLISION");
+		if( minDist < pk_diam/2 + pd1_diam/2 || maxDist < pk_diam/2 + pd1_diam/2 ){
 			/* The square of the distance is given by y = ((A+X(B)) - (C+X(D)))^2 + ((E+X(F)) - (G+X(H)))^2
 			 * Where X is a fraction of the current frame, ranging from 0.0-1.0,
 			 * A is the initial puck X position,
@@ -574,9 +579,8 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
 			 * alternatively, we can just search for whether there is a collision at the beginning or end of the frame
 			 * this will only fail if the puck moves fast enough to travel through the entire paddle in one frame
 			 */
-		}
-		if( minDist < pk_diam/2 + pd1_diam/2 || maxDist < pk_diam/2 + pd1_diam/2 ){
 			collision = true;
+			Pad1Col = true;
 			if(minDist<pk_diam/2 + pd1_diam/2){ // we are colliding at the first point (highly unlikely)
 				ddt = 0; // after this step, ddt will be the best guess time of collision
 			}
@@ -691,9 +695,148 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
 			continue;
 		}
 		
+		// paddle 2 collision
+		// calculate distance
+		minDist = hypot(pk_x-pd2_x,pk_y-pd2_y);
+		maxDist = hypot(pk_x_-pd2_x_,pk_y_-pd2_y_);
+		dist = hypot( ((pk_x+pk_x_)/2) - ((pd2_x+pd2_x_)/2) , ((pk_y+pk_y_)/2) - ((pd2_y+pd2_y_)/2) );
+		// if distance at beginning/end shows a collision, or if the middle distance is less than either end (showing the distance fcn passed through zero), we have a collision
+		if( minDist < pk_diam/2 + pd2_diam/2 || maxDist < pk_diam/2 + pd2_diam/2 ){
+			/* The square of the distance is given by y = ((A+X(B)) - (C+X(D)))^2 + ((E+X(F)) - (G+X(H)))^2
+			 * Where X is a fraction of the current frame, ranging from 0.0-1.0,
+			 * A is the initial puck X position,
+			 * B is the difference between the final puck X position and the initial puck X position,
+			 * C is the initial paddle X position,
+			 * D is the difference between the final paddle X position and the initial paddle X position,
+			 * and E-H represent the same values but for the Y axis
+			 
+			 * The derivative of this, is given by y' = 2(B-D)^2X + 2(A-C)(B-D) + 2(F-H)^2X + 2(E-G)(F-H)
+			 * Solving for when the derivative equals zero, we can find the point within the frame that the puck and paddle are closest to each other
+			 * Plugging this point into the original equation, we can find whether the puck and paddle collided
+			 
+			 * alternatively, we can just search for whether there is a collision at the beginning or end of the frame
+			 * this will only fail if the puck moves fast enough to travel through the entire paddle in one frame
+			 */
+			collision = true;
+			Pad2Col = true;
+			if(minDist<pk_diam/2 + pd2_diam/2){ // we are colliding at the first point (highly unlikely)
+				ddt = 0; // after this step, ddt will be the best guess time of collision
+			}
+			else{ // we need to do a binary search to find point of collision
+				// we want to find the first point of collision, so our goal is to never set minDDT to a point of collision, and set maxDDt to the smallest point of collision
+				minDDT = 0;
+				maxDDT = 1;
+				ddt = 0.5;
+				// dist is still at the midpoint from the last step, so we do not need to recalculate it
+				if(dist<pk_diam/2+pd2_diam/2){ // this is a point of collision
+					maxDDT = ddt;
+					maxDist = dist;
+				}
+				else{ // this is not a point of collision
+					// we can still figure out on which side of the collision we are
+					if(minDist<maxDist && dist<maxDist){ // if maxDist is the largest, it is the furthest away from the collision
+						maxDDT = ddt;
+						maxDist = dist;
+					}
+					else{ // otherwise, minDist is the furthest away from the collision (minDist and maxDist will never be equidistant if the middle point is not a collision)
+						minDDT = ddt;
+						minDist = dist;
+					}
+				}
+				for(int i = iter; i>0; i--){
+					// find distance of the original points plus some fraction of the difference between them and the final points
+					// if ddt is 0.5, we look at the points halfway inbetween on both lines
+					dist = hypot( (pk_x + ddt*(pk_x_-pk_x)) - (pd2_x + ddt*(pd2_x_-pd2_x)) , (pk_y + ddt*(pk_y_-pk_y)) - (pd2_y + ddt*(pd2_y_-pd2_y)) );
+					if(dist<pk_diam/2+pd2_diam/2){ // this is a point of collision
+						maxDDT = ddt;
+						maxDist = dist;
+					}
+					else{ // this is not a point of collision
+						// we can still figure out on which side of the collision we are
+						if(minDist<maxDist && dist<maxDist){ // if maxDist is the largest, it is the furthest away from the collision
+							maxDDT = ddt;
+							maxDist = dist;
+						}
+						else{ // otherwise, minDist is the furthest away from the collision (minDist and maxDist will never be equidistant if the middle point is not a collision)
+							minDDT = ddt;
+							minDist = dist;
+						}
+					}
+					
+					// prepare for next iteration
+					i--;
+					ddt = (minDDT+maxDDT)/2;
+				}
+				// we now, hopefully, have the closest non-collision value stored in minDDT
+				ddt = minDDT;//(minDDT+maxDDT)/2;
+			}
+			// here, ddt will hold our best guess of when the point of collision was
+			// set puck position to the point of collision
+			// this is the point in time where the two center-line paths of the puck and the paddle become close enough for a collision, no offset is necessary
+			pk_x = pk_x + ddt*(pk_x_ - pk_x);
+			pk_y = pk_y + ddt*(pk_y_ - pk_y);
+			pd2_x = pd2_x + ddt*(pd2_x_ - pd2_x);
+			pd2_y = pd2_y + ddt*(pd2_y_ - pd2_y);
+			// now, to make the math easier, we need to create a reference frame where the paddle is not moving
+			difX = pd2_x_ - pd2_x;
+			difY = pd2_y_ - pd2_y;
+			pd2_x_ -= difX;
+			pd2_y_ -= difY;
+			pk_x_ -= difX;
+			pk_y_ -= difY;
+			difVX = pd2_vx;
+			difVY = pd2_vy;
+			// we don't bother changing paddle velocity because it won't be used in the calculations
+			pk_vx -= difVX;
+			pk_vy -= difVY;
+			// we now have a reference frame where the paddle is not moving and the puck is moving into the paddle
+			// we need the puck to bounce off of the tanget of the paddle as if it is a wall
+			//find the angle with respect to the x axis of the line passing through both objects' centers
+			m = pd2_x - pk_x;
+			if(m==0){ // both objects are vertically aligned, this just got a lot easier
+				pk_y_ -= 2*(pk_y_ - pk_y); // reflect y velocity upward
+				pk_vy *= -1; // reflect velocity upward
+			}
+			else{
+				m = (pd2_y - pk_y) / m; // if you think about it, slope just defines two sides of a right triangle, dy/dx = opposite/adjacent
+				double angle = atan(m);
+				double par = 0;
+				double perp = 0;
+				// we only need to reflect components of velocities that are going into the paddle
+				if( (pk_x<pd2_x && pk_vx>0) || (pk_x>pd2_x && pk_vx<0) ){ // we are moving horizontally in the direction of the paddle
+					par += pk_vx*sin(angle);
+					perp += -1*pk_vx*cos(angle); // reflect perpendicular components to bounce
+					pk_vx = 0;
+				}
+				if( (pk_y<pd2_y && pk_vy>0) || (pk_y>pd2_y && pk_vy<0) ){ // we are moving vertically in the direction of the paddle
+					par += pk_vy*cos(angle);
+					perp += -1*pk_vy*sin(angle); // reflect perpendicular components to bounce
+					pk_vy = 0;
+				}
+				// reconstruct the velocities from the parallel / perpedicular component vectors
+				pk_vx += par*sin(angle);
+				pk_vy += par*cos(angle);
+				pk_vx += perp*cos(angle);
+				pk_vy += perp*sin(angle);
+				// reconstruct where the final position of the puck should be according to these adjusted velocities
+				pk_x_ = pk_x + pk_vx*dt*(1-ddt);
+				pk_y_ = pk_y + pk_vy*dt*(1-ddt);
+				// leave reference frame where paddle is not moving
+				pd2_x_ += difX;
+				pd2_y_ += difY;
+				pk_x_ += difX;
+				pk_y_ += difY;
+				pk_vx += difVX;
+				pk_vy += difVY;
+			}
+			// house keeping, I don't think we need anything here
+			continue;
+		}
+		
 		// wall collisions
 		if(pk_x_ < pk_diam/2){ // left wall
 			collision = true;
+			WalCol = true;
 			// find standard equation of line that the puck travels
 				// note that we will shift the entire line to the left by 25 units so that we are following the left side of the puck and set the exact intersection point
 			// calculate puck line like this to avoid errors with moving vertically
@@ -727,6 +870,7 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
         }
 		if(pk_x_ > 600 - pk_diam/2){ // right wall
 			collision = true;
+			WalCol = true;
 			// find standard equation of line that the puck travels
 				// note that we will shift the entire line to the right by 25 units so that we are following the right side of the puck and set the exact intersection point
 			// calculate puck line like this to avoid errors with moving vertically
@@ -760,6 +904,7 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
         }
 		if(pk_y_ < pk_diam/2){ // top wall
 			collision = true;
+			WalCol = true;
 			// find standard equation of line that the puck travels
 				// note that we will shift the entire line up by 25 units so that we are following the top side of the puck and set the exact intersection point
 			// calculate puck line like this to avoid errors with moving vertically
@@ -792,6 +937,7 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
         }
 		if(pk_y_ > 800 - pk_diam/2){ // bottom wall
 			collision = true;
+			WalCol = true;
 			// find standard equation of line that the puck travels
 				// note that we will shift the entire line down by 25 units so that we are following the bottom side of the puck and set the exact intersection point
 			// calculate puck line like this to avoid errors with moving vertically
@@ -824,6 +970,22 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
         }
     }
     
+	// unstick the puck if it is pinned between the paddle and the wall
+	if(Pad1Col && WalCol){
+		pk_x_ = pd1_x_;
+		pk_y_ = pd1_y_ - pk_diam/2 - pd1_diam/2;
+		if( pow(pk_vy,2) < pow(pd1_diam*2,2) ){
+			pk_vy = pd1_diam*2 * (pk_vy<0?-1:1);
+		}
+	}
+	if(Pad2Col && WalCol){
+		pk_x_ = pd2_x_;
+		pk_y_ = pd2_y_ - pk_diam/2 - pd2_diam/2;
+		if( pow(pk_vy,2) < pow(pd2_diam*2,2) ){
+			pk_vy = pd2_diam*2 * (pk_vy<0?-1:1);
+		}
+	}
+	
 	puck->x = pk_x_;
     puck->y = pk_y_;
     puck->vx = pk_vx;
