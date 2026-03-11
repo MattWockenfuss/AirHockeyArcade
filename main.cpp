@@ -686,7 +686,7 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
 		maxDist = hypot(pk_x_-pd1_x_,pk_y_-pd1_y_);
 		dist = hypot( ((pk_x+pk_x_)/2) - ((pd1_x+pd1_x_)/2) , ((pk_y+pk_y_)/2) - ((pd1_y+pd1_y_)/2) );
 		// if distance at beginning/end shows a collision, or if the middle distance is less than either end (showing the distance fcn passed through zero), we have a collision
-		if( minDist < pk_diam/2 + pd1_diam/2 || maxDist < pk_diam/2 + pd1_diam/2 || (dist<minDist && dist<maxDist) ){
+		if(collision){// minDist < pk_diam/2 + pd1_diam/2 || maxDist < pk_diam/2 + pd1_diam/2 || (dist<minDist && dist<maxDist) ){
 			collision = true;
 			
 			if(minDist<pk_diam/2 + pd1_diam/2){ // we are colliding at the first point (highly unlikely)
@@ -972,8 +972,11 @@ int main(){
     Paddle p1paddle(3,11,0,0,67);
     Paddle p2paddle(3,2,0,0,67);
 	
+	bool Up = true, Down = true, Left = true, Right = true, W = true, S = true, A = true, D = true;
+	
 	while ( window.isOpen() )
 	{
+		printf("\nPADDLE POS: %d\n",p2paddle.xPos);
 		time = clock.restart();
 		dt = time.asSeconds();
 		while ( const std::optional event = window.pollEvent() )
@@ -1038,38 +1041,70 @@ int main(){
 				puck.vx  = puck.vx/1.25;
 				puck.vy = puck.vy/1.25;
 			}
-			// paddle movement
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up)){
+			// paddle movement (need to virtually unpress keys so only one press is registered at a time
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) && !Up){
 				if(p1paddle.yPos>=11)
 					p1paddle.yPos -= 1;
+				Up = true;
 			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down)){
+			if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) && Up){
+				Up = false;
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) && !Down){
 				if(p1paddle.yPos<=11)
-                p1paddle.yPos += 1;
+					p1paddle.yPos += 1;
+				Down = true;
 			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)){
+			if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down) && Down){
+				Down = false;
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left) && !Left){
 				if(p1paddle.xPos>=2)
 					p1paddle.xPos -= 1;
+				Left = true;
 			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right)){
+			if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left) && Left){
+				Left = false;
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right) && !Right){
 				if(p1paddle.xPos<=4)
 					p1paddle.xPos += 1;
+				Right = true;
 			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W)){
+			if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right) && Right){
+				Right = false;
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) && !W){
 				if(p2paddle.yPos>=2)
 					p2paddle.yPos -= 1;
+				W = true;
 			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S)){
+			if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W) && W){
+				W = false;
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) && !S){
 				if(p2paddle.yPos<=2)
 					p2paddle.yPos += 1;
+				S = true;
 			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A)){
+			if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S) && S){
+				S = false;
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) && !A){
 				if(p2paddle.xPos>=2)
 					p2paddle.xPos -= 1;
+				A = true;
 			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D)){
+			if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A) && A){
+				A = false;
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) && !D){
 				if(p2paddle.xPos<=4)
 					p2paddle.xPos += 1;
+				D = true;
+			}
+			if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D) && D){
+				D = false;
 			}
 		}
 		
