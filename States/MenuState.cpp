@@ -8,7 +8,6 @@
 #include "../AssetManager.hpp"
 #include "../KeyManager.hpp"
 #include "GameStateManager.hpp"
-#include "../GPIOManager.hpp"
 
 MenuState::MenuState(){}
 
@@ -48,11 +47,11 @@ void MenuState::tick() {
         ctx -> gsm -> changeState(States::AirHockey);
     }
 
-    if ((sec = static_cast<unsigned int>(sec)) % 2 == 0) {
-        ctx -> gpio -> P1A_LED.lastKnownValue = true;
-    }else{
-        ctx -> gpio -> P1A_LED.lastKnownValue = false;
-    }
+    // if ((sec = static_cast<unsigned int>(sec)) % 2 == 0) {
+    //     ctx -> gpio -> P1A_LED.lastKnownValue = true;
+    // }else{
+    //     ctx -> gpio -> P1A_LED.lastKnownValue = false;
+    // }
 }
 
 void MenuState::render(sf::RenderWindow& window) {

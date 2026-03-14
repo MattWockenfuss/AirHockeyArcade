@@ -24,6 +24,28 @@ KeyManager::KeyManager(){
     F4 = false;
     ESC = false;
 
+    W = false;
+    S = false;
+    A = false;
+    D = false;
+
+    R = false;
+    T = false;
+    F = false;
+    G = false;
+
+    Up = false;
+    Down = false;
+    Left = false;
+    Right = false;
+
+    J = false;
+    K = false;
+    N = false;
+    M = false;
+    
+
+
     std::cout << "[KeyManager] A KeyManager was created! FINALLY" << std::endl;
 }
 
@@ -54,4 +76,19 @@ void KeyManager::tick(){
     F3 = m_keys[static_cast<int>(sf::Keyboard::Key::F3)];
     F4 = m_keys[static_cast<int>(sf::Keyboard::Key::F4)];
     ESC = m_keys[static_cast<int>(sf::Keyboard::Key::Escape)];
+
+    //Player 1 Movement
+    W = m_keys[static_cast<int>(sf::Keyboard::Key::W)];
+    S = m_keys[static_cast<int>(sf::Keyboard::Key::S)];
+    A = m_keys[static_cast<int>(sf::Keyboard::Key::A)];
+    D = m_keys[static_cast<int>(sf::Keyboard::Key::D)];
+
+    //Player 2 Movement
+    Up = m_keys[static_cast<int>(sf::Keyboard::Key::Up)];
+    Down = m_keys[static_cast<int>(sf::Keyboard::Key::Down)];
+    Left = m_keys[static_cast<int>(sf::Keyboard::Key::Left)];
+    Right = m_keys[static_cast<int>(sf::Keyboard::Key::Right)];
+
+
+    
 }

@@ -1,8 +1,8 @@
 #include "GPIOManager.hpp"
 #include <iostream>
-#include "Context.hpp"
-#include "AssetManager.hpp"
-#include "KeyManager.hpp"
+#include "../Context.hpp"
+#include "../AssetManager.hpp"
+#include "../KeyManager.hpp"
 #include <sstream>
 
 /*

@@ -8,3 +8,7 @@ main.o
 run.sh
 run_test.sh
 runmatt.sh
+
+
+#ignore folders
+SFML/

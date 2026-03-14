@@ -11,6 +11,13 @@ class KeyManager {
         void handleEvent(const sf::Event& event);
 
         bool F1, F2, F3, F4, ESC;
+
+        bool W, S, A, D;
+        bool R, T, F, G;
+
+        bool Up, Down, Left, Right;
+        bool J, K, N, M;
+
     private:
         std::array<bool, static_cast<std::size_t>(sf::Keyboard::KeyCount)> m_keys;
 };

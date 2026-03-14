@@ -9,13 +9,13 @@ Game::Game(){
     ctx.window = &window;
     ctx.assets = &assetManager;
     ctx.keys = &keyManager;
-    ctx.gpio = &GPIOmanager;
+    ctx.input = &input;
     ctx.gsm = &gsm;
 }
 
 void Game::initialization(){
     ctx.gsm -> init(&ctx);
-    ctx.gpio -> init(&ctx);
+    ctx.input -> init(&ctx);
 
 
 
@@ -66,7 +66,7 @@ void Game::tick(){
     ctx.keys -> tick();
 
     gsm.getCurrentState() -> tick();
-    GPIOmanager.tick();
+    input.tick();
 
     if(ctx.keys -> ESC){
         running = false;
@@ -77,7 +77,7 @@ void Game::render(){
     window.clear();
 
     gsm.getCurrentState() -> render(window);
-    GPIOmanager.render(window);
+    input.render(window);
 
     window.display();
 }
