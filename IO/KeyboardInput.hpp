@@ -10,6 +10,7 @@ class KeyboardInput : public  InputInterface {
         void tick() override;
         void render(sf::RenderWindow& window) override;
     private:
+        void drawSquare(float x, float y, bool isGreen, sf::RenderWindow& window);
         bool triggeredFlag = false;
         std::optional<sf::Text> textbox;
         sf::RectangleShape rect;
