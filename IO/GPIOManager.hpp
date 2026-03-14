@@ -1,5 +1,7 @@
 #pragma once
 
+#include "InputInterface.hpp"
+
 #include <SFML/Graphics.hpp>
 #include <gpiod.h>
 #include <memory>
@@ -12,13 +14,11 @@ namespace sf{
 
 class Context;
 
-class GPIOManager {
+class GPIOManager : public InputInterface{
     public:
-        void init(Context* ctx);
-        ~GPIOManager();
-        void tick();
-        void render(sf::RenderWindow& window);
-        bool overlay = false;
+        void init(Context* ctx, InputManager* input) override;
+        void tick() override;
+        void render(sf::RenderWindow& window) override;
 
         DigitalPin P1A = DigitalPin(3 , 2 , "GPIO-02", "P1A");
         DigitalPin P1B = DigitalPin(5 , 3 , "GPIO-03", "P1B");
@@ -41,8 +41,8 @@ class GPIOManager {
         DigitalPin P2X_LED = DigitalPin(24, 8 , "GPIO-08", "P2X_LED");
         DigitalPin P2Y_LED = DigitalPin(26, 7 , "GPIO-07", "P2Y_LED");
 
+        ~GPIOManager();
     private:
-        Context* ctx = nullptr;
         bool triggeredFlag = false;
 
         //Graphics Stuff

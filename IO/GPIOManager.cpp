@@ -11,8 +11,9 @@
     it also has a render to display the information for easy view
 */
 
-void GPIOManager::init(Context* ctx){
+void GPIOManager::init(Context* ctx, InputManager* input){
     this -> ctx = ctx;
+    this -> input = input;
     // auto& font = ctx.assets -> getFont("Consolas");
 
     pinout_text.emplace(ctx -> assets -> getFont("Consolas"), "", 28);
@@ -117,11 +118,7 @@ void GPIOManager::init(Context* ctx){
 
 
 
-GPIOManager::~GPIOManager() {
-    if (outReq) gpiod_line_request_release(outReq);
-    if (inReq)  gpiod_line_request_release(inReq);
-    if (chip)   gpiod_chip_close(chip);
-}
+
 
 void GPIOManager::tick(){
     if(overlay){
@@ -308,4 +305,12 @@ void GPIOManager::render(sf::RenderWindow& window){
 
 
 
+}
+
+
+
+GPIOManager::~GPIOManager() {
+    if (outReq) gpiod_line_request_release(outReq);
+    if (inReq)  gpiod_line_request_release(inReq);
+    if (chip)   gpiod_chip_close(chip);
 }

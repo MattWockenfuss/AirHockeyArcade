@@ -8,7 +8,6 @@
 void KeyboardInput::init(Context* ctx, InputManager* input){
     this -> ctx = ctx;
     this -> input = input;
-    textbox.emplace(ctx -> assets -> getFont("Consolas"), "", 12);
 }
 
 void KeyboardInput::tick(){
@@ -39,40 +38,9 @@ void KeyboardInput::tick(){
     input -> P2B = ctx -> keys -> K;
     input -> P2X = ctx -> keys -> N;
     input -> P2Y = ctx -> keys -> M;
-
-    if(ctx -> keys -> F1){
-        if(triggeredFlag == false){
-            //ok so we are holding F1 and we havent trigger it yet, 
-            input -> overlay = !input -> overlay;
-            triggeredFlag = true;
-        }
-    }else{// we stopped holding F1
-        triggeredFlag = false;
-    } 
-
 }
 
 void KeyboardInput::render(sf::RenderWindow& window){
-    //okay on render, if overlay lets display something
-    if(!input -> overlay) return;
-
-    //okay so draw if overlay is true, then we want to draw to the window
-    //The overlay renders the INPUT MANAGER VALUES for robustness and consistency
-
-    //okay so I want to draw a little controller, actually 2 of them, one for each player
-    //each one is going to have the 8 squares and render the values accordingly?
-
-    
-    rect.setSize({300.0f, 200.0f});
-    rect.setPosition({20.0f, 20.0f});
-    rect.setFillColor(sf::Color(155, 155, 155, 255));
-
-    textbox -> setFont(ctx -> assets -> getFont("Consolas"));
-    textbox -> setCharacterSize(24);
-    textbox -> setFillColor(sf::Color::White);
-
-    textbox -> setPosition({50.0f, 50.0f});
-    textbox -> setString("KEYBOARD OVERLAY");
-    window.draw(rect);
-    window.draw(*textbox);
+    //render something to display key presses at some point?
 }
+

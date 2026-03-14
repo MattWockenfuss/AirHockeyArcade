@@ -83,11 +83,23 @@ void KeyManager::tick(){
     A = m_keys[static_cast<int>(sf::Keyboard::Key::A)];
     D = m_keys[static_cast<int>(sf::Keyboard::Key::D)];
 
+    //Buttons
+    R = m_keys[static_cast<int>(sf::Keyboard::Key::R)];
+    T = m_keys[static_cast<int>(sf::Keyboard::Key::T)];
+    F = m_keys[static_cast<int>(sf::Keyboard::Key::F)];
+    G = m_keys[static_cast<int>(sf::Keyboard::Key::G)];
+
     //Player 2 Movement
     Up = m_keys[static_cast<int>(sf::Keyboard::Key::Up)];
     Down = m_keys[static_cast<int>(sf::Keyboard::Key::Down)];
     Left = m_keys[static_cast<int>(sf::Keyboard::Key::Left)];
     Right = m_keys[static_cast<int>(sf::Keyboard::Key::Right)];
+
+    //Buttons
+    J = m_keys[static_cast<int>(sf::Keyboard::Key::J)];
+    K = m_keys[static_cast<int>(sf::Keyboard::Key::K)];
+    N = m_keys[static_cast<int>(sf::Keyboard::Key::N)];
+    M = m_keys[static_cast<int>(sf::Keyboard::Key::M)];
 
 
     

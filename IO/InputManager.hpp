@@ -2,7 +2,7 @@
 
 //#include "InputInterface.hpp"
 
-//#include <SFML/Graphics.hpp>
+#include <SFML/Graphics.hpp>
 #include <optional>
 #include <memory>
 #include <array>
@@ -61,9 +61,14 @@ class InputManager {
 
     private:
         Context* ctx = nullptr;
+        InputInterface* backendInput = nullptr;
+
         bool triggeredFlag = false;
         //A reference to the actual input
-        InputInterface* backendInput = nullptr;
+        void renderDebugControllers(sf::RenderWindow& window);
+        void drawSquare(float x, float y, bool isGreen, sf::RenderWindow& window);
+        std::optional<sf::Text> textbox;
+        sf::RectangleShape rect;
 
 
 };
