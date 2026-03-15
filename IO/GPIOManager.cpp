@@ -121,11 +121,6 @@ void GPIOManager::init(Context* ctx, InputManager* input){
 
 
 void GPIOManager::tick(){
-    if(overlay){
-        //P1A_LED = true;
-    }else {
-        //P1A_LED = false;
-    }
 
     P1A.read(inReq);
     P1B.read(inReq);
@@ -147,23 +142,57 @@ void GPIOManager::tick(){
     P2X_LED.write(outReq, P2X_LED.lastKnownValue);
     P2Y_LED.write(outReq, P2Y_LED.lastKnownValue);
 
+    //Movement
+    //input -> P1_Up = ctx -> keys -> W;
+    //input -> P1_Left = ctx -> keys -> A;
+    //input -> P1_Down = ctx -> keys -> S;
+    //input -> P1_Right = ctx -> keys -> D;
+    
+    //Buttons
+    input -> P1A = P1A.lastKnownValue;
+    input -> P1B = P1B.lastKnownValue;
+    input -> P1X = P1X.lastKnownValue;
+    input -> P1Y = P1Y.lastKnownValue;
 
-    //ok so we have this overlay variable we want to flip it when we press F1
-    if(ctx -> keys -> F1){
-        if(triggeredFlag == false){
-            //ok so we are holding F1 and we havent trigger it yet, 
-            ctx -> gpio -> overlay = !ctx -> gpio -> overlay;
-            triggeredFlag = true;
-        }
-    }else{// we stopped holding F1
-        triggeredFlag = false;
-    } 
+    //Player 2
+    //Movement
+    //input -> P2_Up = ctx -> keys -> Up;
+    //input -> P2_Left = ctx -> keys -> Left;
+    //input -> P2_Down = ctx -> keys -> Down;
+    //input -> P2_Right = ctx -> keys -> Right;
+
+    //Buttons
+    input -> P2A = P2A.lastKnownValue;
+    input -> P2B = P2B.lastKnownValue;
+    input -> P2X = P2X.lastKnownValue;
+    input -> P2Y = P2Y.lastKnownValue;
+
+
+    /*
+        okay what is the best way to structure this? we have a bunch of booleans we need to write to based on reading signals
+        we also need to be able to write to some of them, so we should add that to the input Manager?
+
+        //if not GPIO it just ignores its
+
+        //what if we want to trigger the lights and such?
+
+        //okay so how can we structure this?
+        //we no longer need the digital pin abstraction, preferably get rid of it
+
+    
+    
+    */
+
+
+
+
+
 }
 
 void GPIOManager::render(sf::RenderWindow& window){
-    if(!overlay) return;  //only render if the overlay is up
+    if(!input -> overlay) return;  //only render if the overlay is up
     
-    float startX = 300.0f;
+    float startX = 800.0f;
     float startY = 100.0f;
     
     float baseWidth = 370.0f;
@@ -184,29 +213,7 @@ void GPIOManager::render(sf::RenderWindow& window){
     square_background.setFillColor(sf::Color(255, 240, 102));
     window.draw(square_background);
 
-
-    // std::ostringstream ss;
-    // ss  << "P1A = " << P1A.lastKnownValue << std::endl
-    //     << "P1B = " << P1B.lastKnownValue << std::endl
-    //     << "P1X = " << P1X.lastKnownValue << std::endl
-    //     << "P1Y = " << P1Y.lastKnownValue << std::endl
-
-    //     << "P2A = " << P2A.lastKnownValue << std::endl
-    //     << "P2B = " << P2B.lastKnownValue << std::endl
-    //     << "P2X = " << P2X.lastKnownValue << std::endl
-    //     << "P2Y = " << P2Y.lastKnownValue << std::endl;
-
-    // pinout_text -> setString(ss.str());
-
-
-
-
-
-    //window.draw(*pinout_text);
-    
-    //lets draw the pinout
-
-
+    //drawing the pinout
 
     for(int i = 1; i <= 40; i++){
         std::ostringstream ss;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "InputInterface.hpp"
+#include "InputManager.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <gpiod.h>

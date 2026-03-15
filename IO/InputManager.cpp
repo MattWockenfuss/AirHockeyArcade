@@ -4,8 +4,12 @@
 #include "../Context.hpp"
 #include "../AssetManager.hpp"
 #include "../KeyManager.hpp"
-
 #include <iostream>
+
+#ifdef HAVE_GPIOD
+#include "GPIOManager.hpp"
+#endif
+
 
 InputManager::InputManager() = default;
 
@@ -15,16 +19,21 @@ void InputManager::init(Context* ctx){
     this -> ctx = ctx;
 
     /*
-        So depending on whether or not we have it, we want to tick GPIO, always tick keyboard?
-        I like that too
-    
+        Depending on whether or not the buildscript found libgpiod, we are either going to 
+        use it or just stick to keybcan oard input. This allows for testing, debugging and sharing
+        between devices.
     */
 
+    #ifdef HAVE_GPIOD
+        std::cout << "[InputManager] Created, using libgpiod and reading from GPIO Pins" << std::endl;
+        backendInput = new GPIOManager();
+    #else
+        std::cout << "[InputManager] created, using Keyboard Input!" << std::endl;
+        backendInput = new KeyboardInput();
+    #endif
 
-    backendInput = new KeyboardInput();
     backendInput -> init(ctx, this);
 
-    std::cout << "[InputManager] Using KEYBOARD INPUT" << std::endl;
 
     //for the graphics because most SFML objects dont have default constructors D:
     textbox.emplace(ctx -> assets -> getFont("Consolas"), "", 12);
