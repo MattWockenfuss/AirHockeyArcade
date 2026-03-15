@@ -1,14 +1,11 @@
 #VSCode Specific
-output
-main.code-workspace
+*.code-workspace
 .vscode
 
-#Linux Specific
-main.o
-run.sh
-run_test.sh
-runmatt.sh
-
+#windows junk
+.DS_Store
+Thumbs.db
 
 #ignore folders
+build/
 SFML/
