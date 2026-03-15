@@ -7,5 +7,6 @@
 Thumbs.db
 
 #ignore folders
-build/
+build/*
+!build/.gitkeep
 SFML/
