@@ -4,6 +4,7 @@
 #include <sstream>
 
 #include "../Context.hpp"
+#include "../States/GameStateManager.hpp"
 #include "../AssetManager.hpp"
 #include "../KeyManager.hpp"
 #include "../IO/InputManager.hpp"
@@ -1050,6 +1051,9 @@ void AirHockeyGameState::init(Context* ctx){
 }
 
 void AirHockeyGameState::tick() {
+    if(ctx -> keys -> F3){
+        ctx -> gsm -> requestStateChange(States::Snake);
+    }
     //we want to square to loop around a circle?
 
     static float t = 0.0f;  //static means this var keeps its value between function calls, which is interesting

@@ -5,16 +5,21 @@
 class Context;
 
 enum class States {
-    Menu, AirHockey
+    Menu, AirHockey, Snake
 };
 
 class GameStateManager {
     public:
         void init(Context* ctx);
         
-        void changeState(States s);
+        void requestStateChange(States s);
+        void changeState();
         State* getCurrentState();
+        bool pendingStateChange = false;
     private:
         State* currentState;
         Context* ctx;
+
+    
+        States pendingState;
 };

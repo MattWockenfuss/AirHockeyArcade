@@ -1,6 +1,43 @@
 @echo off
 echo.
+::change directory to wherever this command is run from, even on a different drive, hence the /d
+cd /d "%~dp0"
 
-g++ src\Game.cpp src\AssetManager.cpp src\States\GameStateManager.cpp src\States\State.cpp src\States\MenuState.cpp src\States\AirHockeyGameState.cpp src\IO\KeyboardInput.cpp src\IO\InputManager.cpp src\KeyManager.cpp -ISFML\include -LSFML\lib -lsfml-graphics -lsfml-window -lsfml-system -o build\game.exe
+::	the ^ continues the command onto the next line
+::	So essentially we are manually including all of the required .cpp files, then
+::	static linking the 3 dlls from the compiler into the .exe, and linking SFML, in SFML\include and 
+::	SFML\bin
+
+::	This command only works on windows, a.k.a Matt and Briar's dev machines
+
+g++ ^
+src\Game.cpp ^
+src\AssetManager.cpp ^
+src\States\GameStateManager.cpp ^
+src\States\State.cpp ^
+src\States\MenuState.cpp ^
+src\States\AirHockeyGameState.cpp ^
+src\States\Snake\SnakeGameState.cpp ^
+src\States\Snake\Snake.cpp ^
+src\IO\KeyboardInput.cpp ^
+src\IO\InputManager.cpp ^
+src\KeyManager.cpp ^
+-I"%~dp0SFML\include" ^
+-L"%~dp0SFML\lib" ^
+-static-libgcc ^
+-static-libstdc++ ^
+-Wl,-Bstatic ^
+-lwinpthread ^
+-Wl,-Bdynamic ^
+-lsfml-graphics ^
+-lsfml-window ^
+-lsfml-system ^
+-o build\game.exe
+
+copy /Y SFML\bin\sfml-graphics-3.dll build\
+copy /Y SFML\bin\sfml-window-3.dll build\
+copy /Y SFML\bin\sfml-system-3.dll build\
+
+
 build\game.exe
 
