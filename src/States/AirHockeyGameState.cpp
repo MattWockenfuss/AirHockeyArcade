@@ -4,6 +4,7 @@
 #include <sstream>
 
 #include "../Context.hpp"
+#include "../States/GameStateManager.hpp"
 #include "../AssetManager.hpp"
 #include "../KeyManager.hpp"
 #include "../IO/InputManager.hpp"
@@ -317,7 +318,6 @@ void Paddle::draw(sf::RenderWindow* window){
     sprite.setScale({(float) screenRatio, (float) screenRatio});
     window -> draw(sprite);
 }
-
 
 void puckFriction(double *vx, double *vy, float dt){
 	// base puck velocity should be 930 (~1s to travel down the field (750) and ~1s to travel across the field (550) )
@@ -1051,6 +1051,11 @@ void AirHockeyGameState::init(Context* ctx){
 }
 
 void AirHockeyGameState::tick() {
+	//change state
+	if(ctx->keys->F3){
+		ctx->gsm->requestStateChange(States::Snake);
+	}
+	
     time = clock.restart();
     dt = time.asSeconds();
 
