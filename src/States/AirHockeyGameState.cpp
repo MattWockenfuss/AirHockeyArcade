@@ -996,38 +996,17 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
 	return;
 }
 
-
 AirHockeyGameState::AirHockeyGameState(){}
 
 void AirHockeyGameState::init(Context* ctx){
     State::init(ctx);
-
+	
+	// debugging
     std::cout << "AirHockeyGameState Created!" << std::endl;
-
-    square = sf::RectangleShape(sf::Vector2f(100.f, 100.f));
-    square.setFillColor(sf::Color::Green);
-    square.setPosition(sf::Vector2f(350.f, 250.f)); // center-ish
-
     std::cout << "Consolas" << &ctx -> assets -> getFont("Consolas") << std::endl;
     std::cout << "ST-SimpleSquare" << &ctx -> assets -> getFont("ST-SimpleSquare") << std::endl;
-
-    text.emplace(ctx -> assets -> getFont("Consolas"), "", 24);
-    text -> setFillColor(sf::Color::White);
-    text -> setPosition(sf::Vector2f(20.0f, 20.0f));
-    
-    
-    label.emplace(ctx -> assets -> getFont("ST-SimpleSquare"), "", 96);
-    label -> setFillColor(sf::Color::Yellow);
-    label -> setPosition(sf::Vector2f(100.0f, 100.0f));
-    label -> setString("AirHockeyGameState State");
-
-    text2.emplace(ctx -> assets -> getFont("ST-SimpleSquare"), "", 34);
-    text2 -> setFillColor(sf::Color::Yellow);
-    text2 -> setPosition(sf::Vector2f(400.0f, 400.0f));
-    text2 -> setString("yeet");
-
-    //okay lets start merging
-
+	
+	p2Score->setString("0");
 	
 	sf::Clock clock;
 	sf::Time time;
@@ -1038,85 +1017,42 @@ void AirHockeyGameState::init(Context* ctx){
     field.emplace(ctx -> assets -> getAsset("Field"));
     fieldBack.emplace(ctx -> assets -> getAsset("FieldBack"));
 
-
-    float wid = ctx -> window -> getSize().x;
+    float width = ctx -> window -> getSize().x;
     float height = ctx -> window -> getSize().y;
-	double screenRatio = wid / 320.0;
-    //screenRatio = 2;
+	double screenRatio = width / 320.0;
+    //screenRatio = 6;
     std::cout << "Screen Ratio: " << screenRatio << std::endl;
 	field -> setScale({(float) screenRatio, (float) screenRatio});
 	fieldBack -> setScale({(float) screenRatio, (float) screenRatio});
 	fieldBack -> setPosition({0.f, (float)(height - (8 * screenRatio))});
+	
+	// text
+	sf::Color blue(111,99,255);
+	sf::Color red(223,0,0);
+	p1Name.emplace(ctx->assets->getFont("ST-SimpleSquare"), "", 16*screenRatio);
+	p1Name->setFillColor(blue);
+	p1Name->setPosition(sf::Vector2f(16.0*screenRatio,16.0*screenRatio));
+	p1Name->setString("PLR");
+	
+	p2Name.emplace(ctx->assets->getFont("ST-SimpleSquare"), "", 16*screenRatio);
+	p2Name->setFillColor(red);
+	p2Name->setPosition(sf::Vector2f(256.0*screenRatio,16.0*screenRatio));
+	p2Name->setString("COM");
+	
+	p1Score.emplace(ctx->assets->getFont("ST-SimpleSquare"), "", 16*screenRatio);
+	p1Score->setFillColor(blue);
+	p1Score->setPosition(sf::Vector2f(16.0*screenRatio,40.0*screenRatio));
+	p1Score->setString("0");
+	
+	p2Score.emplace(ctx->assets->getFont("ST-SimpleSquare"), "", 16*screenRatio);
+	p2Score->setFillColor(red);
+	p2Score->setPosition(sf::Vector2f(256.0*screenRatio,40.0*screenRatio));
+	p2Score->setString("0");
 }
 
 void AirHockeyGameState::tick() {
-    //we want to square to loop around a circle?
-
-    static float t = 0.0f;  //static means this var keeps its value between function calls, which is interesting
-    t += 0.016f;
-
-
-
-
-    float sinT = std::sin(t);
-    float cosT = std::cos(t);
-    float tanT = std::tan(t);
-    float expT = std::exp(sinT);  //e ^ t
-    float powT = std::pow(t, cosT);
-
-    x = 400.0f + sinT * 100.0f;
-    y = 400.0f + cosT * 100.0f;
-    w = 100.0f + expT * 10.0f;
-    h = 100.0f + powT * 20.0f;
-
-    float logValue = std::log(std::abs(sinT) + 1.0f);  //log is ln
-    float log10Value = std::log10(std::abs(cosT) + 1.0f);
-
-    // if(ctx.keys -> F1){
-    //     square.setPosition(sf::Vector2f(500.0f, 500.0f));
-    //     square.setSize(sf::Vector2f(50.0f, 50.0f));
-    // } else {
-    //     square.setPosition(sf::Vector2f(x, y));
-    //     square.setSize(sf::Vector2f(w, h));
-    // }
-
-
-
-    int r = abs(sinT) * 256;
-    int g = abs(cosT) * 256;
-    int b = abs(tanT) * 256;
-
-
-    std::ostringstream ss;
-    ss << std::fixed << std::setprecision(2);
-    ss << "t = " << t << std::endl
-        << "sin(t) = " << sinT << std::endl
-        << "cos(t) = " << cosT << std::endl
-        << "tan(t) = " << tanT << std::endl
-        << "exp(t) = " << expT << std::endl
-        << "pow(t) = " << powT << std::endl
-        << std::endl
-        << "x = " << x << std::endl
-        << "y = " << y << std::endl
-        << "w = " << w << std::endl
-        << "h = " << h << std::endl
-        << std::endl
-        << "ln = " << logValue << std::endl
-        << "log10 = " << log10Value << std::endl
-        << std::endl
-        << "r = " << r << std::endl
-        << "g = " << g << std::endl
-        << "b = " << b << std::endl;
-    //text -> setString(ss.str());
-    text2 -> rotate(sf::degrees(1.0));
-
-    square.setPosition(sf::Vector2f(x, y)); // center-ish
-    square.setFillColor(sf::Color(120, 120, 120));
-
     time = clock.restart();
     dt = time.asSeconds();
-    
-    
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num1)){
         puck.x = 100;
@@ -1175,12 +1111,7 @@ void AirHockeyGameState::tick() {
         puck.vx  = puck.vx/1.25;
         puck.vy = puck.vy/1.25;
     }
-   
-    if(ctx -> input -> P1_Up){
-        std::cout << "P1 Up Pressed" << std::endl;
-    }
-
-    //paddle movement (need to virtually unpress keys so only one press is registered at a time
+	//paddle movement (need to virtually unpress keys so only one press is registered at a time
     if (ctx -> input -> P1_Up && !Up){
         if(p1paddle.yPos>=11)
             p1paddle.yPos -= 1;
@@ -1251,12 +1182,12 @@ void AirHockeyGameState::tick() {
 
 void AirHockeyGameState::render(sf::RenderWindow& window) {
     window.clear();
-    window.draw(square);
-    //window.draw(*text);
-    window.draw(*label);
-    window.draw(*text2);
-
-    
+	
+	window.draw(*p1Name);
+	window.draw(*p1Score);
+	window.draw(*p2Name);
+	window.draw(*p2Score);
+	
     window.draw(*field);
     // decide drawing order
     if(puck.y < p2paddle.y){
@@ -1272,5 +1203,5 @@ void AirHockeyGameState::render(sf::RenderWindow& window) {
         puck.draw(&window);
         p1paddle.draw(&window);
     }
-    //window.draw(*fieldBack); //hmm idk where this goes
+    window.draw(*fieldBack); //this covers the wall closest to the player, so the pucks and paddles are correctly obscured from view
 }

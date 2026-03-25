@@ -10,7 +10,6 @@ struct Puck {
         double x, y, vx, vy, diam;
 
         Puck(double x, double y, double vx, double vy, double diam);
-
         int getIndex(double x, double y, double diam);
         void draw(sf::RenderWindow* window);
 
@@ -49,14 +48,10 @@ class AirHockeyGameState : public State {
         sf::Time time;
         float dt;
         
-        bool Up = true, Down = true, Left = true, Right = true, W = true, S = true, A = true, D = true;
+        bool Up = true, Down = true, Left = true, Right = true, W = true, S = true, A = true, D = true; // virtual keys to prevent one press from registering 1000 times
 
         AirHockeyGameState();
         ~AirHockeyGameState() override = default;
     private:
-        std::optional<sf::Text> text, label, text2;
-
-        sf::RectangleShape square;
-        float x, y;
-        float w, h;
+        std::optional<sf::Text> p1Name, p2Name, p1Score, p2Score;
 };
