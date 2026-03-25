@@ -9,20 +9,6 @@
 #include "../GameStateManager.hpp"
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void SnakeGameState::init(Context* ctx){
     State::init(ctx);
 
@@ -53,7 +39,12 @@ void SnakeGameState::init(Context* ctx){
 }
 
 void SnakeGameState::tick() {
-    //assume about 60 ticks per second, it can be slightly less, but good enough
+    //change state
+	if(ctx->keys->F4){
+		ctx->gsm->requestStateChange(States::AirHockey);
+	}
+	
+	//assume about 60 ticks per second, it can be slightly less, but good enough
     tickCount++;
     if(tickCount >= 15){
         tickCount = 0;

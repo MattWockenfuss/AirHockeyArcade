@@ -46,6 +46,9 @@ void MenuState::tick() {
     if(ctx -> keys -> F4){
         ctx -> gsm -> requestStateChange(States::AirHockey);
     }
+	if(ctx -> keys -> F3){
+        ctx -> gsm -> requestStateChange(States::Snake);
+    }
 
     // if ((sec = static_cast<unsigned int>(sec)) % 2 == 0) {
     //     ctx -> gpio -> P1A_LED.lastKnownValue = true;
