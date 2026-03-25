@@ -1,6 +1,6 @@
 #include "GameStateManager.hpp"
 #include "MenuState.hpp"
-#include "AirHockeyGameState.hpp"
+#include "AirHockey/AirHockeyGameState.hpp"
 #include "Snake/SnakeGameState.hpp"
 
 #include "../Context.hpp"

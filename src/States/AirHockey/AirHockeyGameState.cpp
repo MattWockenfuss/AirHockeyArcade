@@ -3,11 +3,11 @@
 #include <cmath>
 #include <sstream>
 
-#include "../Context.hpp"
-#include "../States/GameStateManager.hpp"
-#include "../AssetManager.hpp"
-#include "../KeyManager.hpp"
-#include "../IO/InputManager.hpp"
+#include "../../Context.hpp"
+#include "../GameStateManager.hpp"
+#include "../../AssetManager.hpp"
+#include "../../KeyManager.hpp"
+#include "../../IO/InputManager.hpp"
 
 
 double getScreenX(double x, double y, int screenWidth){
@@ -1031,21 +1031,25 @@ void AirHockeyGameState::init(Context* ctx){
 	sf::Color red(223,0,0);
 	p1Name.emplace(ctx->assets->getFont("ST-SimpleSquare"), "", 16*screenRatio);
 	p1Name->setFillColor(blue);
+	//p1Name->setFillColor(sf::Color::Blue);
 	p1Name->setPosition(sf::Vector2f(16.0*screenRatio,16.0*screenRatio));
 	p1Name->setString("PLR");
 	
 	p2Name.emplace(ctx->assets->getFont("ST-SimpleSquare"), "", 16*screenRatio);
 	p2Name->setFillColor(red);
+	//p2Name->setFillColor(sf::Color::Red);
 	p2Name->setPosition(sf::Vector2f(256.0*screenRatio,16.0*screenRatio));
 	p2Name->setString("COM");
 	
 	p1Score.emplace(ctx->assets->getFont("ST-SimpleSquare"), "", 16*screenRatio);
 	p1Score->setFillColor(blue);
+	//p1Score->setFillColor(sf::Color::Blue);
 	p1Score->setPosition(sf::Vector2f(16.0*screenRatio,40.0*screenRatio));
 	p1Score->setString("0");
 	
 	p2Score.emplace(ctx->assets->getFont("ST-SimpleSquare"), "", 16*screenRatio);
 	p2Score->setFillColor(red);
+	//p2Score->setFillColor(sf::Color::Red);
 	p2Score->setPosition(sf::Vector2f(256.0*screenRatio,40.0*screenRatio));
 	p2Score->setString("0");
 }

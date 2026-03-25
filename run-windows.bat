@@ -16,7 +16,7 @@ src\AssetManager.cpp ^
 src\States\GameStateManager.cpp ^
 src\States\State.cpp ^
 src\States\MenuState.cpp ^
-src\States\AirHockeyGameState.cpp ^
+src\States\AirHockey\AirHockeyGameState.cpp ^
 src\States\Snake\SnakeGameState.cpp ^
 src\States\Snake\Snake.cpp ^
 src\IO\KeyboardInput.cpp ^
