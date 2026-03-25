@@ -44,7 +44,7 @@ void MenuState::tick() {
     seconds_counter -> setString(std::to_string(sec));
 
     if(ctx -> keys -> F4){
-        ctx -> gsm -> changeState(States::AirHockey);
+        ctx -> gsm -> requestStateChange(States::AirHockey);
     }
 
     // if ((sec = static_cast<unsigned int>(sec)) % 2 == 0) {

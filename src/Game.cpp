@@ -27,7 +27,7 @@ void Game::initialization(){
 	//Chooses largest resolution and highest bpp, makes window fullscreen
 	window.create(modes[0], "Arcade", sf::State::Fullscreen);
 
-    gsm.changeState(States::Menu);
+    gsm.requestStateChange(States::Menu);
 }
 
 
@@ -64,9 +64,12 @@ void Game::tick(){
 
     }
     ctx.keys -> tick();
-
-    gsm.getCurrentState() -> tick();
+    if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> tick();
     input.tick();
+    if(gsm.pendingStateChange){
+        gsm.changeState();
+        gsm.pendingStateChange = false;
+    }
 
     if(ctx.keys -> ESC){
         running = false;
