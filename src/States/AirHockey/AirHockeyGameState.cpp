@@ -197,6 +197,19 @@ void Puck::draw(sf::RenderWindow* window) {
     sprite.setScale({(float) screenRatio, (float) screenRatio});
     window -> draw(sprite);
 }
+void Puck::setKickoff(int type){
+	double pi = 3.1415926;
+	double direction = -1;
+	if(type==1)
+		direction = 1;
+	if(type==0){ // this is the kickoff for the very start of the game
+		std::srand(std::time(0)); // seed the random numbers based on the current time at kickoff
+		direction = -1 + 2*(std::rand()%2); // make direction either -1 or 1;
+	}
+	double angle = (double)((std::rand()%121)+30)*pi/180.0;
+	vx = 930*cos(angle)*direction;
+	vy = 930*sin(angle)*direction;
+}
 
 Paddle::Paddle(int xPos, int yPos, double vx, double vy, double diam){
     this -> xPos = xPos;
@@ -560,10 +573,12 @@ void AirHockeyGameState::moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle
 			if(pk_y_<0){ // give plr 1 the goal
 				player1.score++;
 				scoreText1->setString(player1.getScore());
+				kickoff = 1;
 			}
 			else{ // give plr 2 the goal
 				player2.score++;
 				scoreText2->setString(player2.getScore());
+				kickoff = 2;
 			}
 			pk_x_ = 300;
 			pk_y_ = 400;
@@ -1204,7 +1219,20 @@ void AirHockeyGameState::tick() {
         D = false;
     }
     
-    moveObjects(&puck, &p1paddle, &p2paddle, dt, 10);
+    if(kickoff>=0){
+		puck.x = 300;
+		puck.y = 400;
+		puck.vx = 0;
+		puck.vy = 0;
+		timer += dt;
+		if(timer >= 3){
+			puck.setKickoff(kickoff);
+			timer = 0;
+			kickoff = -1;
+		}
+	}
+	
+	moveObjects(&puck, &p1paddle, &p2paddle, dt, 10);
 }
 
 void AirHockeyGameState::render(sf::RenderWindow& window) {
@@ -1216,19 +1244,41 @@ void AirHockeyGameState::render(sf::RenderWindow& window) {
 	window.draw(*scoreText2);
 	
     window.draw(*field);
-    // decide drawing order
-    if(puck.y < p2paddle.y){
-        puck.draw(&window);
-        p2paddle.draw(&window);
-        p1paddle.draw(&window);
-    }else if(puck.y > p1paddle.y){
-        p2paddle.draw(&window);
-        p1paddle.draw(&window);
-        puck.draw(&window);
-    }else{
-        p2paddle.draw(&window);
-        puck.draw(&window);
-        p1paddle.draw(&window);
-    }
+	
+	if(kickoff>=0){
+		int num;
+		p2paddle.draw(&window);
+		if(timer<1){
+			num = round(timer*2);
+			if(num%2==0)
+				puck.draw(&window);
+		}
+		if(timer<2){
+			num = round(timer*8);
+			if(num%2==0)
+				puck.draw(&window);
+		}
+		else{
+			num = round(timer*16);
+			if(num%2==0)
+				puck.draw(&window);
+		}
+		p1paddle.draw(&window);
+	} else {
+		// decide drawing order
+		if(puck.y < p2paddle.y){
+			puck.draw(&window);
+			p2paddle.draw(&window);
+			p1paddle.draw(&window);
+		}else if(puck.y > p1paddle.y){
+			p2paddle.draw(&window);
+			p1paddle.draw(&window);
+			puck.draw(&window);
+		}else{
+			p2paddle.draw(&window);
+			puck.draw(&window);
+			p1paddle.draw(&window);
+		}
+	}
     window.draw(*fieldBack); //this covers the wall closest to the player, so the pucks and paddles are correctly obscured from view
 }

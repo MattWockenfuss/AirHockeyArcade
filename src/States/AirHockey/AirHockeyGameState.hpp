@@ -3,6 +3,9 @@
 #include "../State.hpp"
 #include <SFML/Graphics.hpp>
 #include <optional>
+#include <cstdlib>
+#include <ctime>
+#include <cmath>
 
 
 struct Puck {
@@ -12,6 +15,7 @@ struct Puck {
         Puck(double x, double y, double vx, double vy, double diam);
         int getIndex(double x, double y, double diam);
         void draw(sf::RenderWindow* window);
+		void setKickoff(int type);
 
     private:
         sf::Texture pucks[28];
@@ -64,8 +68,10 @@ class AirHockeyGameState : public State {
         sf::Clock clock;
         sf::Time time;
         float dt;
+		float timer = 0.0;
         
         bool Up = true, Down = true, Left = true, Right = true, W = true, S = true, A = true, D = true; // virtual keys to prevent one press from registering 1000 times
+		int kickoff = 0;
 		
 		void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int iter);
 };
