@@ -30,28 +30,42 @@ struct Paddle {
         sf::Texture paddles[18];
 };
 
+struct Player {
+	public:
+		std::string name;
+		int score;
+		
+		Player(std::string name);
+		std::string getScore();
+};
+
 class AirHockeyGameState : public State {
     public:
         void init(Context* ctx) override;
-
+		
         void tick() override;
         void render(sf::RenderWindow& window) override;
-
-        Puck puck = Puck(300,400,0,0,50);
+		
+        AirHockeyGameState();
+        ~AirHockeyGameState() override = default;
+    private:
+		Puck puck = Puck(300,400,0,0,50);
         Paddle p1paddle = Paddle(3,11,0,0,67);
         Paddle p2paddle = Paddle(3,2,0,0,67);
-
+		
+		Player player1 = Player("PLR");
+		Player player2 = Player("COM");
+		
+		std::optional<sf::Text> nameText1, nameText2, scoreText1, scoreText2;
+		
         std::optional<sf::Sprite> field;
-        std::optional<sf::Sprite> fieldBack;    
-
+        std::optional<sf::Sprite> fieldBack;
+		
         sf::Clock clock;
         sf::Time time;
         float dt;
         
         bool Up = true, Down = true, Left = true, Right = true, W = true, S = true, A = true, D = true; // virtual keys to prevent one press from registering 1000 times
-
-        AirHockeyGameState();
-        ~AirHockeyGameState() override = default;
-    private:
-        std::optional<sf::Text> p1Name, p2Name, p1Score, p2Score;
+		
+		void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int iter);
 };

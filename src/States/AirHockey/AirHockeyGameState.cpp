@@ -386,7 +386,7 @@ void paddleFriction(Paddle* paddle, float dt){
 	double fricConst = 55; // the larger this is, the lower the friction
 	
     
-    double jitterConst = 0.01; // the smaller this is, the more jittering
+    double jitterConst = 58*dt; // the smaller this is, the more jittering // feels good at 0.01 for 2000fps, and 1 for 60fps // roughly equates to 58*dt
 	// change velocity
 	
 	// xACC
@@ -462,7 +462,17 @@ void paddleFriction(Paddle* paddle, float dt){
 	return;
 }
 
-void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int iter){
+Player::Player(std::string name){
+	this->name = name;
+	this->score = 0;
+}
+std::string Player::getScore(){
+	return std::to_string(score);
+}
+
+AirHockeyGameState::AirHockeyGameState(){}
+
+void AirHockeyGameState::moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int iter){
     // field is 600x800
 	// puck
     double pk_x = puck -> x;
@@ -546,6 +556,22 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
 	bool WalCol = false;
 	
     while(collision && !((Pad1Col||Pad2Col) && WalCol) ){
+		if(pk_y_<0-pk_diam/2 || pk_y_>800+pk_diam/2){ // the puck is in the goal
+			if(pk_y_<0){ // give plr 1 the goal
+				player1.score++;
+				scoreText1->setString(player1.getScore());
+			}
+			else{ // give plr 2 the goal
+				player2.score++;
+				scoreText2->setString(player2.getScore());
+			}
+			pk_x_ = 300;
+			pk_y_ = 400;
+			pk_vx = 0;
+			pk_vy = 0;
+			break;
+		}
+		
 		collision = false;
 		// do paddle collisions first, because in most cases, the puck will hit the paddle before the wall, and checking for the paddle first in the other cases will not mess anything up
 		
@@ -894,7 +920,7 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
 			// do not fuck with walls slowing down the puck
 			continue;
         }
-		if(pk_y_ < pk_diam/2){ // top wall
+		if(pk_y_ < pk_diam/2 && (pk_x_<200+pk_diam/2 || pk_x_>400-pk_diam/2) ){ // top wall (exclude goal from collisions)
 			collision = true;
 			WalCol = true;
 			// find standard equation of line that the puck travels
@@ -927,7 +953,7 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
 			// do not fuck with walls slowing down the puck
 			continue;
         }
-		if(pk_y_ > 800 - pk_diam/2){ // bottom wall
+		if(pk_y_ > 800 - pk_diam/2 && (pk_x_<200+pk_diam/2 || pk_x_>400-pk_diam/2) ){ // bottom wall (exclude goal from collisions)
 			collision = true;
 			WalCol = true;
 			// find standard equation of line that the puck travels
@@ -996,17 +1022,13 @@ void moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int ite
 	return;
 }
 
-AirHockeyGameState::AirHockeyGameState(){}
-
 void AirHockeyGameState::init(Context* ctx){
     State::init(ctx);
 	
 	// debugging
-    std::cout << "AirHockeyGameState Created!" << std::endl;
+    std::cout << "\nAirHockeyGameState Created!" << std::endl;
     std::cout << "Consolas" << &ctx -> assets -> getFont("Consolas") << std::endl;
     std::cout << "ST-SimpleSquare" << &ctx -> assets -> getFont("ST-SimpleSquare") << std::endl;
-	
-	p2Score->setString("0");
 	
 	sf::Clock clock;
 	sf::Time time;
@@ -1029,29 +1051,25 @@ void AirHockeyGameState::init(Context* ctx){
 	// text
 	sf::Color blue(111,99,255);
 	sf::Color red(223,0,0);
-	p1Name.emplace(ctx->assets->getFont("ST-SimpleSquare"), "", 16*screenRatio);
-	p1Name->setFillColor(blue);
-	//p1Name->setFillColor(sf::Color::Blue);
-	p1Name->setPosition(sf::Vector2f(16.0*screenRatio,16.0*screenRatio));
-	p1Name->setString("PLR");
+	nameText1.emplace(ctx->assets->getFont("ST-SimpleSquare"), "", 16*screenRatio);
+	nameText1->setFillColor(blue);
+	nameText1->setPosition(sf::Vector2f(16.0*screenRatio,16.0*screenRatio));
+	nameText1->setString(player1.name);
 	
-	p2Name.emplace(ctx->assets->getFont("ST-SimpleSquare"), "", 16*screenRatio);
-	p2Name->setFillColor(red);
-	//p2Name->setFillColor(sf::Color::Red);
-	p2Name->setPosition(sf::Vector2f(256.0*screenRatio,16.0*screenRatio));
-	p2Name->setString("COM");
+	nameText2.emplace(ctx->assets->getFont("ST-SimpleSquare"), "", 16*screenRatio);
+	nameText2->setFillColor(red);
+	nameText2->setPosition(sf::Vector2f(256.0*screenRatio,16.0*screenRatio));
+	nameText2->setString(player2.name);
 	
-	p1Score.emplace(ctx->assets->getFont("ST-SimpleSquare"), "", 16*screenRatio);
-	p1Score->setFillColor(blue);
-	//p1Score->setFillColor(sf::Color::Blue);
-	p1Score->setPosition(sf::Vector2f(16.0*screenRatio,40.0*screenRatio));
-	p1Score->setString("0");
+	scoreText1.emplace(ctx->assets->getFont("ST-SimpleSquare"), "", 16*screenRatio);
+	scoreText1->setFillColor(blue);
+	scoreText1->setPosition(sf::Vector2f(16.0*screenRatio,40.0*screenRatio));
+	scoreText1->setString(player1.getScore());
 	
-	p2Score.emplace(ctx->assets->getFont("ST-SimpleSquare"), "", 16*screenRatio);
-	p2Score->setFillColor(red);
-	//p2Score->setFillColor(sf::Color::Red);
-	p2Score->setPosition(sf::Vector2f(256.0*screenRatio,40.0*screenRatio));
-	p2Score->setString("0");
+	scoreText2.emplace(ctx->assets->getFont("ST-SimpleSquare"), "", 16*screenRatio);
+	scoreText2->setFillColor(red);
+	scoreText2->setPosition(sf::Vector2f(256.0*screenRatio,40.0*screenRatio));
+	scoreText2->setString(player2.getScore());
 }
 
 void AirHockeyGameState::tick() {
@@ -1192,10 +1210,10 @@ void AirHockeyGameState::tick() {
 void AirHockeyGameState::render(sf::RenderWindow& window) {
     window.clear();
 	
-	window.draw(*p1Name);
-	window.draw(*p1Score);
-	window.draw(*p2Name);
-	window.draw(*p2Score);
+	window.draw(*nameText1);
+	window.draw(*scoreText1);
+	window.draw(*nameText2);
+	window.draw(*scoreText2);
 	
     window.draw(*field);
     // decide drawing order
