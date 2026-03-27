@@ -10,6 +10,10 @@ cd /d "%~dp0"
 
 ::	This command only works on windows, a.k.a Matt and Briar's dev machines
 
+if not exist build (
+    mkdir build
+)
+
 g++ ^
 src\Game.cpp ^
 src\AssetManager.cpp ^
