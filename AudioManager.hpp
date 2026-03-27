@@ -14,9 +14,8 @@ class AudioManager {
         //Default constructor/destructor
         AudioManager();
 
-        //Audio play/stop/pause
+        //Audio play
         void playSound(const sf::SoundBuffer &sound);
-        void stopSound(const sf::SoundBuffer &sound);
 
         //Specify USB device to send audio to, uses ALSA lib
         void playSound(sf::SoundBuffer &sound, short int speaker);
@@ -31,5 +30,5 @@ class AudioManager {
         bool h1 = false, h2 = false;
         int initPCM(const char *deviceName, short int speaker);
         void stopSound(snd_pcm_t *handler);
-        std::vector<sf::Sound> p_sounds = {};
+        sf::Sound *snd;
 };

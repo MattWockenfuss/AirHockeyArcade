@@ -38,103 +38,97 @@ AudioManager::AudioManager() {}
 
 //Plays sound using default device
 void AudioManager::playSound(const sf::SoundBuffer &sound) {
-    sf::Sound snd = sf::Sound(sound);
-    snd.play();
-    if (snd.getStatus() == sf::Sound::Status::Playing) {
-        std::cout << "Sound is playing!" << std::endl;
-    }
-    char p;
-    std::cin>>p;
+    snd = &sf::Sound(sound);
+    snd->play();
+    // if (snd.getStatus() == sf::Sound::Status::Playing) {
+    //     std::cout << "Sound is playing!" << std::endl;
+    // }
 }
 
-//Stops sound using default device
-void AudioManager::stopSound(const sf::SoundBuffer &sound) {
-    if (p_sounds.empty()) {
-        //If sound vector is empty...then do nothing
-        std::cerr << "No sound is playing!" << std::endl;
+// //Stops sound using default device
+// void AudioManager::stopSound(const sf::SoundBuffer &sound) {
+//     if (p_sounds.empty()) {
+//         //If sound vector is empty...then do nothing
+//         std::cerr << "No sound is playing!" << std::endl;
+//         return;
+//     }
+
+//     unsigned int index = 0;
+
+//     for (sf::Sound snd : p_sounds) {
+//         std::cout << p_sounds.size() << std::endl;
+//         std::cout << "Index: " << index << std::endl;
+//         std::cout << &snd << std::endl;
+//         //Clear p_sounds
+//         if (snd.getStatus() == sf::Sound::Status::Stopped) {
+//             std::cout << "Sound popped" << std::endl;
+//             std::swap(p_sounds[index], p_sounds.back());
+//             p_sounds.pop_back();
+//             index = 0;
+//             continue;
+//         }
+//         index++;
+//     }
+
+//     std::cout << p_sounds.empty() << std::endl;
+
+//     index = 0;
+    
+//     for (sf::Sound snd : p_sounds) {
+//         std::cout << "Index: " << index << std::endl;
+//         sf::SoundBuffer buff = snd.getBuffer();
+//         std::cout << "Buffer: " << &buff << std::endl;
+//         std::cout << "Sound: " << &sound << std::endl;
+//         if (&buff == &sound) {
+//             std::cout << "Buffer and sound are equal!" << std::endl;
+//             //Same buffer, stop sound
+//             if (snd.getStatus() == sf::Sound::Status::Playing) {
+//                 std::cout << "Sound is playing!" << std::endl;
+//                 //Stop playing music, perform efficient swap to pop sound object, then free memory
+//                 snd.stop();
+//                 std::swap(p_sounds[index], p_sounds.back());
+//                 p_sounds.pop_back();
+//                 snd.~Sound();
+//                 return;
+//             }
+//         }
+//         index++;
+//     }
+
+//     std::cerr << "Failed to stop playing sound!" << std::endl;
+// }
+
+void AudioManager::stopAllSound() {
+
+    if (h1 == false && h2 == false) {
+        std::cerr << "PCM devices are not initialized..." << std::endl;
+        return;
+    }
+    if (h1) {
+        snd_pcm_drop(handler_1);
+        snd_pcm_prepare(handler_1);
+        return;
+    }
+    if (h2) {
+        snd_pcm_drop(handler_2);
+        snd_pcm_prepare(handler_2);
         return;
     }
 
     unsigned int index = 0;
 
-    for (sf::Sound snd : p_sounds) {
-        std::cout << p_sounds.size() << std::endl;
-        std::cout << "Index: " << index << std::endl;
-        std::cout << &snd << std::endl;
-        //Clear p_sounds
-        if (snd.getStatus() == sf::Sound::Status::Stopped) {
-            std::cout << "Sound popped" << std::endl;
-            std::swap(p_sounds[index], p_sounds.back());
-            p_sounds.pop_back();
-            index = 0;
-            continue;
-        }
-        index++;
-    }
-
-    std::cout << p_sounds.empty() << std::endl;
-
-    index = 0;
-    
-    for (sf::Sound snd : p_sounds) {
-        std::cout << "Index: " << index << std::endl;
-        sf::SoundBuffer buff = snd.getBuffer();
-        std::cout << "Buffer: " << &buff << std::endl;
-        std::cout << "Sound: " << &sound << std::endl;
-        if (&buff == &sound) {
-            std::cout << "Buffer and sound are equal!" << std::endl;
-            //Same buffer, stop sound
-            if (snd.getStatus() == sf::Sound::Status::Playing) {
-                std::cout << "Sound is playing!" << std::endl;
-                //Stop playing music, perform efficient swap to pop sound object, then free memory
-                snd.stop();
-                std::swap(p_sounds[index], p_sounds.back());
-                p_sounds.pop_back();
-                snd.~Sound();
-                return;
-            }
-        }
-        index++;
-    }
-
-    std::cerr << "Failed to stop playing sound!" << std::endl;
-}
-
-void AudioManager::stopAllSound() {
-
-    if (p_sounds.empty()) {
-        //If sound vector is empty...then do nothing
-        std::cerr << "No sound is playing! Checking speakers..." << std::endl;
-        if (h1 == false && h2 == false) {
-            std::cerr << "PCM devices are not initialized..." << std::endl;
-            return;
-        }
-        if (h1) {
-            snd_pcm_drop(handler_1);
-            snd_pcm_prepare(handler_1);
-            return;
-        }
-        if (h2) {
-            snd_pcm_drop(handler_2);
-            snd_pcm_prepare(handler_2);
-            return;
-        }
-    }
-
-    unsigned int index = 0;
-
-    for (sf::Sound snd : p_sounds) {
-        //Same buffer, stop sound
-        if (snd.getStatus() == sf::Sound::Status::Playing) {
-            //Stop playing music, perform efficient swap to pop sound object, then free memory
-            snd.pause();
-            std::swap(p_sounds[index], p_sounds.back());
-            p_sounds.pop_back();
-            snd.~Sound();
-            return;
-        }
-        index++;
-    }
+    // for (sf::Sound snd : p_sounds) {
+    //     //Same buffer, stop sound
+    //     if (snd.getStatus() == sf::Sound::Status::Playing) {
+    //         //Stop playing music, perform efficient swap to pop sound object, then free memory
+    //         snd.pause();
+    //         std::swap(p_sounds[index], p_sounds.back());
+    //         p_sounds.pop_back();
+    //         snd.~Sound();
+    //         return;
+    //     }
+    //     index++;
+    // }
 
     std::cerr << "Failed to stop playing sound!" << std::endl;
 }
