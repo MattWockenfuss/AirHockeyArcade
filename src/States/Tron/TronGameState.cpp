@@ -42,6 +42,8 @@ void TronGameState::tick() {
     //change state
 	if(ctx->keys->F4){
 		ctx->gsm->requestStateChange(States::AirHockey);
+	}if(ctx->keys->F5){
+		ctx->gsm->requestStateChange(States::FruitNinja);
 	}
 	
 	//assume about 60 ticks per second, it can be slightly less, but good enough
