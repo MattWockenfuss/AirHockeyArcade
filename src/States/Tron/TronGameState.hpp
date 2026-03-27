@@ -14,16 +14,13 @@ class TronGameState : public State {
 
         void tick() override;
         void render(sf::RenderWindow& window) override;
-        
-        TronGameState();
-        ~TronGameState() override = default;
 
         Tron p1;
         Tron p2;
 
     private:
         long long sec;
-        std::optional<sf::Text> title_text, play_text, seconds_counter;
+        std::optional<sf::Text> title_text, play_text, seconds_counter, p1score, p2score;
 
         sf::RectangleShape square;
         float x, y;
