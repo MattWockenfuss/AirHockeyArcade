@@ -2,7 +2,7 @@
 #include <iostream>
 
 AssetManager::AssetManager(){
-    //assets
+    //Air Hockey Images
     loadAsset("FieldBack", "field_back.png");
     loadAsset("Field", "field.png");
 
@@ -67,6 +67,15 @@ AssetManager::AssetManager(){
     loadAsset("Puck9a", "puck_9a.png");
     loadAsset("Puck9b", "puck_9b.png");
     loadAsset("Puck9c", "puck_9c.png");
+	
+	// Fruit Ninja Images
+	loadAsset("background","background.png");
+	loadAsset("redGuy_tileSet","redGuy_tileSet.png");
+	loadAsset("greenGuy_tileSet","greenGuy_tileSet.png");
+	loadAsset("mellon_tileSet","mellon_tileSet.png");
+	loadAsset("apple_tileSet","apple_tileSet.png");
+	loadAsset("orange_tileSet","orange_tileSet.png");
+	loadAsset("lemon_tileSet","lemon_tileSet.png");
 
     //fonts
     loadFont("Consolas", "Consolas-Regular.ttf");   

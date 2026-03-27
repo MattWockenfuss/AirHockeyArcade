@@ -23,6 +23,7 @@ src\States\MenuState.cpp ^
 src\States\AirHockey\AirHockeyGameState.cpp ^
 src\States\Tron\TronGameState.cpp ^
 src\States\Tron\Tron.cpp ^
+src\States\FruitNinja\FruitNinjaGameState.cpp ^
 src\IO\KeyboardInput.cpp ^
 src\IO\InputManager.cpp ^
 src\KeyManager.cpp ^

@@ -483,8 +483,6 @@ std::string Player::getScore(){
 	return std::to_string(score);
 }
 
-AirHockeyGameState::AirHockeyGameState(){}
-
 void AirHockeyGameState::moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int iter){
     // field is 600x800
 	// puck
@@ -1044,22 +1042,16 @@ void AirHockeyGameState::init(Context* ctx){
     std::cout << "\nAirHockeyGameState Created!" << std::endl;
     std::cout << "Consolas" << &ctx -> assets -> getFont("Consolas") << std::endl;
     std::cout << "ST-SimpleSquare" << &ctx -> assets -> getFont("ST-SimpleSquare") << std::endl;
-	
-	sf::Clock clock;
-	sf::Time time;
-	float dt;
-	int counter = 0;
-	float timer = 0;
-
-    field.emplace(ctx -> assets -> getAsset("Field"));
-    fieldBack.emplace(ctx -> assets -> getAsset("FieldBack"));
-
+    
     float width = ctx -> window -> getSize().x;
     float height = ctx -> window -> getSize().y;
 	double screenRatio = width / 320.0;
     //screenRatio = 6;
     std::cout << "Screen Ratio: " << screenRatio << std::endl;
+	
+	field.emplace(ctx -> assets -> getAsset("Field"));
 	field -> setScale({(float) screenRatio, (float) screenRatio});
+    fieldBack.emplace(ctx -> assets -> getAsset("FieldBack"));
 	fieldBack -> setScale({(float) screenRatio, (float) screenRatio});
 	fieldBack -> setPosition({0.f, (float)(height - (8 * screenRatio))});
 	
@@ -1091,6 +1083,9 @@ void AirHockeyGameState::tick() {
 	//change state
 	if(ctx->keys->F3){
 		ctx->gsm->requestStateChange(States::Tron);
+	}
+	if(ctx->keys->F5){
+		ctx->gsm->requestStateChange(States::FruitNinja);
 	}
 	
     time = clock.restart();

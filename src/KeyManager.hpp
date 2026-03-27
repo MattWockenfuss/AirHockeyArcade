@@ -10,7 +10,7 @@ class KeyManager {
         void tick();
         void handleEvent(const sf::Event& event);
 
-        bool F1, F2, F3, F4, ESC;
+        bool F1, F2, F3, F4, F5, ESC;
 
         bool W, S, A, D;
         bool R, T, F, G;

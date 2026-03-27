@@ -2,6 +2,7 @@
 #include "MenuState.hpp"
 #include "AirHockey/AirHockeyGameState.hpp"
 #include "Tron/TronGameState.hpp"
+#include "FruitNinja/FruitNinjaGameState.hpp"
 
 #include "../Context.hpp"
 
@@ -36,6 +37,10 @@ void GameStateManager::changeState(){
             currentState = new TronGameState();
             currentState -> init(ctx);
             break;
+		case States::FruitNinja:
+			currentState = new FruitNinjaGameState();
+			currentState -> init(ctx);
+			break;
     }
 }
 

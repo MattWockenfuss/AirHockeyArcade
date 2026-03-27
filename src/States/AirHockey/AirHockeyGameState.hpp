@@ -49,9 +49,6 @@ class AirHockeyGameState : public State {
 		
         void tick() override;
         void render(sf::RenderWindow& window) override;
-		
-        AirHockeyGameState();
-        ~AirHockeyGameState() override = default;
     private:
 		Puck puck = Puck(300,400,0,0,50);
         Paddle p1paddle = Paddle(3,11,0,0,67);
