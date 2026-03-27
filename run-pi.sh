@@ -5,7 +5,7 @@ echo "Building for PiOS WITH GPIO access updated!"
 
 #compiling for the raspberry pi with GPIO access
 
-g++ src/Game.cpp 
+g++ src/Game.cpp \
 src/AssetManager.cpp \
 src/States/State.cpp \
 src/States/GameStateManager.cpp \
