@@ -1,7 +1,7 @@
 #include "GameStateManager.hpp"
 #include "MenuState.hpp"
 #include "AirHockey/AirHockeyGameState.hpp"
-#include "Snake/SnakeGameState.hpp"
+#include "Tron/TronGameState.hpp"
 
 #include "../Context.hpp"
 
@@ -32,8 +32,8 @@ void GameStateManager::changeState(){
             currentState = new AirHockeyGameState();
             currentState -> init(ctx);
             break;
-        case States::Snake:
-            currentState = new SnakeGameState();
+        case States::Tron:
+            currentState = new TronGameState();
             currentState -> init(ctx);
             break;
     }

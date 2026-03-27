@@ -5,21 +5,21 @@
 #include <chrono>
 #include <optional>
 
-#include "Snake.hpp"
+#include "Tron.hpp"
 
 
-class SnakeGameState : public State {
+class TronGameState : public State {
     public:
         void init(Context* ctx) override;
 
         void tick() override;
         void render(sf::RenderWindow& window) override;
         
-        SnakeGameState();
-        ~SnakeGameState() override = default;
+        TronGameState();
+        ~TronGameState() override = default;
 
-        Snake p1;
-        Snake p2;
+        Tron p1;
+        Tron p2;
 
     private:
         long long sec;

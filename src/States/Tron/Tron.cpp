@@ -1,4 +1,4 @@
-#include "Snake.hpp"
+#include "Tron.hpp"
 
 #include <iostream>
 
@@ -26,7 +26,7 @@ std::string directionToString(Direction d){
     return "North"; //should never reach here
 }
 
-Snake::Snake(Context* ctx, Direction facing, int length, int headX, int headY, int tailX, int tailY,sf::Color color, float yOffset){
+Tron::Tron(Context* ctx, Direction facing, int length, int headX, int headY, int tailX, int tailY,sf::Color color, float yOffset){
     this -> ctx = ctx;
     this -> facing = facing;
     this -> headX = headX;
@@ -42,9 +42,9 @@ Snake::Snake(Context* ctx, Direction facing, int length, int headX, int headY, i
 
 
 
-/*  Every snake has a queue of joints, ordered by distance from the head. The newest joints are at
+/*  Every Tron has a queue of joints, ordered by distance from the head. The newest joints are at
     the end of the linked list (tail of queue) and the oldest are in the back, or the head.                 */
-void Snake::enqueue(int x, int y){
+void Tron::enqueue(int x, int y){
     Joint* newJoint = new Joint{x, y};
     //okay so when we add a new joint, what are we doing?
     //we are adding it to the end, the tail
@@ -60,7 +60,7 @@ void Snake::enqueue(int x, int y){
         back = newJoint;
     }
 }
-void Snake::dequeue(){
+void Tron::dequeue(){
     if(front == nullptr) return;
     
     //move it up and delete
@@ -73,7 +73,7 @@ void Snake::dequeue(){
     return;
 }
 
-Joint Snake::peek(){
+Joint Tron::peek(){
     if(front == nullptr) return Joint{0, 0};
 
     Joint value = *front;
@@ -81,11 +81,11 @@ Joint Snake::peek(){
     return value;
 }
 
-//okay so how can the snake move?
+//okay so how can the Tron move?
 //every tick they move in the direction we are facing, we need to update the head and tail, and the joints list, possible dequeue
 
-void Snake::tick(){
-    //the snakes tick function, it updates its location and checks for collision
+void Tron::tick(){
+    //the Trons tick function, it updates its location and checks for collision
 
     //now lets get the input
     if(ctx -> input -> P1_Up) facing = Direction::North;
@@ -100,7 +100,7 @@ void Snake::tick(){
 
     move();
 }
-void Snake::render(sf::RenderWindow& window){
+void Tron::render(sf::RenderWindow& window){
     //okay how do we render?
     //render all of the squares from the tail to the head, changing directions at joints
     
@@ -112,12 +112,12 @@ void Snake::render(sf::RenderWindow& window){
 
     Joint* current = front;
     while(current != nullptr){
-        //so we are starting at the front of the queue, or the tail of the snake
+        //so we are starting at the front of the queue, or the tail of the Tron
         //for every joint, we want to loop between our current x and y to the location of the next joint
 
         //loop to the current joints x and y depending on direction
 
-        renderSnakeSegment(window, tx, ty, current -> x, current -> y);
+        renderTronSegment(window, tx, ty, current -> x, current -> y);
         
         tx = current -> x;
         ty = current -> y;
@@ -129,16 +129,16 @@ void Snake::render(sf::RenderWindow& window){
     //otherwise tx and ty are at the location of the last joint, so we want to loop to the head from there
     //okay so since we going to the head, we check facing direction
 
-    renderSnakeSegment(window, tx, ty, headX, headY);
+    renderTronSegment(window, tx, ty, headX, headY);
 
-    //next render the head of the snake!
+    //next render the head of the Tron!
     square.setFillColor(sf::Color::Magenta);
     square.setPosition({headX * squareWidth, headY * squareWidth});
     window.draw(square);
 
 
 
-    //  Next we are going to render the debug text for listing all of the information about the snake
+    //  Next we are going to render the debug text for listing all of the information about the Tron
     //  such as head and tail position, length, and joints list
 
     std::string debug = "Head: (" + std::to_string(headX) + ", " + std::to_string(headY) + ")\n" +
@@ -162,11 +162,11 @@ void Snake::render(sf::RenderWindow& window){
     window.draw(*text);
 }
 
-void Snake::renderSnakeSegment(sf::RenderWindow& window, int tx, int ty, int ex, int ey){
+void Tron::renderTronSegment(sf::RenderWindow& window, int tx, int ty, int ex, int ey){
     /*
-        This function renders a segment of the snake from (tx, ty) to (ex, ey), it is used for rendering the joints and head of the snake
+        This function renders a segment of the Tron from (tx, ty) to (ex, ey), it is used for rendering the joints and head of the Tron
         it does NOT render the square at ex, ey, as that is tx, ty of the next segment, this also means that we must
-        render the head of the snake separately after rendering all of the segments
+        render the head of the Tron separately after rendering all of the segments
 
         Notice the while loop stop when both Xs or Ys are equal
         'Keep looping while at least one coordinate is different, move in the direction of the difference'
@@ -192,10 +192,10 @@ void Snake::renderSnakeSegment(sf::RenderWindow& window, int tx, int ty, int ex,
 }
 
 
-void Snake::move(){
+void Tron::move(){
 
     /*
-            Okay how does the snake move? well depending on the direction they are facing, we need to update
+            Okay how does the Tron move? well depending on the direction they are facing, we need to update
             the coordinates of the head and tail as well as all of the joints
             If the tail is at a joint, then dequeue said joint.
 
@@ -243,7 +243,7 @@ void Snake::move(){
             else if(jy < tailY) tailY--;
         }
     }else{
-        std::cout << "Growing snake by 1!" << std::endl;
+        std::cout << "Growing Tron by 1!" << std::endl;
         //then we are growing, so we skip moving the tail, and just set growNextTick to false for the next tick
 
         growNextTick = false;

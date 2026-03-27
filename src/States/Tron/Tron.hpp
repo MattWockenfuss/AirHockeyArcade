@@ -16,10 +16,10 @@ struct Joint {
     Joint* next = nullptr;
 };
 
-struct Snake {
+struct Tron {
     public:
         sf::RectangleShape square;
-        float squareWidth = 96.0f;
+        float squareWidth = 16.0f;
 
         Direction facing, lastFacing;
         int headX, headY;
@@ -33,15 +33,15 @@ struct Snake {
         void tick();
         void render(sf::RenderWindow& window);
 
-        Snake() = default;
-        Snake(Context* ctx, Direction facing, int length, int headX, int headY, int tailX, int tailY, sf::Color color, float yOffset = 0.0f);
+        Tron() = default;
+        Tron(Context* ctx, Direction facing, int length, int headX, int headY, int tailX, int tailY, sf::Color color, float yOffset = 0.0f);
     private:
         Context* ctx;
         void enqueue(int x, int y);
         void dequeue();
         Joint peek();
 
-        void renderSnakeSegment(sf::RenderWindow& window, int tx, int ty, int ex, int ey);
+        void renderTronSegment(sf::RenderWindow& window, int tx, int ty, int ex, int ey);
 
         void move();
         void grow(int lengthToGrow);

@@ -1,4 +1,4 @@
-#include "SnakeGameState.hpp"
+#include "TronGameState.hpp"
 #include <iostream>
 #include <cmath>
 #include <sstream>
@@ -9,15 +9,15 @@
 #include "../GameStateManager.hpp"
 
 
-void SnakeGameState::init(Context* ctx){
+void TronGameState::init(Context* ctx){
     State::init(ctx);
 
-    title_text.emplace(ctx -> assets -> getFont("Consolas"), "Snake", 75);
+    title_text.emplace(ctx -> assets -> getFont("Consolas"), "Tron", 75);
     play_text.emplace(ctx -> assets -> getFont("SquareSansSerif"), "Insert Coin to Play!", 35);
     seconds_counter.emplace(ctx -> assets -> getFont("ST-SimpleSquare"), "", 40);
 
 
-    std::cout << "SnakeGameState Created!" << std::endl;
+    std::cout << "Tron Created!" << std::endl;
 
 
 	const sf::FloatRect titleRect = title_text -> getLocalBounds();
@@ -32,13 +32,13 @@ void SnakeGameState::init(Context* ctx){
     seconds_counter -> setOrigin(secondsRect.getCenter());
     seconds_counter -> setPosition(sf::Vector2f(ctx -> window -> getSize().x - 150.0f, 50.0f));
 
-    p1 = Snake(ctx, Direction::North, 5, 10, 10, 10, 15, sf::Color::Green);
-    p2 = Snake(ctx, Direction::East, 15, 20, 10, 20, 15, sf::Color::Red, 400.0f);
+    p1 = Tron(ctx, Direction::North, 5, 10, 10, 10, 15, sf::Color::Green);
+    p2 = Tron(ctx, Direction::East, 15, 20, 10, 20, 15, sf::Color::Red, 400.0f);
 
 
 }
 
-void SnakeGameState::tick() {
+void TronGameState::tick() {
     //change state
 	if(ctx->keys->F4){
 		ctx->gsm->requestStateChange(States::AirHockey);
@@ -55,7 +55,7 @@ void SnakeGameState::tick() {
 
 }
 
-void SnakeGameState::render(sf::RenderWindow& window) {
+void TronGameState::render(sf::RenderWindow& window) {
     //render for snake game state
     p1.render(window);
     p2.render(window);
@@ -67,4 +67,4 @@ void SnakeGameState::render(sf::RenderWindow& window) {
 }
 
 
-SnakeGameState::SnakeGameState(){}
+TronGameState::TronGameState(){}
