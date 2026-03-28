@@ -6,7 +6,8 @@
 
 
 Game::Game(){
-    ctx.window = &window;
+    ctx.p1window = &p1window;
+    ctx.p2window = &p2window;
     ctx.assets = &assetManager;
     ctx.keys = &keyManager;
     ctx.input = &input;
@@ -17,15 +18,31 @@ void Game::initialization(){
     ctx.gsm -> init(&ctx);
     ctx.input -> init(&ctx);
 
+    /*
+        SFML 3.0.2 does NOT support multiple windows in fullscreen, we have to set them as borderless and
+        position them manually. This is fine in the final build on the pi with a few manual tweaks, but
+        for development on all of our different machines it will be a pain in the ass.
+
+        If you wish to enable both windows to display, set the boolean to True
+    
+    
+    */
+    renderPlayer2 = false;
+
+
+    if(!renderPlayer2){
+        std::vector<sf::VideoMode> modes = sf::VideoMode::getFullscreenModes();
+        p1window.create(modes[0], "Arcade", sf::State::Fullscreen);
+    }else{
+        p1window.create(sf::VideoMode({1920, 1080}), "Player1", sf::Style::None);
+        p2window.create(sf::VideoMode({1920, 1080}), "Player2", sf::Style::None);
+        
+        p1window.setPosition({0, 0});
+        p2window.setPosition({-1920, 0});
+    }
 
 
 
-    //this function is called at the beginning of the game to create all of the objects that we will need
-    std::vector<sf::VideoMode> modes = sf::VideoMode::getFullscreenModes();
-	
-
-	//Chooses largest resolution and highest bpp, makes window fullscreen
-	window.create(modes[0], "Arcade", sf::State::Fullscreen);
 
     gsm.requestStateChange(States::Menu);
 }
@@ -39,33 +56,51 @@ void Game::start(){
 void Game::stop(){
     //called when we want to stop the game
     running = false;
-    window.close(); //SFML will close down window and its resources needed
+
+    //SFML will close down window and its resources needed
+    p1window.close();
+    if(renderPlayer2) p2window.close();
 }
 
 void Game::tick(){
     /*
         This loop processes all pending window events by repeatedly calling window.pollEvent(), which returns an std::optional containing 
         an event if one is available. For each event, it checks whether the event is of type sf::Event::Closed using the templated is<>()
-        function. If the user has clicked the window’s close button, it sets running to false, which causes the main game loop to exit cleanly.
+        function. If the user has clicked the window's close button, it sets running to false, which causes the main game loop to exit cleanly.
 
         window.pollEvent() returns a std::optional<sf::Event>, which means it may or may not contain an event. The loop only runs when the 
         optional actually contains an sf::Event, so inside the loop we know it is safe to access it. We use the dereference operator *event to 
         extract the actual sf::Event object from the optional so it can be passed to handleEvent.
 
-        Thess comment was written by ChatGPT
+        This comment was written by ChatGPT
     */
 
-    while (const std::optional event = window.pollEvent()) {
-        if (event -> is<sf::Event::Closed>()) {
+    ctx.keys -> tick();
+    
+
+    //process all of the events for both windows
+    while (const auto p1 = p1window.pollEvent()) {
+        if (p1 -> is<sf::Event::Closed>()) {
             running = false;
         }
-
-        keyManager.handleEvent(*event);
-
+        keyManager.handleEvent(*p1);
     }
-    ctx.keys -> tick();
-    if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> tick();
+    if(renderPlayer2){
+        while (const auto p2 = p2window.pollEvent()) {
+            if (p2 -> is<sf::Event::Closed>()) {
+                running = false;
+            }
+            keyManager.handleEvent(*p2);
+        }
+    }
+
+
     input.tick();
+
+
+    if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> tick();
+    
+
     if(gsm.pendingStateChange){
         gsm.changeState();
         gsm.pendingStateChange = false;
@@ -77,12 +112,18 @@ void Game::tick(){
 
 }
 void Game::render(){
-    window.clear();
+    p1window.clear();
+    if(renderPlayer2) p2window.clear();
 
-    gsm.getCurrentState() -> render(window);
-    input.render(window);
+    gsm.getCurrentState() -> p1render(p1window);
+    if(renderPlayer2) gsm.getCurrentState() -> p2render(p2window);
 
-    window.display();
+    //sure, display for both players for now
+    input.render(p1window);
+    if(renderPlayer2) input.render(p2window);
+
+    p1window.display();
+    if(renderPlayer2) p2window.display();
 }
 
 void Game::run(){

@@ -48,7 +48,8 @@ class AirHockeyGameState : public State {
         void init(Context* ctx) override;
 		
         void tick() override;
-        void render(sf::RenderWindow& window) override;
+        void p1render(sf::RenderWindow& p1window) override;
+        void p2render(sf::RenderWindow& p2window) override;
     private:
 		Puck puck = Puck(300,400,0,0,50);
         Paddle p1paddle = Paddle(3,11,0,0,67);

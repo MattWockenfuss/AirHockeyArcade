@@ -12,7 +12,8 @@ class InputManager;
 
 
 struct Context {
-    sf::RenderWindow*   window = nullptr;
+    sf::RenderWindow*   p1window = nullptr;
+    sf::RenderWindow*   p2window = nullptr;
     AssetManager*       assets = nullptr;
     KeyManager*         keys = nullptr;
     GameStateManager*   gsm = nullptr;
