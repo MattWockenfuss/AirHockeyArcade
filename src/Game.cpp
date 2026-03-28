@@ -24,8 +24,9 @@ void Game::initialization(){
         for development on all of our different machines it will be a pain in the ass.
 
         If you wish to enable both windows to display, set the boolean to True
-    
-    
+        This will create 2 separate windows, render both of them, with player2 being rendered exactly 1920 to the left
+        This works on my pc, but idk about u guys
+
     */
     renderPlayer2 = false;
 
