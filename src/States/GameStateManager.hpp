@@ -5,7 +5,7 @@
 class Context;
 
 enum class States {
-    Menu, AirHockey, Tron, FruitNinja
+    Menu, NameEntry, AirHockey, Tron, FruitNinja
 };
 
 class GameStateManager {

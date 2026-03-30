@@ -41,4 +41,35 @@ Now you’re in a situation where:
     and the compiler hasn’t reached the place where the type is fully defined yet.
 
 
+Okay so leaderboard? Usernames? 
+
+How do we want to do that? sqlite3 database to store names and highscores? Or just a text file?
+
+when do we ask the players to enter their names? after their game? ask? Or head of their game? It would be really nice if they could enter their names at the same time?
+we could have a separate game state and do it at the beginning of the game.
+
+Maybe we could have a separate game state for the leaderboard
+
+Im thinking we have a main menu screen, next after that we have a name enter screen, then the game selection screen, where they can pick a game, view the leaderboard, or exit.
+If they exit they go back to the main menu, which will have them reenter their name upon contining.
+
+Those names are used for all of the players, and every score is entered to the leaderboard? maybe ever winner is entered in the database?
+
+
+
+I like this, lets work on the name enter game state, then the leaderboard game state.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 */

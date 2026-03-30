@@ -21,14 +21,15 @@ void Game::initialization(){
     /*
         SFML 3.0.2 does NOT support multiple windows in fullscreen, we have to set them as borderless and
         position them manually. This is fine in the final build on the pi with a few manual tweaks, but
-        for development on all of our different machines it will be a pain in the ass.
+        for development on all of our different machines it will be a pain in the ass. It is also worth mentioning
+        that input is handling for each window separately, not a problem for our project.
 
         If you wish to enable both windows to display, set the boolean to True
         This will create 2 separate windows, render both of them, with player2 being rendered exactly 1920 to the left
         This works on my pc, but idk about u guys
 
     */
-    renderPlayer2 = false;
+    renderPlayer2 = true;
 
 
     if(!renderPlayer2){
@@ -45,7 +46,7 @@ void Game::initialization(){
 
 
 
-    gsm.requestStateChange(States::Menu);
+    gsm.requestStateChange(States::NameEntry);
 }
 
 
