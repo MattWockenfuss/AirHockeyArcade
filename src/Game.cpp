@@ -30,6 +30,7 @@ void Game::initialization(){
 
     */
     renderPlayer2 = false;
+    ctx.renderp2 = renderPlayer2;
 
 
     if(!renderPlayer2){

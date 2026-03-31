@@ -35,6 +35,11 @@ void NameEntryState::init(Context* ctx){
         have a flashing text caret, if you arent ready, it renders?
 
 
+        okay so both players have readied up, now what?
+        change game state to the game selection state, change text for instructions to nothing?
+        maybe just not have it render?
+
+
     
     */
 
@@ -210,7 +215,15 @@ void NameEntryState::tick() {
     p2prevRight = rightNow;
     p2prevEnter = nowEnter;
 
-
+    //either both players readied up, or only 1 and they readied up.
+    //also check for flag
+    if((p1ready && p2ready && !gameStartingFlag) || (p1ready && !ctx -> renderp2 && !gameStartingFlag)){
+        //then start the game
+        gameStartingFlag = true;
+        ctx -> gsm -> requestStateChange(States::AirHockey, 5.0f, 2.0f);
+        ctx -> p1name = this -> p1name;
+        ctx -> p2name = this -> p2name;
+    }
 
 }
 
@@ -364,11 +377,23 @@ void NameEntryState::p1render(sf::RenderWindow& p1window) {
         instructionsClock.restart();
     }
     if(instructionsVisible){
-        if(p1ready){
-            charLabel -> setString("Waiting for other players.");
+        if(ctx -> renderp2){
+            //there is 2 players
+            if(p1ready){
+                if(p2ready) charLabel -> setString("Starting...");
+                else charLabel -> setString("Waiting for other players.");
+            }else{
+                charLabel -> setString("PRESS 'READY' TO BEGIN");
+            }
         }else{
-            charLabel -> setString("PRESS 'READY' TO BEGIN");
+            //then single
+            if(p1ready){
+                charLabel -> setString("Starting...");
+            }else{
+                charLabel -> setString("PRESS 'READY' TO BEGIN");
+            }
         }
+
         charLabel -> setOrigin(charLabel -> getLocalBounds().getCenter()); //where we set its position is the center of the string/char
         charLabel -> setFillColor(sf::Color::Yellow);
         charLabel -> setPosition({width / 2.0f, height / 2 + ((1.0f / 2) * (6 * (squareWidth + gap)))});
