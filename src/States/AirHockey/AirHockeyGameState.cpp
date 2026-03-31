@@ -1080,14 +1080,6 @@ void AirHockeyGameState::init(Context* ctx){
 }
 
 void AirHockeyGameState::tick() {
-	//change state
-	if(ctx->keys->F3){
-		ctx->gsm->requestStateChange(States::Tron);
-	}
-	if(ctx->keys->F5){
-		ctx->gsm->requestStateChange(States::FruitNinja);
-	}
-	
     time = clock.restart();
     dt = time.asSeconds();
 

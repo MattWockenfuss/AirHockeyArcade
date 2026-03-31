@@ -53,17 +53,6 @@ void NameEntryState::tick() {
 
     //player 1 can go back to menu, and both players ready up.
 
-	if(ctx -> keys -> F3){
-        ctx -> gsm -> requestStateChange(States::Tron);
-    }
-    if(ctx -> keys -> F4){
-        ctx -> gsm -> requestStateChange(States::AirHockey);
-    }
-	if(ctx -> keys -> F5){
-        ctx -> gsm -> requestStateChange(States::FruitNinja);
-    }
-
-    
     /*
         Okay so this is edge detection, or really rising edge detection, because we are
         trying to capture the onPress. We keep track of the previous state and compare them. 
@@ -388,11 +377,11 @@ void NameEntryState::p1render(sf::RenderWindow& p1window) {
     }
 
     //Rendering Debug Keyboard coords
-    charLabel -> setOrigin({0.0f, 0.0f});
-    charLabel -> setString(std::to_string(p1x) + ", " + std::to_string(p1y));
-    charLabel -> setFillColor(sf::Color::Yellow);
-    charLabel -> setPosition({150.0f, 150.0f});
-    p1window.draw(*charLabel);
+    // charLabel -> setOrigin({0.0f, 0.0f});
+    // charLabel -> setString(std::to_string(p1x) + ", " + std::to_string(p1y));
+    // charLabel -> setFillColor(sf::Color::Yellow);
+    // charLabel -> setPosition({150.0f, 150.0f});
+    // p1window.draw(*charLabel);
 }
 
 void NameEntryState::p2render(sf::RenderWindow& p2window) {

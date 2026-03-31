@@ -29,7 +29,7 @@ void Game::initialization(){
         This works on my pc, but idk about u guys
 
     */
-    renderPlayer2 = true;
+    renderPlayer2 = false;
 
 
     if(!renderPlayer2){
@@ -46,7 +46,7 @@ void Game::initialization(){
 
 
 
-    gsm.requestStateChange(States::NameEntry);
+    gsm.requestStateChange(States::NameEntry, 0.0f, 4.0f);
 }
 
 
@@ -78,7 +78,7 @@ void Game::tick(){
     */
 
     ctx.keys -> tick();
-    
+    ctx.gsm -> tick();
 
     //process all of the events for both windows
     while (const auto p1 = p1window.pollEvent()) {
@@ -99,14 +99,23 @@ void Game::tick(){
 
     input.tick();
 
-
-    if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> tick();
-    
-
-    if(gsm.pendingStateChange){
-        gsm.changeState();
-        gsm.pendingStateChange = false;
+    //handle state changes
+    if(ctx.keys -> F3){
+        ctx.gsm -> requestStateChange(States::Tron, 2.0f, 2.0f);
     }
+    if(ctx.keys -> F4){
+        ctx.gsm -> requestStateChange(States::AirHockey, 2.0f, 2.0f);
+    }
+	if(ctx.keys -> F5){
+        ctx.gsm -> requestStateChange(States::FruitNinja, 10.0f, 10.0f);
+    }
+    
+    if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> tick();
+
+    // if(gsm.pendingStateChange){
+    //     gsm.changeState();
+    //     gsm.pendingStateChange = false;
+    // }
 
     if(ctx.keys -> ESC){
         running = false;
@@ -117,10 +126,18 @@ void Game::render(){
     p1window.clear();
     if(renderPlayer2) p2window.clear();
 
-    gsm.getCurrentState() -> p1render(p1window);
-    if(renderPlayer2) gsm.getCurrentState() -> p2render(p2window);
+    //render the current game state
+    if(gsm.getCurrentState() != nullptr){
+        gsm.getCurrentState() -> p1render(p1window);
+        if(renderPlayer2) gsm.getCurrentState() -> p2render(p2window);
+    }
 
-    //sure, display for both players for now
+
+    //render any transisitions if there are any
+    gsm.p1render(p1window);
+    if(renderPlayer2) gsm.p2render(p2window);
+
+    //render the input manager
     input.render(p1window);
     if(renderPlayer2) input.render(p2window);
 

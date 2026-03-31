@@ -75,15 +75,7 @@ void FruitNinjaGameState::init(Context* ctx){
 	std::cout<<"Sprites Created!"<<std::endl;
 }
 
-void FruitNinjaGameState::tick(){
-	//change state
-	if(ctx->keys->F3){
-		ctx->gsm->requestStateChange(States::Tron);
-	}
-	if(ctx->keys->F4){
-		ctx->gsm->requestStateChange(States::AirHockey);
-	}
-	
+void FruitNinjaGameState::tick(){	
 	time = clock.restart();
 	dt = time.asSeconds();
 	
