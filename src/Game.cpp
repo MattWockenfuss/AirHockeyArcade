@@ -47,7 +47,7 @@ void Game::initialization(){
 
 
 
-    gsm.requestStateChange(States::NameEntry, 0.0f, 2.0f);
+    gsm.requestStateChange(States::Idle, 0.0f, 2.0f);
 }
 
 
@@ -101,6 +101,9 @@ void Game::tick(){
     input.tick();
 
     //handle state changes
+	if(ctx.keys -> F2){
+		ctx.gsm -> requestStateChange(States::NameEntry, 1.5f, 1.5f);
+	}
     if(ctx.keys -> F3){
         ctx.gsm -> requestStateChange(States::Tron, 1.5f, 1.5f);
     }

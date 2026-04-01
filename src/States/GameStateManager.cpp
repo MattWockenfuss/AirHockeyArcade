@@ -1,6 +1,6 @@
 #include "GameStateManager.hpp"
 
-#include "MenuState.hpp"
+#include "IdleState.hpp"
 #include "AirHockey/AirHockeyGameState.hpp"
 #include "Tron/TronGameState.hpp"
 #include "FruitNinja/FruitNinjaGameState.hpp"
@@ -46,8 +46,8 @@ void GameStateManager::changeState(){
         currentState = nullptr;
     }
     switch(pendingState){
-        case States::Menu:
-            currentState = new MenuState();
+        case States::Idle:
+            currentState = new IdleState();
             currentState -> init(ctx);
             break;
         case States::AirHockey:

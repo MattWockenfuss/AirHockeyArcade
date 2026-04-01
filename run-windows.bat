@@ -19,7 +19,7 @@ src\Game.cpp ^
 src\AssetManager.cpp ^
 src\States\GameStateManager.cpp ^
 src\States\State.cpp ^
-src\States\MenuState.cpp ^
+src\States\IdleState.cpp ^
 src\States\NameEntryState.cpp ^
 src\States\AirHockey\AirHockeyGameState.cpp ^
 src\States\Tron\TronGameState.cpp ^
