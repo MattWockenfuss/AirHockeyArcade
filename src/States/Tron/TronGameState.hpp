@@ -13,7 +13,8 @@ class TronGameState : public State {
         void init(Context* ctx) override;
 
         void tick() override;
-        void render(sf::RenderWindow& window) override;
+        void p1render(sf::RenderWindow& p1window) override;
+        void p2render(sf::RenderWindow& p2window) override;
 
         Tron p1;
         Tron p2;

@@ -82,6 +82,7 @@ AssetManager::AssetManager(){
     loadFont("SquareSansSerif", "square_sans_serif_7.ttf");
     loadFont("ST-SimpleSquare", "ST-SimpleSquare.otf");
     loadFont("Technoid", "TECHNOID.TTF");
+    loadFont("ArcadeNormal", "ArcadeNormal-ZDZ.ttf");
 }
 
 sf::Texture& AssetManager::getAsset(std::string key){

@@ -50,8 +50,8 @@ void FruitNinjaGameState::init(Context* ctx){
     std::cout << "Consolas" << &ctx -> assets -> getFont("Consolas") << std::endl;
     std::cout << "ST-SimpleSquare" << &ctx -> assets -> getFont("ST-SimpleSquare") << std::endl;
 	
-	width = ctx -> window -> getSize().x;
-    height = ctx -> window -> getSize().y;
+	width = ctx -> p1window -> getSize().x;
+    height = ctx -> p1window -> getSize().y;
 	screenRatio = width / 320.0;
     //screenRatio = 6;
     std::cout << "Screen Ratio: " << screenRatio << std::endl;
@@ -75,15 +75,7 @@ void FruitNinjaGameState::init(Context* ctx){
 	std::cout<<"Sprites Created!"<<std::endl;
 }
 
-void FruitNinjaGameState::tick(){
-	//change state
-	if(ctx->keys->F3){
-		ctx->gsm->requestStateChange(States::Tron);
-	}
-	if(ctx->keys->F4){
-		ctx->gsm->requestStateChange(States::AirHockey);
-	}
-	
+void FruitNinjaGameState::tick(){	
 	time = clock.restart();
 	dt = time.asSeconds();
 	
@@ -245,14 +237,26 @@ void FruitNinjaGameState::tick(){
 	}
 }
 
-void FruitNinjaGameState::render(sf::RenderWindow& window){
-	window.clear();
+void FruitNinjaGameState::p1render(sf::RenderWindow& p1window){
+	p1window.clear();
 	// background
-	window.draw(*back);
+	p1window.draw(*back);
 	// fruit
 	for(int i = 0; i<fruits.size(); i++){
-		fruits[i]->draw(&window, screenRatio);
+		fruits[i]->draw(&p1window, screenRatio);
 	}
 	// guy
-	window.draw(*guy);
+	p1window.draw(*guy);
+}
+
+void FruitNinjaGameState::p2render(sf::RenderWindow& p2window){
+	p2window.clear();
+	// background
+	p2window.draw(*back);
+	// fruit
+	for(int i = 0; i<fruits.size(); i++){
+		fruits[i]->draw(&p2window, screenRatio);
+	}
+	// guy
+	p2window.draw(*guy);
 }

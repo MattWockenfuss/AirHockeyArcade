@@ -24,21 +24,21 @@ void TronGameState::init(Context* ctx){
 
 	const sf::FloatRect titleRect = title_text -> getLocalBounds();
 	title_text -> setOrigin(titleRect.getCenter());
-	title_text -> setPosition(sf::Vector2f(ctx -> window -> getSize().x / 2.0f, ctx -> window -> getSize().y / 5.0f));
+	title_text -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2.0f, ctx -> p1window -> getSize().y / 5.0f));
 
 	const sf::FloatRect textRect = play_text -> getLocalBounds();
 	play_text -> setOrigin(textRect.getCenter());
-	play_text -> setPosition(sf::Vector2f(ctx -> window -> getSize().x / 2.0f, ctx -> window -> getSize().y / 1.2f));
+	play_text -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2.0f, ctx -> p1window -> getSize().y / 1.2f));
     
     const sf::FloatRect secondsRect = seconds_counter -> getLocalBounds();
     seconds_counter -> setOrigin(secondsRect.getCenter());
-    seconds_counter -> setPosition(sf::Vector2f(ctx -> window -> getSize().x - 150.0f, 50.0f));
+    seconds_counter -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x - 150.0f, 50.0f));
 
     p1score -> setOrigin(secondsRect.getCenter());
-    p1score -> setPosition(sf::Vector2f(ctx -> window -> getSize().x - 250.0f, 50.0f));
+    p1score -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x - 250.0f, 50.0f));
 
     p2score -> setOrigin(secondsRect.getCenter());
-    p2score -> setPosition(sf::Vector2f(ctx -> window -> getSize().x - 250.0f, 150.0f));
+    p2score -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x - 250.0f, 150.0f));
 
 
     p1 = Tron(ctx, Direction::North, 5, 10, 10, 10, 15, sf::Color::Green);
@@ -48,13 +48,6 @@ void TronGameState::init(Context* ctx){
 }
 
 void TronGameState::tick() {
-    //change state
-	if(ctx->keys->F4){
-		ctx->gsm->requestStateChange(States::AirHockey);
-	}if(ctx->keys->F5){
-		ctx->gsm->requestStateChange(States::FruitNinja);
-	}
-	
 	//assume about 60 ticks per second, it can be slightly less, but good enough
 
     tickCount++;
@@ -69,18 +62,28 @@ void TronGameState::tick() {
 
 }
 
-void TronGameState::render(sf::RenderWindow& window) {
+void TronGameState::p1render(sf::RenderWindow& p1window) {
     //render for snake game state
-    p1.render(window);
-    p2.render(window);
-    
+    p1.render(p1window);
+    p2.render(p1window);
 
+    p1window.draw(*title_text);
+    p1window.draw(*play_text);
+    p1window.draw(*seconds_counter);
 
-    window.draw(*title_text);
-    window.draw(*play_text);
-    window.draw(*seconds_counter);
+    p1window.draw(*p1score);
+    p1window.draw(*p2score);
+}
 
-    window.draw(*p1score);
-    window.draw(*p2score);
+void TronGameState::p2render(sf::RenderWindow& p2window) {
+    //render for snake game state
+    p1.render(p2window);
+    p2.render(p2window);
 
+    p2window.draw(*title_text);
+    p2window.draw(*play_text);
+    p2window.draw(*seconds_counter);
+
+    p2window.draw(*p1score);
+    p2window.draw(*p2score);
 }

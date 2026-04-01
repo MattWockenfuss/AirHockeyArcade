@@ -1043,8 +1043,8 @@ void AirHockeyGameState::init(Context* ctx){
     std::cout << "Consolas" << &ctx -> assets -> getFont("Consolas") << std::endl;
     std::cout << "ST-SimpleSquare" << &ctx -> assets -> getFont("ST-SimpleSquare") << std::endl;
     
-    float width = ctx -> window -> getSize().x;
-    float height = ctx -> window -> getSize().y;
+    float width = ctx -> p1window -> getSize().x;
+    float height = ctx -> p1window -> getSize().y;
 	double screenRatio = width / 320.0;
     //screenRatio = 6;
     std::cout << "Screen Ratio: " << screenRatio << std::endl;
@@ -1080,14 +1080,6 @@ void AirHockeyGameState::init(Context* ctx){
 }
 
 void AirHockeyGameState::tick() {
-	//change state
-	if(ctx->keys->F3){
-		ctx->gsm->requestStateChange(States::Tron);
-	}
-	if(ctx->keys->F5){
-		ctx->gsm->requestStateChange(States::FruitNinja);
-	}
-	
     time = clock.restart();
     dt = time.asSeconds();
 
@@ -1230,50 +1222,98 @@ void AirHockeyGameState::tick() {
 	moveObjects(&puck, &p1paddle, &p2paddle, dt, 10);
 }
 
-void AirHockeyGameState::render(sf::RenderWindow& window) {
-    window.clear();
+void AirHockeyGameState::p1render(sf::RenderWindow& p1window) {
+    p1window.clear();
 	
-	window.draw(*nameText1);
-	window.draw(*scoreText1);
-	window.draw(*nameText2);
-	window.draw(*scoreText2);
+	p1window.draw(*nameText1);
+	p1window.draw(*scoreText1);
+	p1window.draw(*nameText2);
+	p1window.draw(*scoreText2);
 	
-    window.draw(*field);
+    p1window.draw(*field);
 	
 	if(kickoff>=0){
 		int num;
-		p2paddle.draw(&window);
+		p2paddle.draw(&p1window);
 		if(timer<1){
 			num = round(timer*2);
 			if(num%2==0)
-				puck.draw(&window);
+				puck.draw(&p1window);
 		}
 		if(timer<2){
 			num = round(timer*8);
 			if(num%2==0)
-				puck.draw(&window);
+				puck.draw(&p1window);
 		}
 		else{
 			num = round(timer*16);
 			if(num%2==0)
-				puck.draw(&window);
+				puck.draw(&p1window);
 		}
-		p1paddle.draw(&window);
+		p1paddle.draw(&p1window);
 	} else {
 		// decide drawing order
 		if(puck.y < p2paddle.y){
-			puck.draw(&window);
-			p2paddle.draw(&window);
-			p1paddle.draw(&window);
+			puck.draw(&p1window);
+			p2paddle.draw(&p1window);
+			p1paddle.draw(&p1window);
 		}else if(puck.y > p1paddle.y){
-			p2paddle.draw(&window);
-			p1paddle.draw(&window);
-			puck.draw(&window);
+			p2paddle.draw(&p1window);
+			p1paddle.draw(&p1window);
+			puck.draw(&p1window);
 		}else{
-			p2paddle.draw(&window);
-			puck.draw(&window);
-			p1paddle.draw(&window);
+			p2paddle.draw(&p1window);
+			puck.draw(&p1window);
+			p1paddle.draw(&p1window);
 		}
 	}
-    window.draw(*fieldBack); //this covers the wall closest to the player, so the pucks and paddles are correctly obscured from view
+    p1window.draw(*fieldBack); //this covers the wall closest to the player, so the pucks and paddles are correctly obscured from view
+}
+
+void AirHockeyGameState::p2render(sf::RenderWindow& p2window) {
+    p2window.clear();
+	
+	p2window.draw(*nameText1);
+	p2window.draw(*scoreText1);
+	p2window.draw(*nameText2);
+	p2window.draw(*scoreText2);
+	
+    p2window.draw(*field);
+	
+	if(kickoff>=0){
+		int num;
+		p2paddle.draw(&p2window);
+		if(timer<1){
+			num = round(timer*2);
+			if(num%2==0)
+				puck.draw(&p2window);
+		}
+		if(timer<2){
+			num = round(timer*8);
+			if(num%2==0)
+				puck.draw(&p2window);
+		}
+		else{
+			num = round(timer*16);
+			if(num%2==0)
+				puck.draw(&p2window);
+		}
+		p1paddle.draw(&p2window);
+	} else {
+		// decide drawing order
+		if(puck.y < p2paddle.y){
+			puck.draw(&p2window);
+			p2paddle.draw(&p2window);
+			p1paddle.draw(&p2window);
+		}else if(puck.y > p1paddle.y){
+			p2paddle.draw(&p2window);
+			p1paddle.draw(&p2window);
+			puck.draw(&p2window);
+		}else{
+			p2paddle.draw(&p2window);
+			puck.draw(&p2window);
+			p1paddle.draw(&p2window);
+		}
+	}
+    p2window.draw(*fieldBack); //this covers the wall closest to the player, so the pucks and paddles are correctly obscured from view
 }

@@ -24,15 +24,15 @@ void MenuState::init(Context* ctx){
 
 	const sf::FloatRect titleRect = title_text -> getLocalBounds();
 	title_text -> setOrigin(titleRect.getCenter());
-	title_text -> setPosition(sf::Vector2f(ctx -> window -> getSize().x / 2.0f, ctx -> window -> getSize().y / 5.0f));
+	title_text -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2.0f, ctx -> p1window -> getSize().y / 5.0f));
 
 	const sf::FloatRect textRect = play_text -> getLocalBounds();
 	play_text -> setOrigin(textRect.getCenter());
-	play_text -> setPosition(sf::Vector2f(ctx -> window -> getSize().x / 2.0f, ctx -> window -> getSize().y / 1.2f));
+	play_text -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2.0f, ctx -> p1window -> getSize().y / 1.2f));
     
     const sf::FloatRect secondsRect = seconds_counter -> getLocalBounds();
     seconds_counter -> setOrigin(secondsRect.getCenter());
-    seconds_counter -> setPosition(sf::Vector2f(ctx -> window -> getSize().x - 150.0f, 50.0f));
+    seconds_counter -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x - 150.0f, 50.0f));
     
 
 }
@@ -43,16 +43,6 @@ void MenuState::tick() {
     sec = std::chrono::duration_cast<std::chrono::seconds>(elapsed).count();
     seconds_counter -> setString(std::to_string(sec));
 
-	if(ctx -> keys -> F3){
-        ctx -> gsm -> requestStateChange(States::Tron);
-    }
-    if(ctx -> keys -> F4){
-        ctx -> gsm -> requestStateChange(States::AirHockey);
-    }
-	if(ctx -> keys -> F5){
-        ctx -> gsm -> requestStateChange(States::FruitNinja);
-    }
-
     // if ((sec = static_cast<unsigned int>(sec)) % 2 == 0) {
     //     ctx -> gpio -> P1A_LED.lastKnownValue = true;
     // }else{
@@ -60,17 +50,24 @@ void MenuState::tick() {
     // }
 }
 
-void MenuState::render(sf::RenderWindow& window) {
+void MenuState::p1render(sf::RenderWindow& p1window) {
     //render for menustate
-
-    
-
-
-    window.draw(*title_text);
-    window.draw(*seconds_counter);
+    p1window.draw(*title_text);
+    p1window.draw(*seconds_counter);
     
     
     if ((sec = static_cast<unsigned int>(sec)) % 2 == 0) {
-        window.draw(*play_text);
+        p1window.draw(*play_text);
+    }
+}
+
+void MenuState::p2render(sf::RenderWindow& p2window) {
+    //render for menustate
+    p2window.draw(*title_text);
+    p2window.draw(*seconds_counter);
+    
+    
+    if ((sec = static_cast<unsigned int>(sec)) % 2 == 0) {
+        p2window.draw(*play_text);
     }
 }

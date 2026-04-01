@@ -29,7 +29,8 @@ class FruitNinjaGameState : public State {
         void init(Context* ctx) override;
 		
         void tick() override;
-        void render(sf::RenderWindow& window) override;
+        void p1render(sf::RenderWindow& p1render) override;
+		void p2render(sf::RenderWindow& p2render) override;
     private:
 		// screen
 		float width, height;
