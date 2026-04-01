@@ -47,7 +47,7 @@ void Game::initialization(){
 
 
 
-    gsm.requestStateChange(States::NameEntry, 0.0f, 4.0f);
+    gsm.requestStateChange(States::NameEntry, 0.0f, 2.0f);
 }
 
 
@@ -102,13 +102,13 @@ void Game::tick(){
 
     //handle state changes
     if(ctx.keys -> F3){
-        ctx.gsm -> requestStateChange(States::Tron, 2.0f, 2.0f);
+        ctx.gsm -> requestStateChange(States::Tron, 1.5f, 1.5f);
     }
     if(ctx.keys -> F4){
-        ctx.gsm -> requestStateChange(States::AirHockey, 2.0f, 2.0f);
+        ctx.gsm -> requestStateChange(States::AirHockey, 1.5f, 1.5f);
     }
 	if(ctx.keys -> F5){
-        ctx.gsm -> requestStateChange(States::FruitNinja, 10.0f, 10.0f);
+        ctx.gsm -> requestStateChange(States::FruitNinja, 1.5f, 1.5f);
     }
     
     if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> tick();
