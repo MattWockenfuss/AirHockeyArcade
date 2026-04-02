@@ -1063,6 +1063,11 @@ void AirHockeyGameState::init(Context* ctx){
 	nameText1->setPosition(sf::Vector2f(16.0*screenRatio,16.0*screenRatio));
 	nameText1->setString(player1.name);
 	
+	//const sf::FloatRect titleRect = title_text -> getLocalBounds();
+	//title_text -> setOrigin(titleRect.getCenter());
+	//title_text -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2.0f, ctx -> p1window -> getSize().y / 3.0f));
+	
+	
 	nameText2.emplace(ctx->assets->getFont("ST-SimpleSquare"), "", 16*screenRatio);
 	nameText2->setFillColor(red);
 	nameText2->setPosition(sf::Vector2f(256.0*screenRatio,16.0*screenRatio));

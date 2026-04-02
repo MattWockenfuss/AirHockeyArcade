@@ -220,7 +220,7 @@ void NameEntryState::tick() {
     if((p1ready && p2ready && !gameStartingFlag) || (p1ready && !ctx -> renderp2 && !gameStartingFlag)){
         //then start the game
         gameStartingFlag = true;
-        ctx -> gsm -> requestStateChange(States::AirHockey, 5.0f, 2.0f);
+        ctx -> gsm -> requestStateChange(States::GameSelect, 3.0f, 1.5f);
         ctx -> p1name = this -> p1name;
         ctx -> p2name = this -> p2name;
     }

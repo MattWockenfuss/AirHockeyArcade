@@ -8,13 +8,14 @@ class Context;
 
 
 enum class States {
-    Idle, NameEntry, AirHockey, Tron, FruitNinja
+    Idle, NameEntry, GameSelect, AirHockey, Tron, FruitNinja
 };
 
 inline const char* stateToString(States s){
     switch (s){
         case States::Idle: return "Idle";
         case States::NameEntry: return "NameEntry";
+		case States::GameSelect: return "GameSelect";
         case States::AirHockey: return "AirHockey";
         case States::Tron: return "Tron";
         case States::FruitNinja: return "FruitNinja";

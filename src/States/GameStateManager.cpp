@@ -5,6 +5,7 @@
 #include "Tron/TronGameState.hpp"
 #include "FruitNinja/FruitNinjaGameState.hpp"
 #include "NameEntryState.hpp"
+#include "GameSelect/GameSelectState.hpp"
 
 #include "../Context.hpp"
 #include "../AssetManager.hpp"
@@ -64,6 +65,10 @@ void GameStateManager::changeState(){
 			break;
         case States::NameEntry:
 			currentState = new NameEntryState();
+			currentState -> init(ctx);
+			break;
+		case States::GameSelect:
+			currentState = new GameSelectState();
 			currentState -> init(ctx);
 			break;
     }
