@@ -395,14 +395,11 @@ void puckFriction(double *vx, double *vy, float dt){
     double v;
     double angle;
     double fric;
-
-
+	
     //BRIAR HAD THIS AT 4000
 	double fricConst = 4000; // the larger this is, the lower the friction
+    double speedConst = 930; // speed so that the puck travels across the diagonal of the field in 1s
 	
-    
-    
-    double speedConst = 930;
     // change velocity
     if(*vx == 0){
 		fric = ((dt * *vy) / fricConst) * (*vy > 0 ? -1:1) + 1; // scale friction based on dt and velocity
@@ -450,16 +447,12 @@ void paddleFriction(Paddle* paddle, float dt){
 	double v;
 	double angle;
     double acc;
-    double accConst = 1000; // scaled for average friction value of 0.99 // average dt seems to be around 0.0025
 	double fric;
-
-    //Briar HAD THIS AT 55
-	double fricConst = 55; // the larger this is, the lower the friction
+    double accConst = 1500; // scaled for average friction value of 0.99 // average dt seems to be around 0.0025
+    double fricConst = 70; // the larger this is, the lower the friction
+    double jitterConst = 100*dt; // the smaller this is, the more jittering // feels good at 0.01 for 2000fps, and 1 for 60fps // roughly equates to 60*dt
 	
-    
-    double jitterConst = 58*dt; // the smaller this is, the more jittering // feels good at 0.01 for 2000fps, and 1 for 60fps // roughly equates to 58*dt
 	// change velocity
-	
 	// xACC
 	acc = ((xPos * 100) - x) * accConst * dt;
 	vx += acc;
