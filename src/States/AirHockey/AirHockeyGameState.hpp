@@ -14,7 +14,8 @@ struct Puck {
 
         Puck(double x, double y, double vx, double vy, double diam);
         int getIndex(double x, double y, double diam);
-        void draw(sf::RenderWindow* window);
+        void draw1(sf::RenderWindow* window1);
+        void draw2(sf::RenderWindow* window2);
 		void setKickoff(int type);
 
     private:
@@ -28,7 +29,8 @@ struct Paddle {
 
         Paddle(int xPos, int yPos, double vx, double vy, double diam);
         int getIndex(double x, double y, double diam);
-        void draw(sf::RenderWindow* window);
+        void draw1(sf::RenderWindow* window1);
+        void draw2(sf::RenderWindow* window2);
 
     private:
         sf::Texture paddles[18];
@@ -40,7 +42,8 @@ struct Player {
 		int score;
 		
 		Player(std::string name);
-		std::string getScore();
+		void draw1(sf::RenderWindow* window1, sf::Font font);
+		void draw2(sf::RenderWindow* window2, sf::Font font);
 };
 
 class AirHockeyGameState : public State {
@@ -58,7 +61,8 @@ class AirHockeyGameState : public State {
 		Player player1 = Player("PLR");
 		Player player2 = Player("COM");
 		
-		std::optional<sf::Text> nameText1, nameText2, scoreText1, scoreText2;
+		//std::optional<sf::Text> nameText1, nameText2, scoreText1, scoreText2;
+		//sf::FloatRect textRect;
 		
         std::optional<sf::Sprite> field;
         std::optional<sf::Sprite> fieldBack;

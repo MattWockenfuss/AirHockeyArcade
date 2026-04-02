@@ -170,13 +170,13 @@ int Puck::getIndex(double x, double y, double diam) {
         return 27;
     return 26; // puck 9b
 }
-void Puck::draw(sf::RenderWindow* window) {
+void Puck::draw1(sf::RenderWindow* window1) {
     int index;
     double xOffset;
     double yOffset;
     double screenX;
     double screenY;
-    double screenRatio = (double)(window -> getSize().x) / 320.0;
+    double screenRatio = (double)(window1 -> getSize().x) / 320.0;
     
     index = getIndex(x, y, diam);
     xOffset = (pucks[index].getSize().x / 2) * screenRatio;
@@ -189,13 +189,43 @@ void Puck::draw(sf::RenderWindow* window) {
     if(index > 24)
         yOffset += screenRatio;
     
-    screenX = getScreenX(x, y, window -> getSize().x);
-    screenY = getScreenY(y, window -> getSize().y);
+    screenX = getScreenX(x, y, window1 -> getSize().x);
+    screenY = getScreenY(y, window1 -> getSize().y);
+	
     sf::Sprite sprite(pucks[index]);
-
     sprite.setPosition({(float)(screenX - xOffset), (float)(screenY - yOffset)});
     sprite.setScale({(float) screenRatio, (float) screenRatio});
-    window -> draw(sprite);
+    window1 -> draw(sprite);
+}
+void Puck::draw2(sf::RenderWindow* window2) {
+    int index;
+	double x_, y_;
+    double xOffset;
+    double yOffset;
+    double screenX;
+    double screenY;
+    double screenRatio = (double)(window2 -> getSize().x) / 320.0;
+    
+	x_ = 600-x;
+	y_ = 800-y;
+    index = getIndex(x_, y_, diam);
+    xOffset = (pucks[index].getSize().x / 2) * screenRatio;
+    yOffset = (pucks[index].getSize().y / 2) * screenRatio;
+    // as pucks get closer, you see their thickness, their offset needs to be adjusted so they are still drawn at the correct location
+    if(index > 12)
+        yOffset += screenRatio;
+    if(index > 21)
+        yOffset += screenRatio;
+    if(index > 24)
+        yOffset += screenRatio;
+    
+    screenX = getScreenX(x_, y_, window2 -> getSize().x);
+    screenY = getScreenY(y_, window2 -> getSize().y);
+	
+    sf::Sprite sprite(pucks[index]);
+    sprite.setPosition({(float)(screenX - xOffset), (float)(screenY - yOffset)});
+    sprite.setScale({(float) screenRatio, (float) screenRatio});
+    window2 -> draw(sprite);
 }
 void Puck::setKickoff(int type){
 	double pi = 3.1415926;
@@ -302,15 +332,15 @@ int Paddle::getIndex(double x, double y, double diam){
         return 17;
     return 16; // paddle 6b
 }
-void Paddle::draw(sf::RenderWindow* window){
+void Paddle::draw1(sf::RenderWindow* window1){
     int index;
     double xOffset;
     double yOffset;
     double screenX;
     double screenY;
-    double screenRatio = (double)(window -> getSize().x) / 320.0;
+    double screenRatio = (double)(window1 -> getSize().x) / 320.0;
     
-    index = getIndex(x, y, diam);
+	index = getIndex(x, y, diam);
     xOffset = (paddles[index].getSize().x/2)*screenRatio;
     yOffset = (paddles[index].getSize().y/2)*screenRatio;
     // as paddles get closer, you see their thickness, their offset needs to be adjusted so they are still drawn at the correct location
@@ -321,15 +351,43 @@ void Paddle::draw(sf::RenderWindow* window){
     if(index>24)
         yOffset += screenRatio;
     
-    screenX = getScreenX(x, y, window -> getSize().x);
-    screenY = getScreenY(y, window -> getSize().y);
+    screenX = getScreenX(x, y, window1 -> getSize().x);
+    screenY = getScreenY(y, window1 -> getSize().y);
     
     sf::Sprite sprite(paddles[index]);
-    //&sprite.setTexture(paddles[index], true); // true to reset the sprite rectangle to the size of the new texture
-
     sprite.setPosition({(float)(screenX - xOffset), (float)(screenY - yOffset)});
     sprite.setScale({(float) screenRatio, (float) screenRatio});
-    window -> draw(sprite);
+    window1 -> draw(sprite);
+}
+void Paddle::draw2(sf::RenderWindow* window2){
+	int index;
+	double x_, y_;
+    double xOffset;
+    double yOffset;
+    double screenX;
+    double screenY;
+    double screenRatio = (double)(window2 -> getSize().x) / 320.0;
+    
+	x_ = 600-x;
+	y_ = 800-y;
+	index = getIndex(x_, y_, diam);
+    xOffset = (paddles[index].getSize().x/2)*screenRatio;
+    yOffset = (paddles[index].getSize().y/2)*screenRatio;
+    // as paddles get closer, you see their thickness, their offset needs to be adjusted so they are still drawn at the correct location
+    if(index>12)
+        yOffset += screenRatio;
+    if(index>21)
+        yOffset += screenRatio;
+    if(index>24)
+        yOffset += screenRatio;
+    
+    screenX = getScreenX(x_, y_, window2 -> getSize().x);
+    screenY = getScreenY(y_, window2 -> getSize().y);
+    
+    sf::Sprite sprite(paddles[index]);
+    sprite.setPosition({(float)(screenX - xOffset), (float)(screenY - yOffset)});
+    sprite.setScale({(float) screenRatio, (float) screenRatio});
+    window2 -> draw(sprite);
 }
 
 void puckFriction(double *vx, double *vy, float dt){
@@ -479,8 +537,39 @@ Player::Player(std::string name){
 	this->name = name;
 	this->score = 0;
 }
-std::string Player::getScore(){
-	return std::to_string(score);
+void Player::draw1(sf::RenderWindow* window1, sf::Font font){
+	double screenRatio = (double)(window1 -> getSize().x) / 320.0;
+	sf::Color blue(111,99,255);
+	//sf::Color red(223,0,0);
+	
+	sf::Text text(font, name, 16*screenRatio);
+	text.setFillColor(blue);
+	sf::FloatRect rect = text.getLocalBounds();
+	text.setOrigin(sf::Vector2f( rect.getCenter().x, 0)); // centered horizontally, top-bounded
+	text.setPosition(sf::Vector2f(48.0*screenRatio , 16.0*screenRatio));
+	window1 -> draw(text);
+	
+	text.setString(std::to_string(score));
+	text.setOrigin(sf::Vector2f(0,0));
+	text.setPosition(sf::Vector2f(48*screenRatio - rect.getCenter().x, 40*screenRatio));
+	window1 -> draw(text);
+}
+void Player::draw2(sf::RenderWindow* window2, sf::Font font){
+	double screenRatio = (double)(window2 -> getSize().x) / 320.0;
+	//sf::Color blue(111,99,255);
+	sf::Color red(223,0,0);
+	
+	sf::Text text(font, name, 16*screenRatio);
+	text.setFillColor(red);
+	sf::FloatRect rect = text.getLocalBounds();
+	text.setOrigin(sf::Vector2f( rect.getCenter().x, 0)); // centered horizontally, top-bounded
+	text.setPosition(sf::Vector2f(272.0*screenRatio , 16.0*screenRatio));
+	window2 -> draw(text);
+	
+	text.setString(std::to_string(score));
+	text.setOrigin(sf::Vector2f(0,0));
+	text.setPosition(sf::Vector2f(272*screenRatio - rect.getCenter().x, 40*screenRatio));
+	window2 -> draw(text);
 }
 
 void AirHockeyGameState::moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int iter){
@@ -570,12 +659,10 @@ void AirHockeyGameState::moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle
 		if(pk_y_<0-pk_diam/2 || pk_y_>800+pk_diam/2){ // the puck is in the goal
 			if(pk_y_<0){ // give plr 1 the goal
 				player1.score++;
-				scoreText1->setString(player1.getScore());
 				kickoff = 1;
 			}
 			else{ // give plr 2 the goal
 				player2.score++;
-				scoreText2->setString(player2.getScore());
 				kickoff = 2;
 			}
 			pk_x_ = 300;
@@ -1056,32 +1143,10 @@ void AirHockeyGameState::init(Context* ctx){
 	fieldBack -> setPosition({0.f, (float)(height - (8 * screenRatio))});
 	
 	// text
-	sf::Color blue(111,99,255);
-	sf::Color red(223,0,0);
-	nameText1.emplace(ctx->assets->getFont("ST-SimpleSquare"), "", 16*screenRatio);
-	nameText1->setFillColor(blue);
-	nameText1->setPosition(sf::Vector2f(16.0*screenRatio,16.0*screenRatio));
-	nameText1->setString(player1.name);
-	
-	//const sf::FloatRect titleRect = title_text -> getLocalBounds();
-	//title_text -> setOrigin(titleRect.getCenter());
-	//title_text -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2.0f, ctx -> p1window -> getSize().y / 3.0f));
-	
-	
-	nameText2.emplace(ctx->assets->getFont("ST-SimpleSquare"), "", 16*screenRatio);
-	nameText2->setFillColor(red);
-	nameText2->setPosition(sf::Vector2f(256.0*screenRatio,16.0*screenRatio));
-	nameText2->setString(player2.name);
-	
-	scoreText1.emplace(ctx->assets->getFont("ST-SimpleSquare"), "", 16*screenRatio);
-	scoreText1->setFillColor(blue);
-	scoreText1->setPosition(sf::Vector2f(16.0*screenRatio,40.0*screenRatio));
-	scoreText1->setString(player1.getScore());
-	
-	scoreText2.emplace(ctx->assets->getFont("ST-SimpleSquare"), "", 16*screenRatio);
-	scoreText2->setFillColor(red);
-	scoreText2->setPosition(sf::Vector2f(256.0*screenRatio,40.0*screenRatio));
-	scoreText2->setString(player2.getScore());
+	if(ctx -> p1name != "") // set player name while making sure the placeholder is not removed if necessary
+		player1.name = ctx->p1name;
+	if(ctx -> p2name != "")
+		player2.name = ctx->p2name;
 }
 
 void AirHockeyGameState::tick() {
@@ -1179,32 +1244,32 @@ void AirHockeyGameState::tick() {
         Right = false;
     }
     if (ctx -> input -> P2_Up && !W){
-        if(p2paddle.yPos>=2)
-            p2paddle.yPos -= 1;
+		if(p2paddle.yPos<=2)
+            p2paddle.yPos += 1;
         W = true;
     }
     if (!ctx -> input -> P2_Up && W){
         W = false;
     }
     if (ctx -> input -> P2_Down && !S){
-        if(p2paddle.yPos<=2)
-            p2paddle.yPos += 1;
+        if(p2paddle.yPos>=2)
+            p2paddle.yPos -= 1;
         S = true;
     }
     if (!ctx -> input -> P2_Down && S){
         S = false;
     }
     if (ctx -> input -> P2_Left && !A){
-        if(p2paddle.xPos>=2)
-            p2paddle.xPos -= 1;
+		if(p2paddle.xPos<=4)
+            p2paddle.xPos += 1;
         A = true;
     }
     if (!ctx -> input -> P2_Left && A){
         A = false;
     }
     if (ctx -> input -> P2_Right && !D){
-        if(p2paddle.xPos<=4)
-            p2paddle.xPos += 1;
+        if(p2paddle.xPos>=2)
+            p2paddle.xPos -= 1;
         D = true;
     }
     if (!ctx -> input -> P2_Right && D){
@@ -1230,46 +1295,44 @@ void AirHockeyGameState::tick() {
 void AirHockeyGameState::p1render(sf::RenderWindow& p1window) {
     p1window.clear();
 	
-	p1window.draw(*nameText1);
-	p1window.draw(*scoreText1);
-	p1window.draw(*nameText2);
-	p1window.draw(*scoreText2);
+	player1.draw1(&p1window, ctx->assets->getFont("ST-SimpleSquare"));
+	player2.draw2(&p1window, ctx->assets->getFont("ST-SimpleSquare"));
 	
     p1window.draw(*field);
 	
 	if(kickoff>=0){
 		int num;
-		p2paddle.draw(&p1window);
+		p2paddle.draw1(&p1window);
 		if(timer<1){
 			num = round(timer*2);
 			if(num%2==0)
-				puck.draw(&p1window);
+				puck.draw1(&p1window);
 		}
 		if(timer<2){
 			num = round(timer*8);
 			if(num%2==0)
-				puck.draw(&p1window);
+				puck.draw1(&p1window);
 		}
 		else{
 			num = round(timer*16);
 			if(num%2==0)
-				puck.draw(&p1window);
+				puck.draw1(&p1window);
 		}
-		p1paddle.draw(&p1window);
+		p1paddle.draw1(&p1window);
 	} else {
 		// decide drawing order
 		if(puck.y < p2paddle.y){
-			puck.draw(&p1window);
-			p2paddle.draw(&p1window);
-			p1paddle.draw(&p1window);
+			puck.draw1(&p1window);
+			p2paddle.draw1(&p1window);
+			p1paddle.draw1(&p1window);
 		}else if(puck.y > p1paddle.y){
-			p2paddle.draw(&p1window);
-			p1paddle.draw(&p1window);
-			puck.draw(&p1window);
+			p2paddle.draw1(&p1window);
+			p1paddle.draw1(&p1window);
+			puck.draw1(&p1window);
 		}else{
-			p2paddle.draw(&p1window);
-			puck.draw(&p1window);
-			p1paddle.draw(&p1window);
+			p2paddle.draw1(&p1window);
+			puck.draw1(&p1window);
+			p1paddle.draw1(&p1window);
 		}
 	}
     p1window.draw(*fieldBack); //this covers the wall closest to the player, so the pucks and paddles are correctly obscured from view
@@ -1278,46 +1341,44 @@ void AirHockeyGameState::p1render(sf::RenderWindow& p1window) {
 void AirHockeyGameState::p2render(sf::RenderWindow& p2window) {
     p2window.clear();
 	
-	p2window.draw(*nameText1);
-	p2window.draw(*scoreText1);
-	p2window.draw(*nameText2);
-	p2window.draw(*scoreText2);
+	player1.draw2(&p2window, ctx->assets->getFont("ST-SimpleSquare"));
+	player2.draw1(&p2window, ctx->assets->getFont("ST-SimpleSquare"));
 	
     p2window.draw(*field);
 	
 	if(kickoff>=0){
 		int num;
-		p2paddle.draw(&p2window);
+		p2paddle.draw2(&p2window);
 		if(timer<1){
 			num = round(timer*2);
 			if(num%2==0)
-				puck.draw(&p2window);
+				puck.draw2(&p2window);
 		}
 		if(timer<2){
 			num = round(timer*8);
 			if(num%2==0)
-				puck.draw(&p2window);
+				puck.draw2(&p2window);
 		}
 		else{
 			num = round(timer*16);
 			if(num%2==0)
-				puck.draw(&p2window);
+				puck.draw2(&p2window);
 		}
-		p1paddle.draw(&p2window);
+		p1paddle.draw2(&p2window);
 	} else {
 		// decide drawing order
 		if(puck.y < p2paddle.y){
-			puck.draw(&p2window);
-			p2paddle.draw(&p2window);
-			p1paddle.draw(&p2window);
+			puck.draw2(&p2window);
+			p2paddle.draw2(&p2window);
+			p1paddle.draw2(&p2window);
 		}else if(puck.y > p1paddle.y){
-			p2paddle.draw(&p2window);
-			p1paddle.draw(&p2window);
-			puck.draw(&p2window);
+			p2paddle.draw2(&p2window);
+			p1paddle.draw2(&p2window);
+			puck.draw2(&p2window);
 		}else{
-			p2paddle.draw(&p2window);
-			puck.draw(&p2window);
-			p1paddle.draw(&p2window);
+			p2paddle.draw2(&p2window);
+			puck.draw2(&p2window);
+			p1paddle.draw2(&p2window);
 		}
 	}
     p2window.draw(*fieldBack); //this covers the wall closest to the player, so the pucks and paddles are correctly obscured from view
