@@ -760,8 +760,14 @@ void AirHockeyGameState::moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle
 			difVX = pd1_vx;
 			difVY = pd1_vy;
 			// we don't bother changing paddle velocity because it won't be used in the calculations
-			pk_vx -= difVX;
-			pk_vy -= difVY;
+			if(pk_vx==difVX && pk_vy==difVY){ // if *SOMEHOW* the paddle and puck collide with the exact same velocities, the collision will not be resolved and the puck will be left colliding with the paddle in an infinite loop
+				pk_vx -= 0.99*difVX;
+				pk_vy -= 0.99*difVY;
+			}
+			else{
+				pk_vx -= difVX;
+				pk_vy -= difVY;
+			}
 			// we now have a reference frame where the paddle is not moving and the puck is moving into the paddle
 			// we need the puck to bounce off of the tanget of the paddle as if it is a wall
 			//find the angle with respect to the x axis of the line passing through both objects' centers
