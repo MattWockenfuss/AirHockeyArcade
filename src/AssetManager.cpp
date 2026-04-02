@@ -81,6 +81,8 @@ AssetManager::AssetManager(){
 	loadAsset("AirHockeyIcon","AirHockeyIcon.png");
 	loadAsset("CoffeeIcon","CoffeeIcon.png");
 	loadAsset("LogoIcon","LogoIcon.png");
+	loadAsset("LeaderboardIcon","LeaderboardIcon.png");
+	loadAsset("ExitIcon","ExitIcon.png");
 	loadAsset("gameSelectArrow_L1","gameSelectArrow_L1.png");
 	loadAsset("gameSelectArrow_L2","gameSelectArrow_L2.png");
 	loadAsset("gameSelectArrow_R1","gameSelectArrow_R1.png");

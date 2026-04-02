@@ -52,7 +52,7 @@ void GameSelectState::init(Context* ctx){
 	State::init(ctx);
 	
 	// debugging
-    std::cout << "\nAirHockeyGameState Created!" << std::endl;
+    std::cout << "\nGame Select State Created!" << std::endl;
 	
 	// screen size
 	width = ctx -> p1window -> getSize().x;
@@ -66,6 +66,8 @@ void GameSelectState::init(Context* ctx){
 	gameOptions.push_back( GameOption("Air Hockey", "Play first to 11 in this arcade recreation of your favorite game!", ctx->assets->getAsset("AirHockeyIcon"), sf::Color(19,0,223), sf::Color(155,0,0) ));
 	gameOptions.push_back( GameOption("Dunkin Coffee", "Drink Dunkin! It can't be that shitty!", ctx->assets->getAsset("CoffeeIcon"), sf::Color(202,208,210), sf::Color(91,63,50) ));
 	gameOptions.push_back( GameOption("The Trees Have Eyes", "They're Watching They're Watching They're Watching They're Watching They're Watching They're Watching They're Watching", ctx->assets->getAsset("LogoIcon"), sf::Color(255,193,0), sf::Color(15,15,77) ));
+	gameOptions.push_back( GameOption("Leaderboard", "View top scores across all games!", ctx->assets->getAsset("LeaderboardIcon"), sf::Color(250,186,24), sf::Color(205,152,20) ));
+	gameOptions.push_back( GameOption("Exit", "Stop playing for now", ctx->assets->getAsset("ExitIcon"), sf::Color(214,0,0), sf::Color(155,0,0) ));
 	size = gameOptions.size();
 	
 	// textures
@@ -80,9 +82,6 @@ void GameSelectState::init(Context* ctx){
 	
 	// text
 	title.emplace(ctx->assets->getFont("ST-SimpleSquare"), "", 24*screenRatio);
-	//textRect = title -> getLocalBounds();
-	//title -> setOrigin(textRect.getCenter());
-	//title -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2.0f, ctx -> p1window -> getSize().y / 3.0f));
 	description.emplace(ctx->assets->getFont("SquareSansSerif"),"",7*screenRatio);
 	
 	// initialize the scrolling menu
@@ -93,30 +92,57 @@ void GameSelectState::tick(){
 	time = clock.restart();
 	dt = time.asSeconds();
 	lap_Arrow += dt;
-	
+	 // inputs
 	if(ctx -> input -> P1_Left && animate==0){ // animate forward
 		animate = 1;
 	}
 	if(ctx -> input -> P1_Right && animate==0){ // animate backward
 		animate = -1;
 	}
+	// enter games
+	if(ctx -> input -> P1A && animate==0){
+		switch(selection){
+			case 0: // air hockey
+				ctx -> gsm -> requestStateChange(States::AirHockey, 1.5f, 1.5f);
+				break;
+			case 1: // Tron
+				ctx -> gsm -> requestStateChange(States::Tron, 1.5f, 1.5f);
+				break;
+			case 2: // Fruit Ninja
+				ctx -> gsm -> requestStateChange(States::FruitNinja, 1.5f, 1.5f);
+				break;
+			case 3: // Leaderboard
+				//ctx -> gsm -> requestStateChange(States::Tron, 1.5f, 1.5f);
+				break;
+			case 4: // Exit
+				ctx -> gsm -> requestStateChange(States::Idle, 1.5f, 1.5f);
+				break;
+		}
+	}
 	
+	// animation logic
 	if(animate==1){
 		for(int i = 0; i<3; i++){
 			frames[i] += dt;
 			// wrap around
 			if(frames[i]>3)
 				frames[i] -= 3;
+			// change selection
+			if(frames[0]>=1 && frames[0]-dt<1){
+				frames[0] = 0.0;
+				frames[1] = 1.0;
+				frames[2] = 2.0;
+				selection -= 1;
+				if(selection<0)
+					selection = size-1;
+				indexes = getIndexes(selection,size);
+			}
 			// pause animation
-			if(frames[0]>=1.5 && frames[0]-dt<1.5){
+			if(frames[1]>=1.5 && frames[1]-dt<1.5){
 				frames[0] = 0.5;
 				frames[1] = 1.5;
 				frames[2] = 2.5;
 				animate = 0;
-				selection -= 1;
-				if(selection<0)
-					selection = 2;
-				indexes = getIndexes(selection,size);
 			}
 		}
 	}
@@ -126,16 +152,22 @@ void GameSelectState::tick(){
 			// wrap around
 			if(frames[i]<0)
 				frames[i] += 3;
+			// change selection
+			if(frames[2]<=2 && frames[2]+dt>2){
+				frames[0] = 1.0;
+				frames[1] = 2.0;
+				frames[2] = 3.0;
+				selection += 1;
+				if(selection>=size)
+					selection = 0;
+				indexes = getIndexes(selection,size);
+			}
 			// pause animation
-			if(frames[2]<=1.5 && frames[2]+dt>1.5){
+			if(frames[1]>=1.5 && frames[1]-dt<1.5){
 				frames[0] = 0.5;
 				frames[1] = 1.5;
 				frames[2] = 2.5;
 				animate = 0;
-				selection += 1;
-				if(selection>2)
-					selection = 0;
-				indexes = getIndexes(selection,size);
 			}
 		}
 	}

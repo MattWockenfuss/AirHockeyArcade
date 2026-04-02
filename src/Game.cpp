@@ -47,7 +47,7 @@ void Game::initialization(){
 
 
 
-    gsm.requestStateChange(States::Idle, 0.0f, 2.0f);
+    gsm.requestStateChange(States::Idle, 0.0f, 1.5f);
 }
 
 
