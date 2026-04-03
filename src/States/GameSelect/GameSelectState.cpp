@@ -112,7 +112,7 @@ void GameSelectState::tick(){
 				ctx -> gsm -> requestStateChange(States::FruitNinja, 1.5f, 1.5f);
 				break;
 			case 3: // Leaderboard
-				//ctx -> gsm -> requestStateChange(States::Tron, 1.5f, 1.5f);
+				//ctx -> gsm -> requestStateChange(States::Leaderboard, 1.5f, 1.5f);
 				break;
 			case 4: // Exit
 				ctx -> gsm -> requestStateChange(States::Idle, 1.5f, 1.5f);

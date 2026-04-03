@@ -662,6 +662,10 @@ void AirHockeyGameState::moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle
 			pk_y_ = 400;
 			pk_vx = 0;
 			pk_vy = 0;
+			// end game
+			if(player1.score>=11 || player2.score>=11){
+				ctx -> gsm -> requestStateChange(States::GameSelect, 3.0f, 1.5f);
+			}
 			break;
 		}
 		
