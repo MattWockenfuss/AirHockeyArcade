@@ -9,6 +9,7 @@ struct Fruit{
 	public:
 	int type;
 	int state;
+	std::string key;
 	double x;
 	double y;
 	int w;
@@ -22,6 +23,16 @@ struct Fruit{
 	Fruit(sf::Texture tileSet, int type, int state, int x, int y, int w, int h, double vx, double vy);
 	void move(float dt);
 	void draw(sf::RenderWindow* window, double screenRatio);
+};
+struct ScorePoint{
+	public:
+	std::string value;
+	int x;
+	int y;
+	int opacity;
+	
+	ScorePoint(int score, int x, int y);
+	void draw(sf::RenderWindow* window, double screenRatio, sf::Font font);
 };
 
 class FruitNinjaGameState : public State {
@@ -44,7 +55,6 @@ class FruitNinjaGameState : public State {
 		// textures
 		std::optional<sf::Texture> backTex;
 		std::optional<sf::Texture> redTex;
-		std::optional<sf::Texture> greenTex;
 		std::optional<sf::Texture> mellonTex;
 		std::optional<sf::Texture> appleTex;
 		std::optional<sf::Texture> orangeTex;
@@ -58,8 +68,6 @@ class FruitNinjaGameState : public State {
 		int guyX = 0;
 		int guyFacing = 0;
 		int guyFrame = 0;
-		bool guyRed = true;
-		bool guyCanChange = false;
 		bool guySwing = false;
 		bool cutFruit = false;
 		int guyMove = 0;
@@ -68,9 +76,9 @@ class FruitNinjaGameState : public State {
 		
 		// objects
 		std::vector<Fruit*> fruits;
+		std::vector<ScorePoint*> scorePoints;
 		int fallenFruit;
 		float fruitTime = 0;
 		int fruitType = 0;
 		int fruitX = 0;
-		std::vector<int> fruitDist = {0,0,0,0,1,1,1,1,1,1,2,2,2,2,2,2,3,3,3,3,3,4,4,4,4,5,5,5,6,6,7};
 };
