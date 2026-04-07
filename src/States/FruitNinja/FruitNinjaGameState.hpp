@@ -22,7 +22,7 @@ struct Fruit{
 	
 	Fruit(sf::Texture tileSet, int type, int state, int x, int y, int w, int h, double vx, double vy);
 	void move(float dt);
-	void draw(sf::RenderWindow* window, double screenRatio);
+	void draw(sf::RenderWindow* window, double screenRatio, sf::Font font);
 };
 struct ScorePoint{
 	public:
@@ -65,14 +65,15 @@ class FruitNinjaGameState : public State {
 		std::optional<sf::Sprite> guy;
 		
 		// text
-		std::optional<sf::Text> totalPointText;
+		sf::Font font;
+		std::optional<sf::Text> totalPointsText;
 		
 		// animation vars
 		int guyX = 0;
 		int guyFacing = 0;
 		int guyFrame = 0;
-		bool guySwing = false;
-		bool cutFruit = false;
+		int guySwing = -1;
+		int cutFruit = 0;
 		int guyMove = 0;
 		float guyStep = 0;
 		float guyTime = 0.0;

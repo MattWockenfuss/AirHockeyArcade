@@ -71,7 +71,6 @@ AssetManager::AssetManager(){
 	// Fruit Ninja Images
 	loadAsset("background","background.png");
 	loadAsset("redGuy_tileSet","redGuy_tileSet.png");
-	loadAsset("greenGuy_tileSet","greenGuy_tileSet.png");
 	loadAsset("mellon_tileSet","mellon_tileSet.png");
 	loadAsset("apple_tileSet","apple_tileSet.png");
 	loadAsset("orange_tileSet","orange_tileSet.png");
