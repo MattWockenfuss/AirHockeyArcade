@@ -26,7 +26,7 @@ struct Fruit{
 };
 struct ScorePoint{
 	public:
-	std::string value;
+	int score;
 	int x;
 	int y;
 	int opacity;
@@ -64,6 +64,9 @@ class FruitNinjaGameState : public State {
 		std::optional<sf::Sprite> back;
 		std::optional<sf::Sprite> guy;
 		
+		// text
+		std::optional<sf::Text> totalPointText;
+		
 		// animation vars
 		int guyX = 0;
 		int guyFacing = 0;
@@ -76,9 +79,12 @@ class FruitNinjaGameState : public State {
 		
 		// objects
 		std::vector<Fruit*> fruits;
-		std::vector<ScorePoint*> scorePoints;
 		int fallenFruit;
 		float fruitTime = 0;
 		int fruitType = 0;
 		int fruitX = 0;
+		double fruitHeight;
+		std::vector<ScorePoint*> scorePoints;
+		int score;
+		int totalPoints = 0;
 };

@@ -43,13 +43,14 @@ void Fruit::draw(sf::RenderWindow* window, double screenRatio){
 }
 
 ScorePoint::ScorePoint(int score, int x, int y){
-	this->value = std::to_string(score);
+	this->score = score;
 	this->x = x;
 	this->y = y;
 	this->opacity = 255;
 }
 void ScorePoint::draw(sf::RenderWindow* window, double screenRatio, sf::Font font){
-	sf::Text text(font,value,6*screenRatio);
+	std::string points = std::to_string(score)+"0";
+	sf::Text text(font,points,6*screenRatio);
 	sf::FloatRect rect = text.getLocalBounds();
 	text.setOrigin(rect.getCenter());
 	text.setPosition(sf::Vector2f(x*screenRatio,y*screenRatio));
@@ -86,6 +87,12 @@ void FruitNinjaGameState::init(Context* ctx){
 	back->setScale(sf::Vector2f(screenRatio,screenRatio));
 	guy.emplace(*redTex);
 	guy->setScale(sf::Vector2f(screenRatio,screenRatio));
+	
+	std::cout << "\nInit() Succeeded!" << std::endl;
+	
+	// text
+	totalPointText.emplace(ctx->assets->getFont("ST-SimpleSquare"),"0",10*screenRatio);
+	totalPointText->setPosition(sf::Vector2f(8*screenRatio,0));
 }
 
 void FruitNinjaGameState::tick(){	
@@ -134,19 +141,23 @@ void FruitNinjaGameState::tick(){
 			int i;
 			for(i = 0; i<fruits.size(); i++){
 				if(fruits[i]->x/38==guyX && fruits[i]->state==0){ // if there is a whole fruit in the same column as the player
-					double temp = fruits[i]->y;
-					double score = 0;
-					if(temp <= 133 && temp + fruits[i]->h >= 123){ // if the fruit is within the maximum cutting range
+					fruitHeight = fruits[i]->y;
+					if(fruitHeight <= 133 && fruitHeight + fruits[i]->h >= 123){ // if the fruit is within the maximum cutting range
 						score = 1;
-						temp += fruits[i]->h/2;
-						if(temp >= 123 && temp <= 133){ // if the middle of the fruit is within the cutting range
+						fruitHeight += fruits[i]->h/2;
+						if(fruitHeight >= 123 && fruitHeight <= 133){ // if the middle of the fruit is within the cutting range
 							score = 2;
-							if(temp >= 125 && temp <= 130){ // if the middle of the fruit is within the cutting spark
+							if(fruitHeight >= 125 && fruitHeight <= 130){ // if the middle of the fruit is within the cutting spark
 								score = 3;
 							}
 						}
-						score *= 50;
+						score *= 5;
 						scorePoints.push_back( new ScorePoint(score,guyX*38+26,120) );
+						
+						totalPoints += score;
+						std::string str = std::to_string(totalPoints)+"0";
+						totalPointText->setString(str);
+						
 						cutFruit = true;
 						break;
 					}
@@ -216,6 +227,7 @@ void FruitNinjaGameState::tick(){
 	// remove fallen fruit
 	if(fallenFruit!=-1)
 		fruits.erase(fruits.begin()+fallenFruit);
+	
 	// move score points
 	int erasePoint = -1;
 	for(int i = 0; i<scorePoints.size(); i++){
@@ -242,6 +254,7 @@ void FruitNinjaGameState::p1render(sf::RenderWindow& p1window){
 	// points
 	for(int i = 0; i<scorePoints.size(); i++)
 		scorePoints[i]->draw(&p1window,screenRatio,ctx->assets->getFont("ST-SimpleSquare"));
+	p1window.draw(*totalPointText);
 }
 
 void FruitNinjaGameState::p2render(sf::RenderWindow& p2window){
@@ -257,4 +270,5 @@ void FruitNinjaGameState::p2render(sf::RenderWindow& p2window){
 	// points
 	for(int i = 0; i<scorePoints.size(); i++)
 		scorePoints[i]->draw(&p2window,screenRatio,ctx->assets->getFont("ST-SimpleSquare"));
+	p2window.draw(*totalPointText);
 }
