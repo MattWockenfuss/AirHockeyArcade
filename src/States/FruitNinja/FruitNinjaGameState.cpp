@@ -83,6 +83,26 @@ void ScorePoint::draw(sf::RenderWindow* window, double screenRatio, sf::Font fon
 	window->draw(text);
 }
 
+void FruitNinjaInstance::drawName(sf::RenderWindow* window, double screenRatio, sf::Font font, bool opaque){
+	sf::Text text(font,name,12*screenRatio);
+	text.setPosition(sf::Vector2f(8*screenRatio,0));
+	if(opaque)
+		text.setFillColor(sf::Color(255,255,255,128));
+	else
+		text.setFillColor(sf::Color(255,255,255,255));
+	window->draw(text);
+}
+void FruitNinjaInstance::drawTotalScore(sf::RenderWindow* window, double screenRatio, sf::Font font, bool opaque){
+	std::string points = std::to_string(totalPoints)+"0";
+	sf::Text text(font,points,12*screenRatio);
+	text.setPosition(sf::Vector2f(8*screenRatio,12*screenRatio));
+	if(opaque)
+		text.setFillColor(sf::Color(255,255,255,128));
+	else
+		text.setFillColor(sf::Color(255,255,255,255));
+	window->draw(text);
+}
+
 void FruitNinjaGameState::init(Context* ctx){
 	State::init(ctx);
 	
@@ -112,220 +132,213 @@ void FruitNinjaGameState::init(Context* ctx){
 	guy.emplace(*redTex);
 	guy->setScale(sf::Vector2f(screenRatio,screenRatio));
 	
-	std::cout << "\nInit() Succeeded!" << std::endl;
-	
 	// text
 	font = ctx->assets->getFont("ST-SimpleSquare");
-	totalPointsText.emplace(font,"0",10*screenRatio);
-	totalPointsText->setPosition(sf::Vector2f(8*screenRatio,0));
+	p1instance.name = ctx->p1name;
+	//p2instance.emplace(ctx->p1name,font,screenRatio);
 }
 
 void FruitNinjaGameState::tick(){	
 	time = clock.restart();
 	dt = time.asSeconds();
 	
-	if (ctx->input->P1_Left && guySwing == -1 && guyMove==0){ // move left
-		int x = guyX;
-		int y = -1;
-		for(int i = 0; i<fruits.size(); i++){
-			if(fruits[i]->y > y && fruits[i]->y < 133 && fruits[i]->state==0){
-				x = fruits[i]->x/38;
-				y = fruits[i]->y;
+	// p1instance controls
+	if(ctx->input->P1_Left && p1instance.swing==-1){ // move left
+		x = p1instance.x;
+		y = -1;
+		for(int i = 0; i<p1instance.fruits.size(); i++){
+			if(p1instance.fruits[i]->y > y && p1instance.fruits[i]->y < 133 &&p1instance.fruits[i]->state==0){
+				x = p1instance.fruits[i]->x/38;
+				y = p1instance.fruits[i]->y;
 			}
 		}
-		if(guyX>0 && x<guyX){
-			guyX = x;
-		}
+		if(p1instance.x>0 && x<p1instance.x)
+			p1instance.x = x;
 	}
-	if (ctx->input->P1_Right && guySwing == -1 && guyMove==0){ // move right
-		int x = guyX;
-		int y = -1;
-		for(int i = 0; i<fruits.size(); i++){
-			if(fruits[i]->y > y && fruits[i]->y < 133 && fruits[i]->state==0){
-				x = fruits[i]->x/38;
-				y = fruits[i]->y;
+	if(ctx->input->P1_Right && p1instance.swing==-1){ // move right
+		x = p1instance.x;
+		y = -1;
+		for(int i = 0; i<p1instance.fruits.size(); i++){
+			if(p1instance.fruits[i]->y > y && p1instance.fruits[i]->y < 133 && p1instance.fruits[i]->state==0){
+				x = p1instance.fruits[i]->x/38;
+				y = p1instance.fruits[i]->y;
 			}
 		}
-		if(guyX<7 && x>guyX){
-			guyX = x;
-		}
+		if(p1instance.x<7 && x>p1instance.x)
+			p1instance.x = x;
 	}
-	if (ctx->input->P1A && guySwing == -1 && guyMove==0){ // swing sword 'A'
-		guySwing = 0;
-		guyTime = 0;
-		guyFrame = 1;
+	if (ctx->input->P1A && p1instance.swing == -1){ // swing sword 'A'
+		p1instance.swing = 0;
+		p1instance.timer = 0;
+		p1instance.frame = 1;
 	}
-	if (ctx->input->P1B && guySwing == -1 && guyMove==0){ // swing sword 'B'
-		guySwing = 1;
-		guyTime = 0;
-		guyFrame = 1;
+	if (ctx->input->P1B && p1instance.swing == -1){ // swing sword 'B'
+		p1instance.swing = 1;
+		p1instance.timer = 0;
+		p1instance.frame = 1;
 	}
-	if (ctx->input->P1X && guySwing == -1 && guyMove==0){ // swing sword 'X'
-		guySwing = 2;
-		guyTime = 0;
-		guyFrame = 1;
+	if (ctx->input->P1X && p1instance.swing == -1){ // swing sword 'X'
+		p1instance.swing = 2;
+		p1instance.timer = 0;
+		p1instance.frame = 1;
 	}
-	if (ctx->input->P1Y && guySwing == -1 && guyMove==0){ // swing sword 'Y'
-		guySwing = 3;
-		guyTime = 0;
-		guyFrame = 1;
+	if (ctx->input->P1Y && p1instance.swing == -1){ // swing sword 'Y'
+		p1instance.swing = 3;
+		p1instance.timer = 0;
+		p1instance.frame = 1;
 	}
-
-	// animate guy
-	if(guySwing!=-1){
-		guyTime += dt;
-		int n = round(guyTime/0.075f); // change frames every 0.075s (also account for lag that may cause a frame to be longer than 0.075s
-		guyTime = std::remainder(guyTime,0.075f); // reset guyTime while retaining any overflow
-		guyFrame += n;
-		if(guyFrame==2 && cutFruit==0){ // check if we cut fruit
+	
+	// animate p1instance guy
+	if(p1instance.swing!=-1){
+		p1instance.timer += dt;
+		int n = round(p1instance.timer/0.075f); // change frames every 0.075s (also account for lag that may cause a frame to be longer than 0.075s
+		p1instance.timer = std::remainder(p1instance.timer,0.075f); // reset timer while retaining any overflow
+		p1instance.frame += n;
+		if(p1instance.frame==2 && p1instance.cut==0){ // check if we cut fruit
 			int i; // we need to reference i after the loop, so we initialize it before
-			for(i = 0; i<fruits.size(); i++){
-				if(fruits[i]->x/38==guyX && fruits[i]->state==0 && fruits[i]->type==guySwing){ // if there is a whole fruit in the same column as the player, and they swung at the correct fruit
-					fruitHeight = fruits[i]->y;
-					if(fruitHeight <= 133 && fruitHeight + fruits[i]->h >= 123){ // if the fruit is within the maximum cutting range
-						score = 1;
-						fruitHeight += fruits[i]->h/2;
-						if(fruitHeight >= 123 && fruitHeight <= 133){ // if the middle of the fruit is within the cutting range
-							score = 2;
-							if(fruitHeight >= 125 && fruitHeight <= 130){ // if the middle of the fruit is within the cutting spark
-								score = 3;
+			for(i = 0; i<p1instance.fruits.size(); i++){
+				if(p1instance.fruits[i]->x/38==p1instance.x && p1instance.fruits[i]->state==0 && p1instance.fruits[i]->type==p1instance.swing){ // if there is a whole fruit in the same column as the player, and they swung at the correct fruit
+					p1instance.fruitHeight = p1instance.fruits[i]->y;
+					if(p1instance.fruitHeight <= 133 && p1instance.fruitHeight + p1instance.fruits[i]->h >= 123){ // if the fruit is within the maximum cutting range
+						p1instance.score = 1;
+						p1instance.fruitHeight += p1instance.fruits[i]->h/2;
+						if(p1instance.fruitHeight >= 123 && p1instance.fruitHeight <= 133){ // if the middle of the fruit is within the cutting range
+							p1instance.score = 2;
+							if(p1instance.fruitHeight >= 125 && p1instance.fruitHeight <= 130){ // if the middle of the fruit is within the cutting spark
+								p1instance.score = 3;
 							}
 						}
-						score *= 5;
-						scorePoints.push_back( new ScorePoint(score,guyX*38+26,120) );
+						p1instance.score *= 5;
+						p1instance.scorePoints.push_back( new ScorePoint(p1instance.score,p1instance.x*38+26,120) );
+						p1instance.totalPoints += p1instance.score;
 						
-						totalPoints += score;
-						std::string str = std::to_string(totalPoints)+"0";
-						totalPointsText->setString(str);
-						
-						cutFruit = 1;
+						p1instance.cut = 1;
 						break;
 					}
 				}
 				else // we completely missed the fruit
-					cutFruit = -1;
+					p1instance.cut = -1;
 			}
-			if(cutFruit==1){ // add cut fruit
-				int type = fruits[i]->type;
-				int x = fruits[i]->x;
-				int y = fruits[i]->y;
-				int w = fruits[i]->w;
-				int h = fruits[i]->h;
+			if(p1instance.cut==1){ // add cut fruit
+				type = p1instance.fruits[i]->type;
+				x = p1instance.fruits[i]->x;
+				y = p1instance.fruits[i]->y;
+				w = p1instance.fruits[i]->w;
+				h = p1instance.fruits[i]->h;
 				if(type==0){ // watermellon width changes when cut, other fruits do not
-					fruits.push_back( new Fruit(fruitTexs[type],type,1,x-w/2,y,16,h,-0.5,-1) );
-					fruits.push_back( new Fruit(fruitTexs[type],type,2,x+w/2,y,16,h,0.5,-1) );
+					p1instance.fruits.push_back( new Fruit(fruitTexs[type],type,1,x-w/2,y,16,h,-0.5,-1) );
+					p1instance.fruits.push_back( new Fruit(fruitTexs[type],type,2,x+w/2,y,16,h,0.5,-1) );
 				} else {
-					fruits.push_back( new Fruit(fruitTexs[type],type,1,x-w/2,y,w,h,-0.5,-1) );
-					fruits.push_back( new Fruit(fruitTexs[type],type,2,x+w/2,y,w,h,0.5,-1) );
+					p1instance.fruits.push_back( new Fruit(fruitTexs[type],type,1,x-w/2,y,w,h,-0.5,-1) );
+					p1instance.fruits.push_back( new Fruit(fruitTexs[type],type,2,x+w/2,y,w,h,0.5,-1) );
 				}
-				fruits[i]->y = 300; // move original fruit off-screen to be deleted
+				p1instance.fruits[i]->y = 300; // move original fruit off-screen to be deleted
 			}
-			if(cutFruit==-1){ // take away points for a missed fruit
-				score = -2;
-				scorePoints.push_back( new ScorePoint(score,guyX*38+27,120) );
-				totalPoints += score;
-				std::string str = std::to_string(totalPoints)+"0";
-				totalPointsText->setString(str);
+			if(p1instance.cut==-1){ // take away points for a missed fruit
+				p1instance.score = -2;
+				p1instance.scorePoints.push_back( new ScorePoint(p1instance.score,p1instance.x*38+27,120) );
+				p1instance.totalPoints += p1instance.score;
 			}
 		}
-		if(guyFrame >= 4 + cutFruit==1?1:0){ // stop animation
-			guySwing = -1;
-			guyFacing = (guyFacing+1)%2; // will alternate between o and 1
-			guyFrame = 0;
-			cutFruit = 0;
+		if(p1instance.frame >= 4 + p1instance.cut==1?1:0){ // stop animation
+			p1instance.swing = -1;
+			p1instance.facing = (p1instance.facing+1)%2; // will alternate between o and 1
+			p1instance.frame = 0;
+			p1instance.cut = 0;
 		}
-		if(guyFrame==3 && cutFruit==1){ // move to the successful cut frame if we cut the fruit
-			guyFrame = 4;
-		}
-	}
-	if(guyMove!=0){
-		guyStep += dt;
-		if(guyStep>=0.2){
-			guyX += guyMove;
-			guyMove = 0;
-			guyFrame = 0;
+		if(p1instance.frame==3 && p1instance.cut==1){ // move to the successful cut frame if we cut the fruit
+			p1instance.frame = 4;
 		}
 	}
 	
-	// update objects
-	// guy
-	guy->setTextureRect(sf::IntRect( sf::Vector2(48*guyFrame,48*guyFacing), sf::Vector2(48,48) )); // change this will change image we draw from tile set
-	guy->setPosition(sf::Vector2f( (3+(38*(guyX + (guyMove*guyStep/0.2) )))*screenRatio , height-(58*screenRatio) ));
 	// spawn fruit
-	if(fruitTime <= 0){
+	if(p1instance.fruitTimer <= 0){
 		// set random values for the fruit
-		fruitType = rand()%4;
-		fruitX = rand()%8;
+		type = rand()%4;
+		x = rand()%8;
 		// spawn fruit
-		if(fruitType==0)
-			fruits.push_back( new Fruit(fruitTexs[fruitType],fruitType,0,fruitX*38,-16,20,16,0,0) ); // drop mellon
+		if(type==0)
+			p1instance.fruits.push_back( new Fruit(fruitTexs[type],type,0,x*38,-16,20,16,0,0) ); // drop mellon
 		else
-			fruits.push_back( new Fruit(fruitTexs[fruitType],fruitType,0,fruitX*38,-8,8,8,0,0) ); // drop other fruit (they are all the same size)
+			p1instance.fruits.push_back( new Fruit(fruitTexs[type],type,0,x*38,-8,8,8,0,0) ); // drop other fruit (they are all the same size)
 		// set time delay before next fruit
-		fruitTime = ((rand()%3)+1)*0.4;
+		p1instance.fruitTimer = ((rand()%3)+1)*0.4;
 	}
-	fruitTime -= dt;
+	p1instance.fruitTimer -= dt;
+	
 	// move fruit
 	fallenFruit = -1;
-	for(int i = 0; i<fruits.size(); i++){
-		fruits[i]->move(dt);
-		if(fruits[i]->y >= 180){
+	for(int i = 0; i<p1instance.fruits.size(); i++){
+		p1instance.fruits[i]->move(dt);
+		if(p1instance.fruits[i]->y >= 180){
 			fallenFruit = i;
 		}
 	}
 	// remove fallen fruit
 	if(fallenFruit!=-1){
-		if(fruits[fallenFruit]->y<300 && fruits[fallenFruit]->state==0){ // this fruit was uncut, deduct points
-			score = -2;
-			scorePoints.push_back( new ScorePoint(score,fruits[fallenFruit]->x + 27,170) );
-			totalPoints += score;
-			std::string str = std::to_string(totalPoints)+"0";
-			totalPointsText->setString(str);
+		if(p1instance.fruits[fallenFruit]->y<300 && p1instance.fruits[fallenFruit]->state==0){ // this fruit was uncut, deduct points
+			p1instance.score = -2;
+			p1instance.scorePoints.push_back( new ScorePoint(p1instance.score,p1instance.fruits[fallenFruit]->x + 27,170) );
+			p1instance.totalPoints += p1instance.score;
 		}
-		fruits.erase(fruits.begin()+fallenFruit);
+		p1instance.fruits.erase(p1instance.fruits.begin()+fallenFruit);
 	}
 	
 	// move score points
-	int erasePoint = -1;
-	for(int i = 0; i<scorePoints.size(); i++){
-		scorePoints[i]->y--;
-		scorePoints[i]->opacity -= 4;
-		if(scorePoints[i]->opacity<=0)
+	erasePoint = -1;
+	for(int i = 0; i<p1instance.scorePoints.size(); i++){
+		p1instance.scorePoints[i]->y--;
+		p1instance.scorePoints[i]->opacity -= 4;
+		if(p1instance.scorePoints[i]->opacity<=0)
 			erasePoint = i;
 	}
 	// erase score points
 	if(erasePoint!=-1)
-		scorePoints.erase(scorePoints.begin()+erasePoint);
+		p1instance.scorePoints.erase(p1instance.scorePoints.begin()+erasePoint);
 }
 
 void FruitNinjaGameState::p1render(sf::RenderWindow& p1window){
 	p1window.clear();
 	// background
 	p1window.draw(*back);
+	
+	// draw name and total points behind fruit
+	p1instance.drawName(&p1window,screenRatio,font);
+	p1instance.drawTotalScore(&p1window,screenRatio,font);
+	
 	// fruit
-	for(int i = 0; i<fruits.size(); i++){
-		fruits[i]->draw(&p1window, screenRatio, font);
+	for(int i = 0; i<p1instance.fruits.size(); i++){
+		p1instance.fruits[i]->draw(&p1window, screenRatio, font);
 	}
+	
 	// guy
+	guy->setTextureRect(sf::IntRect( sf::Vector2(48*p1instance.frame,48*p1instance.facing), sf::Vector2(48,48) )); // change this will change image we draw from tile set
+	guy->setPosition(sf::Vector2f( (3+(38*p1instance.x) )*screenRatio , height-(58*screenRatio) ));
 	p1window.draw(*guy);
+	
 	// points
-	for(int i = 0; i<scorePoints.size(); i++)
-		scorePoints[i]->draw(&p1window,screenRatio,font);
-	p1window.draw(*totalPointsText);
+	for(int i = 0; i<p1instance.scorePoints.size(); i++)
+		p1instance.scorePoints[i]->draw(&p1window,screenRatio,font);
+	
+	// draw name and total points in front of fruit
+	p1instance.drawName(&p1window,screenRatio,font,true);
+	p1instance.drawTotalScore(&p1window,screenRatio,font,true);
 }
 
 void FruitNinjaGameState::p2render(sf::RenderWindow& p2window){
-	p2window.clear();
-	// background
-	p2window.draw(*back);
-	// fruit
-	for(int i = 0; i<fruits.size(); i++){
-		fruits[i]->draw(&p2window, screenRatio, font);
-	}
-	// guy
-	p2window.draw(*guy);
-	// points
-	for(int i = 0; i<scorePoints.size(); i++)
-		scorePoints[i]->draw(&p2window,screenRatio,font);
-	p2window.draw(*totalPointsText);
+	//p2window.clear();
+	//// background
+	//p2window.draw(*back);
+	//// fruit
+	//for(int i = 0; i<fruits.size(); i++){
+	//	fruits[i]->draw(&p2window, screenRatio, font);
+	//}
+	//// guy
+	//guy->setTextureRect(sf::IntRect( sf::Vector2(48*guyFrame,48*guyFacing), sf::Vector2(48,48) )); // change this will change image we draw from tile set
+	//guy->setPosition(sf::Vector2f( (3+(38*guyX) )*screenRatio , height-(58*screenRatio) ));
+	//p2window.draw(*guy);
+	//// points
+	//for(int i = 0; i<scorePoints.size(); i++)
+	//	scorePoints[i]->draw(&p2window,screenRatio,font);
+	//p2window.draw(*totalPointsText);
 }

@@ -34,6 +34,30 @@ struct ScorePoint{
 	ScorePoint(int score, int x, int y);
 	void draw(sf::RenderWindow* window, double screenRatio, sf::Font font);
 };
+struct FruitNinjaInstance{
+	public:
+		// animation vars
+		float timer = 0.0;
+		int x = 0;
+		int facing = 0;
+		int frame = 0;
+		int swing = -1;
+		int cut = 0;
+		
+		// objects
+		float fruitTimer = 0;
+		double fruitHeight;
+		std::vector<Fruit*> fruits;
+		
+		// scoring
+		std::string name;
+		std::vector<ScorePoint*> scorePoints;
+		int score;
+		int totalPoints = 0;
+		
+		void drawName(sf::RenderWindow* window, double screenRatio, sf::Font font, bool opaque = false);
+		void drawTotalScore(sf::RenderWindow* window, double screenRatio, sf::Font font, bool opaque = false);
+};
 
 class FruitNinjaGameState : public State {
     public:
@@ -66,26 +90,11 @@ class FruitNinjaGameState : public State {
 		
 		// text
 		sf::Font font;
-		std::optional<sf::Text> totalPointsText;
 		
-		// animation vars
-		int guyX = 0;
-		int guyFacing = 0;
-		int guyFrame = 0;
-		int guySwing = -1;
-		int cutFruit = 0;
-		int guyMove = 0;
-		float guyStep = 0;
-		float guyTime = 0.0;
+		// game instances
+		FruitNinjaInstance p1instance;
 		
-		// objects
-		std::vector<Fruit*> fruits;
-		int fallenFruit;
-		float fruitTime = 0;
-		int fruitType = 0;
-		int fruitX = 0;
-		double fruitHeight;
-		std::vector<ScorePoint*> scorePoints;
-		int score;
-		int totalPoints = 0;
+		// random vars
+		int x, y, w, h, type;
+		int erasePoint, fallenFruit;
 };
