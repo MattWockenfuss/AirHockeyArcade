@@ -38,7 +38,7 @@ struct FruitNinjaInstance{
 	public:
 		// animation vars
 		float timer = 0.0;
-		int x = 0;
+		int x = 3;
 		int facing = 0;
 		int frame = 0;
 		int swing = -1;
@@ -52,11 +52,10 @@ struct FruitNinjaInstance{
 		// scoring
 		std::string name;
 		std::vector<ScorePoint*> scorePoints;
-		int score;
 		int totalPoints = 0;
 		
-		void drawName(sf::RenderWindow* window, double screenRatio, sf::Font font, bool opaque = false);
-		void drawTotalScore(sf::RenderWindow* window, double screenRatio, sf::Font font, bool opaque = false);
+		void drawNames(sf::RenderWindow* window, double screenRatio, sf::Font font, std::string oppName, bool opaque = false);
+		void drawTotalScores(sf::RenderWindow* window, double screenRatio, sf::Font font, int oppScore, bool opaque = false);
 };
 
 class FruitNinjaGameState : public State {
@@ -92,9 +91,11 @@ class FruitNinjaGameState : public State {
 		sf::Font font;
 		
 		// game instances
-		FruitNinjaInstance p1instance;
+		std::vector<FruitNinjaInstance> instances;
+		//FruitNinjaInstance p1instance;
 		
 		// random vars
-		int x, y, w, h, type;
+		int x, y, w, h;
+		int type, score, n;
 		int erasePoint, fallenFruit;
 };
