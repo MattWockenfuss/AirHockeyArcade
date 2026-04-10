@@ -19,14 +19,14 @@ struct Joint {
 struct Tron {
     public:
         sf::RectangleShape square;
-        float squareWidth = 16.0f;
+        float squareWidth = 8.0f;
 
         Direction facing, lastFacing;
         int headX, headY;
         int tailX, tailY;
         int length;
         sf::Color color;
-        bool growNextTick = false;
+        bool growNextTick = true;
 
         Joint *front = nullptr, *back = nullptr;
 

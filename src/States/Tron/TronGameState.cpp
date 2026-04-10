@@ -46,7 +46,7 @@ void TronGameState::tick() {
 	
 	//assume about 60 ticks per second, it can be slightly less, but good enough
     tickCount++;
-    if(tickCount >= 15){
+    if(tickCount >= 6){
         tickCount = 0;
         p1.tick();
         p2.tick();
