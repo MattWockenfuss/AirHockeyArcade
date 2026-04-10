@@ -132,6 +132,7 @@ void FruitNinjaGameState::init(Context* ctx){
     //screenRatio = 6;
     std::cout << "Screen Ratio: " << screenRatio << std::endl;
 	
+	// textures
 	backTex.emplace(ctx->assets->getAsset("background"));
 	redTex.emplace(ctx->assets->getAsset("redGuy_tileSet"));
 	mellonTex.emplace(ctx->assets->getAsset("mellon_tileSet"));
@@ -159,6 +160,9 @@ void FruitNinjaGameState::init(Context* ctx){
 		instances[1].name = ctx->p2name;
 	else
 		instances[1].name = "COM";
+	
+	// seed random number generator
+	std::srand(std::time(0)); // seed the random numbers based on the current time at kickoff
 }
 
 void FruitNinjaGameState::tick(){	
