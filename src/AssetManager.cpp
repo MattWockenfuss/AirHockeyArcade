@@ -2,7 +2,7 @@
 #include <iostream>
 
 AssetManager::AssetManager(){
-    //assets
+    //Air Hockey Images
     loadAsset("FieldBack", "field_back.png");
     loadAsset("Field", "field.png");
 
@@ -67,12 +67,32 @@ AssetManager::AssetManager(){
     loadAsset("Puck9a", "puck_9a.png");
     loadAsset("Puck9b", "puck_9b.png");
     loadAsset("Puck9c", "puck_9c.png");
+	
+	// Fruit Ninja Images
+	loadAsset("background","background.png");
+	loadAsset("redGuy_tileSet","redGuy_tileSet.png");
+	loadAsset("mellon_tileSet","mellon_tileSet.png");
+	loadAsset("apple_tileSet","apple_tileSet.png");
+	loadAsset("orange_tileSet","orange_tileSet.png");
+	loadAsset("lemon_tileSet","lemon_tileSet.png");
+	
+	// Game Select Images
+	loadAsset("AirHockeyIcon","AirHockeyIcon.png");
+	loadAsset("CoffeeIcon","CoffeeIcon.png");
+	loadAsset("LogoIcon","LogoIcon.png");
+	loadAsset("LeaderboardIcon","LeaderboardIcon.png");
+	loadAsset("ExitIcon","ExitIcon.png");
+	loadAsset("gameSelectArrow_L1","gameSelectArrow_L1.png");
+	loadAsset("gameSelectArrow_L2","gameSelectArrow_L2.png");
+	loadAsset("gameSelectArrow_R1","gameSelectArrow_R1.png");
+	loadAsset("gameSelectArrow_R2","gameSelectArrow_R2.png");
 
     //fonts
     loadFont("Consolas", "Consolas-Regular.ttf");   
     loadFont("SquareSansSerif", "square_sans_serif_7.ttf");
     loadFont("ST-SimpleSquare", "ST-SimpleSquare.otf");
     loadFont("Technoid", "TECHNOID.TTF");
+    loadFont("ArcadeNormal", "ArcadeNormal-ZDZ.ttf");
 }
 
 sf::Texture& AssetManager::getAsset(std::string key){

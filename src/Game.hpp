@@ -19,10 +19,14 @@ class Game {
     private:
         bool running = false;
         bool shouldRender = false;
+        bool renderPlayer2 = false;
         
         Context ctx;
 
-        sf::RenderWindow window;
+        
+        sf::RenderWindow p1window;
+        sf::RenderWindow p2window;
+
         AssetManager assetManager;
         KeyManager keyManager;
         InputManager input;

@@ -10,15 +10,22 @@ cd /d "%~dp0"
 
 ::	This command only works on windows, a.k.a Matt and Briar's dev machines
 
+if not exist build (
+    mkdir build
+)
+
 g++ ^
 src\Game.cpp ^
 src\AssetManager.cpp ^
 src\States\GameStateManager.cpp ^
 src\States\State.cpp ^
-src\States\MenuState.cpp ^
+src\States\IdleState.cpp ^
+src\States\NameEntryState.cpp ^
+src\States\GameSelect\GameSelectState.cpp ^
 src\States\AirHockey\AirHockeyGameState.cpp ^
 src\States\Tron\TronGameState.cpp ^
 src\States\Tron\Tron.cpp ^
+src\States\FruitNinja\FruitNinjaGameState.cpp ^
 src\IO\KeyboardInput.cpp ^
 src\IO\InputManager.cpp ^
 src\KeyManager.cpp ^
