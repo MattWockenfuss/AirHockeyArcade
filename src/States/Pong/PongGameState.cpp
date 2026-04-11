@@ -42,7 +42,7 @@ void PongGameState::init(Context *ctx) {
 
     //Load background for both screens
     bgTexture.emplace(ctx -> assets -> getAsset("pongbg"));
-    background -> setTexture(bgTexture.value());
+    background.emplace(sf::Sprite(bgTexture.value()));
 
     ctx -> p1window = ctx -> p1window;
 
