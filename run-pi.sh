@@ -16,12 +16,16 @@ src/States/NameEntryState.cpp \
 src/States/AirHockey/AirHockeyGameState.cpp \
 src/States/Tron/TronGameState.cpp \
 src/States/Tron/Tron.cpp \
+src/States/Pong/PongGameState.cpp \
 src/KeyManager.cpp \
+src/AudioManager.cpp \
 src/IO/InputManager.cpp \
 src/IO/GPIOManager.cpp \
 -lsfml-graphics \
 -lsfml-window \
 -lsfml-system \
+-lsfml-audio \
+-lasound \
 -DHAVE_GPIOD \
 -lgpiod \
 -lgpiodcxx \

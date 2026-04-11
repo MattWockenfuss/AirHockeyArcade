@@ -26,6 +26,8 @@ src\States\AirHockey\AirHockeyGameState.cpp ^
 src\States\Tron\TronGameState.cpp ^
 src\States\Tron\Tron.cpp ^
 src\States\FruitNinja\FruitNinjaGameState.cpp ^
+src\States\Pong\PongGameState.cpp ^
+src\AudioManager.cpp ^
 src\IO\KeyboardInput.cpp ^
 src\IO\InputManager.cpp ^
 src\KeyManager.cpp ^
@@ -39,6 +41,7 @@ src\KeyManager.cpp ^
 -lsfml-graphics ^
 -lsfml-window ^
 -lsfml-system ^
+-lsfml-audio ^
 -o build\game.exe
 
 copy /Y SFML\bin\sfml-graphics-3.dll build\
