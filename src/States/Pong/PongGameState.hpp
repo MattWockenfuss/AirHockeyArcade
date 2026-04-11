@@ -32,6 +32,8 @@ class PongGameState : public State {
     private:
         float padding = 40.0f;
         std::optional<sf::Text> title_text, player1, player2, goal_text, seconds_counter, countdown_timer;
+        std::optional<sf::Texture> bgTexture;
+        std::optional<sf::Sprite> background;
         const std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
         int tickCount = 0;
         PongPaddle *p1 = new PongPaddle(); 

@@ -75,6 +75,9 @@ AssetManager::AssetManager(){
 	loadAsset("apple_tileSet","apple_tileSet.png");
 	loadAsset("orange_tileSet","orange_tileSet.png");
 	loadAsset("lemon_tileSet","lemon_tileSet.png");
+
+    // Pong Images
+    loadAsset("pongbg", "pong_bg.png");
 	
 	// Game Select Images
 	loadAsset("AirHockeyIcon","AirHockeyIcon.png");

@@ -40,7 +40,11 @@ void ball_init(Ball *ball) {
 void PongGameState::init(Context *ctx) {
     State::init(ctx);
 
-    window1 = ctx -> p1window;
+    //Load background for both screens
+    bgTexture.emplace(ctx -> assets -> getAsset("pongbg"));
+    background -> setTexture(bgTexture.value());
+
+    ctx -> p1window = ctx -> p1window;
 
     std::string play1 = ctx -> p1name;
     std::string play2 = ctx -> p2name;
@@ -73,39 +77,39 @@ void PongGameState::init(Context *ctx) {
 
 	const sf::FloatRect titleRect = title_text -> getLocalBounds();
 	title_text -> setOrigin(titleRect.getCenter());
-	title_text -> setPosition(sf::Vector2f(window1 -> getSize().x / 2.0f, padding));
+	title_text -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2.0f, padding));
     
     const sf::FloatRect secondsRect = seconds_counter -> getLocalBounds();
     seconds_counter -> setOrigin(secondsRect.getCenter());
-    seconds_counter -> setPosition(sf::Vector2f(window1 -> getSize().x - 150.0f, 50.0f));
+    seconds_counter -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x - 150.0f, 50.0f));
 
     const sf::FloatRect countdownRect = countdown_timer -> getLocalBounds();
     countdown_timer -> setOrigin(countdownRect.getCenter());
-    countdown_timer -> setPosition(sf::Vector2f(window1 -> getSize().x / 2.0f, window1 -> getSize().y / 2.0f));
+    countdown_timer -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2.0f, ctx -> p1window -> getSize().y / 2.0f));
     countdown_timer -> setFillColor(sf::Color::Cyan);
 
     const sf::FloatRect p1Rect = player1 -> getLocalBounds();
 	player1 -> setOrigin(p1Rect.getCenter());
-	player1 -> setPosition(sf::Vector2f(window1 -> getSize().x / 4.5f, padding));
+	player1 -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 4.5f, padding));
     player1 -> setFillColor(sf::Color::Magenta);
     
     const sf::FloatRect p2Rect = player2 -> getLocalBounds();
 	player2 -> setOrigin(p2Rect.getCenter());
-	player2 -> setPosition(sf::Vector2f(window1 -> getSize().x / 1.25f, padding));
+	player2 -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 1.25f, padding));
     player2 -> setFillColor(sf::Color::Magenta);
 
     const sf::FloatRect goalRect = goal_text -> getLocalBounds();
 	goal_text -> setOrigin(goalRect.getCenter());
-	goal_text -> setPosition(sf::Vector2f(window1 -> getSize().x / 2.0f, window1 -> getSize().y / 4.0f));
+	goal_text -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2.0f, ctx -> p1window -> getSize().y / 4.0f));
     goal_text -> setFillColor(sf::Color::Blue);
     rendergoal = false;
 
     //Explicit type conversion
-    sf::Vector2u win = window1->getSize();
+    sf::Vector2u win = ctx -> p1window->getSize();
     winSize = { static_cast<float>(win.x), static_cast<float>(win.y) };
 
     //To help reduce screen tearing caused by game/monitor refresh rate mismatch, set vsync to true
-    window1->setVerticalSyncEnabled(true);
+    ctx -> p1window->setVerticalSyncEnabled(true);
 
     //Pass game object pointers to their init helper functions
     paddle_init(p1);
@@ -202,6 +206,7 @@ void PongGameState::tick() {
 
 void PongGameState::p1render(sf::RenderWindow &window) {
     window.clear();
+    window.draw(background.value());
     window.draw(title_text.value());
     window.draw(player1.value());
     window.draw(player2.value());
@@ -212,6 +217,7 @@ void PongGameState::p1render(sf::RenderWindow &window) {
 
 void PongGameState::p2render(sf::RenderWindow &window) {
     window.clear();
+    window.draw(background.value());
     window.draw(title_text.value());
     window.draw(player1.value());
     window.draw(player2.value());
@@ -457,36 +463,42 @@ void PongGameState::match_start(unsigned short int dir) {
 
         const sf::FloatRect countdownRect = countdown_timer -> getLocalBounds();
         countdown_timer -> setOrigin(countdownRect.getCenter());
-        countdown_timer -> setPosition(sf::Vector2f(window1 -> getSize().x / 2.0f, window1 -> getSize().y / 2.0f));
+        countdown_timer -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2.0f, ctx -> p1window -> getSize().y / 2.0f));
 
         //Draw order
 
         //Clear window
-        window1 -> clear();
+        ctx -> p1window -> clear();
+
+        //Draw background
+        ctx -> p1window -> draw(background.value());
 
         //Draw score text
-        window1 -> draw(title_text.value());
-        window1 -> draw(player1.value());
-        window1 -> draw(player2.value());
+        ctx -> p1window -> draw(title_text.value());
+        ctx -> p1window -> draw(player1.value());
+        ctx -> p1window -> draw(player2.value());
 
         if (rendergoal) {
-            window1 -> draw(goal_text.value());
+            ctx -> p1window -> draw(goal_text.value());
         }
 
         //Draw game objects
-        window1 -> draw(p1->rect);
-        window1 -> draw(p2->rect);
-        window1 -> draw(b->circ);
+        ctx -> p1window -> draw(p1->rect);
+        ctx -> p1window -> draw(p2->rect);
+        ctx -> p1window -> draw(b->circ);
 
         //Render countdown timer
-        window1 -> draw(countdown_timer.value());
+        ctx -> p1window -> draw(countdown_timer.value());
 
-        window1 -> display();
+        ctx -> p1window -> display();
 
         //Draw order
 
         //Clear window
         ctx -> p2window -> clear();
+
+        //Draw background
+        ctx -> p2window -> draw(background.value());
 
         //Draw score text
         ctx -> p2window -> draw(title_text.value());
