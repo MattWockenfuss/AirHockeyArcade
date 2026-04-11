@@ -12,6 +12,7 @@ Game::Game(){
     ctx.keys = &keyManager;
     ctx.input = &input;
     ctx.gsm = &gsm;
+    ctx.audio = &audio;
 }
 
 void Game::initialization(){

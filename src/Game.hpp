@@ -1,11 +1,13 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include "Context.hpp"
 #include "States/GameStateManager.hpp"
 #include "AssetManager.hpp"
 #include "KeyManager.hpp"
 #include "IO/InputManager.hpp"
+#include "AudioManager.hpp"
 
 class Game {
     public:
@@ -31,4 +33,5 @@ class Game {
         KeyManager keyManager;
         InputManager input;
         GameStateManager gsm;
+        AudioManager audio;
 };

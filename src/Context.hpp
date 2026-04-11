@@ -10,6 +10,7 @@ class AssetManager;
 class KeyManager;
 class GameStateManager;
 class InputManager;
+class AudioManager;
 
 
 
@@ -23,6 +24,7 @@ struct Context {
     KeyManager*         keys = nullptr;
     GameStateManager*   gsm = nullptr;
     InputManager*       input = nullptr;
+    AudioManager*       audio = nullptr;
 
     //audio manager
     //etc
