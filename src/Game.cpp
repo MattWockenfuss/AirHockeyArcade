@@ -114,6 +114,9 @@ void Game::tick(){
 	if(ctx.keys -> F5){
         ctx.gsm -> requestStateChange(States::FruitNinja, 1.5f, 1.5f);
     }
+    if(ctx.keys -> F8){
+        ctx.gsm -> requestStateChange(States::Pong, 1.5f, 1.5f);
+    }
     
     if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> tick();
 
