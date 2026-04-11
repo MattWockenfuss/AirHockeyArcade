@@ -1155,7 +1155,8 @@ void AirHockeyGameState::init(Context* ctx){
 void AirHockeyGameState::tick() {
     time = clock.restart();
     dt = time.asSeconds();
-
+	
+	// puck dev controls
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num1)){
         puck.x = 100;
         puck.y = 400;
@@ -1214,7 +1215,8 @@ void AirHockeyGameState::tick() {
         puck.vy = puck.vy/1.25;
     }
 	//paddle movement (need to virtually unpress keys so only one press is registered at a time
-    if (ctx -> input -> P1_Up && !Up){
+    // player 1
+	if (ctx -> input -> P1_Up && !Up){
         if(p1paddle.yPos>=11)
             p1paddle.yPos -= 1;
         Up = true;
@@ -1246,7 +1248,8 @@ void AirHockeyGameState::tick() {
     if (!ctx -> input -> P1_Right && Right){
         Right = false;
     }
-    if (ctx -> input -> P2_Up && !W){
+    // player 2
+	if (ctx -> input -> P2_Up && !W){
 		if(p2paddle.yPos<=2)
             p2paddle.yPos += 1;
         W = true;

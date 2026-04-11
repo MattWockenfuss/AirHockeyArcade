@@ -44,16 +44,19 @@ struct FruitNinjaInstance{
 		int swing = -1;
 		int cut = 0;
 		
-		// objects
-		float fruitTimer = 0;
-		double fruitHeight;
+		// fruit
 		std::vector<Fruit*> fruits;
+		std::vector<std::vector<float>> fruitSongTimes;
+		int fruitSong = 0;
+		int fruitNote = 0;
+		float fruitDelay = 0;
 		
 		// scoring
 		std::string name;
 		std::vector<ScorePoint*> scorePoints;
 		int totalPoints = 0;
 		
+		// score drawing functions
 		void drawNames(sf::RenderWindow* window, double screenRatio, sf::Font font, std::string oppName, bool opaque = false);
 		void drawTotalScores(sf::RenderWindow* window, double screenRatio, sf::Font font, int oppScore, bool opaque = false);
 };
@@ -98,4 +101,5 @@ class FruitNinjaGameState : public State {
 		int x, y, w, h;
 		int type, score, n;
 		int erasePoint, fallenFruit;
+		double fruitHeight;
 };

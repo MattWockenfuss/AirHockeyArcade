@@ -105,9 +105,9 @@ void FruitNinjaInstance::drawTotalScores(sf::RenderWindow* window, double screen
 	sf::Text text(font,points,12*screenRatio);
 	text.setPosition(sf::Vector2f(8*screenRatio,12*screenRatio));
 	if(opaque)
-		text.setFillColor(sf::Color(255,255,255,128));
+		text.setFillColor(sf::Color(255,255*(points[0]=='-'?0:1),255*(points[0]=='-'?0:1),128));
 	else
-		text.setFillColor(sf::Color(255,255,255,255));
+		text.setFillColor(sf::Color(255,255*(points[0]=='-'?0:1),255*(points[0]=='-'?0:1),255));
 	window->draw(text);
 	
 	// opponent score
@@ -115,6 +115,10 @@ void FruitNinjaInstance::drawTotalScores(sf::RenderWindow* window, double screen
 	text.setString(points);
 	text.setOrigin(sf::Vector2f(text.getLocalBounds().size.x, 0));
 	text.setPosition(sf::Vector2f(312*screenRatio,12*screenRatio));
+	if(opaque)
+		text.setFillColor(sf::Color(255,255*(points[0]=='-'?0:1),255*(points[0]=='-'?0:1),128));
+	else
+		text.setFillColor(sf::Color(255,255*(points[0]=='-'?0:1),255*(points[0]=='-'?0:1),255));
 	window->draw(text);
 }
 
@@ -163,6 +167,21 @@ void FruitNinjaGameState::init(Context* ctx){
 	
 	// seed random number generator
 	std::srand(std::time(0)); // seed the random numbers based on the current time at kickoff
+	
+	// set fruit timing lists for the songs
+	// fruit drop delay from spawn to sweet spot is roughly 3.933 seconds
+	// song 1, player 1 // 45 notes
+	instances[0].fruitSongTimes.push_back( *(new std::vector<float>{ /*time delay relative to start of song : */5.0, 4.0, 2.0, 0.8, 0.8, 0.4, 0.8, 0.4, 1.2, 0.4, 0.8, 0.4, 0.4, 2.4, 0.4, 0.4, 0.4, 0.8, 0.4, 0.8, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.8, 0.8, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4}) );
+	// song 1, player 2 // 45 notes
+	instances[1].fruitSongTimes.push_back( *(new std::vector<float>{ /*time delay relative to start of song : */5.0, 2.4, 1.2, 0.8, 1.2, 0.4, 0.8, 0.4, 0.8, 0.4, 0.8, 0.4, 0.4, 0.8, 0.4, 0.4, 0.4, 2.8, 0.4, 0.8, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 1.2, 0.8, 0.4, 0.4, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4}) );
+	// song 2, player 1 // 56 notes
+	instances[0].fruitSongTimes.push_back( *(new std::vector<float>{ /*time delay relative to start of song : */5.0, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0.8, 0.8, 0.8, 0.4, 0.4, 0.8, 0.4, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.8, 0.4, 0.4, 0.4, 0.8, 0.4, 0.8, 0.4, 0.8, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.8, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.4}) );
+	// song 2, player 2 // 56 notes
+	instances[1].fruitSongTimes.push_back( *(new std::vector<float>{ /*time delay relative to start of song : */5.0, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.8, 0.4, 0.4, 0.4, 0.8, 0.8, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0.8, 0.8, 0.8, 0.4, 0.4, 0.8, 0.4, 0.8, 0.4, 0.8, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.8, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.4}) );
+	// song 3, player 1 // 54 notes
+	instances[0].fruitSongTimes.push_back( *(new std::vector<float>{ /*time delay relative to start of song : */5.0, 0.4, 0.4, 1.2, 0.4, 0.4, 1.2, 0.4, 0.4, 0.4, 0.8, 0.4, 0.4, 0.4, 0.8, 1.6, 0.8, 0.4, 0.4, 0.4, 0.8, 0.8, 0.4, 0.4, 0.8, 0.4, 0.8, 0.8, 1.6, 0.4, 0.4, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.8, 0.4, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.4, 0.4, 0.4}) );
+	// song 3, player 2 // 54 notes
+	instances[1].fruitSongTimes.push_back( *(new std::vector<float>{ /*time delay relative to start of song : */5.0, 0.4, 0.4, 1.2, 0.4, 0.4, 1.2, 0.4, 0.4, 0.4, 0.8, 0.4, 0.4, 0.8, 0.8, 0.4, 0.4, 0.8, 1.2, 0.4, 0.8, 0.8, 0.4, 0.4, 0.8, 0.4, 0.4, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 2.0, 0.4, 0.4, 0.4, 0.4, 0.8, 0.8, 0.8, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.4, 0.4, 0.4}) );
 }
 
 void FruitNinjaGameState::tick(){	
@@ -269,16 +288,16 @@ void FruitNinjaGameState::tick(){
 			instances[i].timer = std::remainder(instances[i].timer,0.075f); // reset timer while retaining any overflow
 			instances[i].frame += n;
 			if(instances[i].frame==2 && instances[i].cut==0){ // check if we cut fruit
-				int j; // we need to reference i after the loop, so we initialize it before
+				int j; // we need to reference j after the loop, so we initialize it before
 				for(j = 0; j<instances[i].fruits.size(); j++){
 					if(instances[i].fruits[j]->x/38==instances[i].x && instances[i].fruits[j]->state==0 && instances[i].fruits[j]->type==instances[i].swing){ // if there is a whole fruit in the same column as the player, and they swung at the correct fruit
-						instances[i].fruitHeight = instances[i].fruits[j]->y;
-						if(instances[i].fruitHeight <= 133 && instances[i].fruitHeight + instances[i].fruits[j]->h >= 123){ // if the fruit is within the maximum cutting range
+						fruitHeight = instances[i].fruits[j]->y;
+						if(fruitHeight <= 133 && fruitHeight + instances[i].fruits[j]->h >= 123){ // if the fruit is within the maximum cutting range
 							score = 1;
-							instances[i].fruitHeight += instances[i].fruits[j]->h/2;
-							if(instances[i].fruitHeight >= 123 && instances[i].fruitHeight <= 133){ // if the middle of the fruit is within the cutting range
+							fruitHeight += instances[i].fruits[j]->h/2;
+							if(fruitHeight >= 123 && fruitHeight <= 133){ // if the middle of the fruit is within the cutting range
 								score = 2;
-								if(instances[i].fruitHeight >= 125 && instances[i].fruitHeight <= 130){ // if the middle of the fruit is within the cutting spark
+								if(fruitHeight >= 125 && fruitHeight <= 130){ // if the middle of the fruit is within the cutting spark
 									score = 3;
 								}
 							}
@@ -326,7 +345,11 @@ void FruitNinjaGameState::tick(){
 		}
 		
 		// spawn fruit
-		if(instances[i].fruitTimer <= 0){
+		instances[i].fruitDelay -= dt;
+		if(instances[i].fruitDelay <= 10 && instances[i].fruitSong==-1){ // the game was triggered to close
+			ctx -> gsm -> requestStateChange(States::GameSelect, 5.0f, 1.5f);
+		}
+		if(instances[i].fruitDelay <= 0){
 			// set random values for the fruit
 			type = rand()%4;
 			x = rand()%8;
@@ -334,11 +357,20 @@ void FruitNinjaGameState::tick(){
 			if(type==0)
 				instances[i].fruits.push_back( new Fruit(fruitTexs[type],type,0,x*38,-16,20,16,0,0) ); // drop mellon
 			else
-				instances[i].fruits.push_back( new Fruit(fruitTexs[type],type,0,x*38,-8,8,8,0,0) ); // drop other fruit (they are all the same size)
+				instances[i].fruits.push_back( new Fruit(fruitTexs[type],type,0,x*38,-12,8,8,0,0) ); // drop other fruit (they are all the same size)
+			
 			// set time delay before next fruit
-			instances[i].fruitTimer = ((rand()%3)+1)*0.4;
+			instances[i].fruitDelay = instances[i].fruitSongTimes[instances[i].fruitSong][instances[i].fruitNote];
+			instances[i].fruitNote++;
+			if(instances[i].fruitNote >= instances[i].fruitSongTimes[instances[i].fruitSong].size()){
+				instances[i].fruitNote = 0;
+				instances[i].fruitSong++;
+				if(instances[i].fruitSong >= 3){ // we finished the last song, set game to close and return to the game select menu
+					instances[i].fruitDelay = 16;
+					instances[i].fruitSong = -1;
+				}
+			}
 		}
-		instances[i].fruitTimer -= dt;
 		
 		// move fruit
 		fallenFruit = -1;
