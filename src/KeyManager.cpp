@@ -23,6 +23,7 @@ KeyManager::KeyManager(){
     F3 = false;
     F4 = false;
     F5 = false;
+    F8 = false;
     ESC = false;
 
     W = false;
@@ -77,6 +78,7 @@ void KeyManager::tick(){
     F3 = m_keys[static_cast<int>(sf::Keyboard::Key::F3)];
     F4 = m_keys[static_cast<int>(sf::Keyboard::Key::F4)];
     F5 = m_keys[static_cast<int>(sf::Keyboard::Key::F5)];
+    F8 = m_keys[static_cast<int>(sf::Keyboard::Key::F8)];
     ESC = m_keys[static_cast<int>(sf::Keyboard::Key::Escape)];
 
     //Player 1 Movement

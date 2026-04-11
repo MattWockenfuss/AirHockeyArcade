@@ -6,6 +6,7 @@
 #include "FruitNinja/FruitNinjaGameState.hpp"
 #include "NameEntryState.hpp"
 #include "GameSelect/GameSelectState.hpp"
+#include "Pong/PongGameState.hpp"
 
 #include "../Context.hpp"
 #include "../AssetManager.hpp"
@@ -71,6 +72,10 @@ void GameStateManager::changeState(){
 			currentState = new GameSelectState();
 			currentState -> init(ctx);
 			break;
+        case States::Pong:
+            currentState = new PongGameState();
+            currentState -> init(ctx);
+            break;
     }
     currentStateType = pendingState;
 }
