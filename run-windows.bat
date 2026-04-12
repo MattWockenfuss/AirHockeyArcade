@@ -47,7 +47,7 @@ src\KeyManager.cpp ^
 copy /Y SFML\bin\sfml-graphics-3.dll build\
 copy /Y SFML\bin\sfml-window-3.dll build\
 copy /Y SFML\bin\sfml-system-3.dll build\
-
+copy /Y SFML\bin\sfml-audio-3.dll build\
 
 build\game.exe
 

@@ -66,6 +66,7 @@ void GameSelectState::init(Context* ctx){
 	gameOptions.push_back( GameOption("Air Hockey", "Play first to 11 in this arcade recreation of your favorite game!", ctx->assets->getAsset("AirHockeyIcon"), sf::Color(19,0,223), sf::Color(155,0,0) ));
 	gameOptions.push_back( GameOption("Dunkin Coffee", "Drink Dunkin! It can't be that shitty!", ctx->assets->getAsset("CoffeeIcon"), sf::Color(202,208,210), sf::Color(91,63,50) ));
 	gameOptions.push_back( GameOption("The Trees Have Eyes", "They're Watching They're Watching They're Watching They're Watching They're Watching They're Watching They're Watching", ctx->assets->getAsset("LogoIcon"), sf::Color(255,193,0), sf::Color(15,15,77) ));
+	gameOptions.push_back( GameOption("Pong", "Relive old memories and play Pong against your friends!", ctx->assets->getAsset("PongIcon"), sf::Color(222,19,195), sf::Color(12,59,6) ));
 	gameOptions.push_back( GameOption("Leaderboard", "View top scores across all games!", ctx->assets->getAsset("LeaderboardIcon"), sf::Color(250,186,24), sf::Color(205,152,20) ));
 	gameOptions.push_back( GameOption("Exit", "Stop playing for now", ctx->assets->getAsset("ExitIcon"), sf::Color(214,0,0), sf::Color(155,0,0) ));
 	size = gameOptions.size();
@@ -111,10 +112,13 @@ void GameSelectState::tick(){
 			case 2: // Fruit Ninja
 				ctx -> gsm -> requestStateChange(States::FruitNinja, 1.5f, 1.5f);
 				break;
-			case 3: // Leaderboard
+			case 3: // Pong
+				ctx -> gsm -> requestStateChange(States::Pong, 1.5f, 1.5f);
+				break;
+			case 4: // Leaderboard
 				//ctx -> gsm -> requestStateChange(States::Leaderboard, 1.5f, 1.5f);
 				break;
-			case 4: // Exit
+			case 5: // Exit
 				ctx -> gsm -> requestStateChange(States::Idle, 1.5f, 1.5f);
 				break;
 		}
