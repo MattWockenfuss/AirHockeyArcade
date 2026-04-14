@@ -2,6 +2,12 @@
 #include <iostream>
 
 AssetManager::AssetManager(){
+
+    //Global Sounds
+    loadSound("Boot", "boot.wav");
+    loadSound("Bounce", "bounce.wav");
+    loadSound("Hit", "hit.wav");
+
     //Air Hockey Images
     loadAsset("FieldBack", "field_back.png");
     loadAsset("Field", "field.png");
@@ -72,6 +78,7 @@ AssetManager::AssetManager(){
     loadSound("goal1", "goal_horn.wav");
     loadSound("goal2", "goal_horn_2.wav");
     loadSound("inter", "intermission.wav");
+    loadSound("cheer", "cheer.wav");
 	
 	// Fruit Ninja Images
 	loadAsset("background","background.png");
