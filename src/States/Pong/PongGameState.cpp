@@ -44,22 +44,27 @@ void PongGameState::init(Context *ctx) {
     bgTexture.emplace(ctx -> assets -> getAsset("pongbg"));
     background.emplace(sf::Sprite(bgTexture.value()));
 
-    ctx -> p1window = ctx -> p1window;
-
     std::string play1 = ctx -> p1name;
     std::string play2 = ctx -> p2name;
 
     if (play1 != "") {
         player1.emplace(ctx -> assets -> getFont("ST-SimpleSquare"), play1 + ": ", 40);
+        win1.emplace(ctx -> assets -> getFont("ST-SimpleSquare"), "GAME OVER\n" + play1 + " wins!", 100);
     }
     else {
         player1.emplace(ctx -> assets -> getFont("ST-SimpleSquare"), "Player 1: ", 40);
+
+        win1.emplace(ctx -> assets -> getFont("ST-SimpleSquare"), "GAME OVER\nPlayer 1 wins!", 100);
     }
     if (play2 != "") {
         player2.emplace(ctx -> assets -> getFont("ST-SimpleSquare"), play2 + ": ", 40);
+
+        win2.emplace(ctx -> assets -> getFont("ST-SimpleSquare"), "GAME OVER\n" + play2 + " wins!", 100);
     }
     else {
         player2.emplace(ctx -> assets -> getFont("ST-SimpleSquare"), "COM: ", 40);
+
+        win2.emplace(ctx -> assets -> getFont("ST-SimpleSquare"), "GAME OVER\nCOM wins!", 100);
     }
 
     title_text.emplace(ctx -> assets -> getFont("ST-SimpleSquare"), "Pong", 55);
@@ -97,6 +102,16 @@ void PongGameState::init(Context *ctx) {
 	player2 -> setOrigin(p2Rect.getCenter());
 	player2 -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 1.25f, padding));
     player2 -> setFillColor(sf::Color::Magenta);
+
+    const sf::FloatRect wint1 = win1 -> getLocalBounds();
+    win1 -> setOrigin(wint1.getCenter());
+    win1 -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2.0f, ctx -> p1window -> getSize().y / 2.0f));
+    win1 -> setFillColor(sf::Color::Green);
+
+    const sf::FloatRect wint2 = win2 -> getLocalBounds();
+    win2 -> setOrigin(wint2.getCenter());
+    win2 -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2.0f, ctx -> p1window -> getSize().y / 2.0f));
+    win2 -> setFillColor(sf::Color::Green);
 
     const sf::FloatRect goalRect = goal_text -> getLocalBounds();
 	goal_text -> setOrigin(goalRect.getCenter());
@@ -385,7 +400,8 @@ void PongGameState::p1_score() {
     rendergoal = true;
     score1 += 1;
     player1 -> setString(player1 -> getString().substring(0, player1 -> getString().getSize()-1) + std::to_string(score1));
-    match_start(2);
+    if (score1 == 10) p1_win();
+    else match_start(2);
 }
 
 //Triggers when player2 (right side) scores
@@ -397,7 +413,161 @@ void PongGameState::p2_score() {
     rendergoal = true;
     score2 += 1;
     player2 -> setString(player2 -> getString().substring(0, player2 -> getString().getSize()-1) + std::to_string(score2));
-    match_start(1);
+    if (score2 == 10) p2_win();
+    else match_start(1);
+}
+
+void PongGameState::p1_win() {
+    //We want to flash the "win" text on the screen, using clock with modulus
+
+    p1->rect.setPosition(sf::Vector2f(padding, winSize.y/2.0f));
+    p2->rect.setPosition(sf::Vector2f((winSize.x - padding), winSize.y/2.0f));
+    b->circ.setPosition(sf::Vector2f(winSize.x/2.0f, winSize.y/2.0f));
+
+    //Begin end countdown!
+    short int sec = 10;
+    auto countdown = std::chrono::steady_clock::now() + std::chrono::seconds(sec);
+    while (std::chrono::steady_clock::now() < countdown) {
+        auto time_remaining = std::chrono::duration_cast<std::chrono::seconds>(countdown-std::chrono::steady_clock::now());
+
+        //Draw order
+
+        //Clear window
+        ctx -> p1window -> clear();
+
+        //Draw background
+        ctx -> p1window -> draw(background.value());
+
+        //Draw score text
+        ctx -> p1window -> draw(title_text.value());
+        ctx -> p1window -> draw(player1.value());
+        ctx -> p1window -> draw(player2.value());
+
+        if (rendergoal) {
+            ctx -> p1window -> draw(goal_text.value());
+        }
+
+        //Draw game objects
+        ctx -> p1window -> draw(p1->rect);
+        ctx -> p1window -> draw(p2->rect);
+        ctx -> p1window -> draw(b->circ);
+
+        long long tr = std::chrono::duration_cast<std::chrono::seconds>(time_remaining).count();
+        //Draw win text
+        if (static_cast<unsigned int>(tr) % 2 == 0) {
+            ctx -> p1window -> draw(win1.value());
+        }
+
+        ctx -> p1window -> display();
+
+        //Draw order
+
+        //Clear window
+        ctx -> p2window -> clear();
+
+        //Draw background
+        ctx -> p2window -> draw(background.value());
+
+        //Draw score text
+        ctx -> p2window -> draw(title_text.value());
+        ctx -> p2window -> draw(player1.value());
+        ctx -> p2window -> draw(player2.value());
+
+        if (rendergoal) {
+            ctx -> p2window -> draw(goal_text.value());
+        }
+
+        //Draw game objects
+        ctx -> p2window -> draw(p1->rect);
+        ctx -> p2window -> draw(p2->rect);
+        ctx -> p2window -> draw(b->circ);
+
+        //Draw win text
+        if (static_cast<unsigned int>(tr) % 2 == 0) {
+            ctx -> p2window -> draw(win1.value());
+        }
+
+
+        ctx -> p2window -> display();
+    }
+
+    ctx -> gsm -> requestStateChange(States::Idle, 1.5f, 1.5f);
+}
+
+void PongGameState::p2_win() {
+    //We want to flash the "win" text on the screen, using clock with modulus
+
+    p1->rect.setPosition(sf::Vector2f(padding, winSize.y/2.0f));
+    p2->rect.setPosition(sf::Vector2f((winSize.x - padding), winSize.y/2.0f));
+    b->circ.setPosition(sf::Vector2f(winSize.x/2.0f, winSize.y/2.0f));
+
+    //Begin match countdown!
+    short int sec = 10;
+    auto countdown = std::chrono::steady_clock::now() + std::chrono::seconds(sec);
+    while (std::chrono::steady_clock::now() < countdown) {
+        auto time_remaining = std::chrono::duration_cast<std::chrono::seconds>(countdown-std::chrono::steady_clock::now());
+
+        //Draw order
+
+        //Clear window
+        ctx -> p1window -> clear();
+
+        //Draw background
+        ctx -> p1window -> draw(background.value());
+
+        //Draw score text
+        ctx -> p1window -> draw(title_text.value());
+        ctx -> p1window -> draw(player1.value());
+        ctx -> p1window -> draw(player2.value());
+
+        if (rendergoal) {
+            ctx -> p1window -> draw(goal_text.value());
+        }
+
+        //Draw game objects
+        ctx -> p1window -> draw(p1->rect);
+        ctx -> p1window -> draw(p2->rect);
+        ctx -> p1window -> draw(b->circ);
+
+        long long tr = std::chrono::duration_cast<std::chrono::seconds>(time_remaining).count();
+        //Draw win text
+        if (static_cast<unsigned int>(tr) % 2 == 0) {
+            ctx -> p1window -> draw(win2.value());
+        }
+
+        ctx -> p1window -> display();
+
+        //Draw order
+
+        //Clear window
+        ctx -> p2window -> clear();
+
+        //Draw background
+        ctx -> p2window -> draw(background.value());
+
+        //Draw score text
+        ctx -> p2window -> draw(title_text.value());
+        ctx -> p2window -> draw(player1.value());
+        ctx -> p2window -> draw(player2.value());
+
+        if (rendergoal) {
+            ctx -> p2window -> draw(goal_text.value());
+        }
+
+        //Draw game objects
+        ctx -> p2window -> draw(p1->rect);
+        ctx -> p2window -> draw(p2->rect);
+        ctx -> p2window -> draw(b->circ);
+
+        //Draw win text
+        if (static_cast<unsigned int>(tr) % 2 == 0) {
+            ctx -> p2window -> draw(win2.value());
+        }
+
+        ctx -> p2window -> display();
+    }
+    
+    ctx -> gsm -> requestStateChange(States::Idle, 1.5f, 1.5f);
 }
 
 //Defines the match beginning, including ball direction and such.

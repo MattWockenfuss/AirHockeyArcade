@@ -31,7 +31,7 @@ class PongGameState : public State {
         ~PongGameState() override = default;
     private:
         float padding = 40.0f;
-        std::optional<sf::Text> title_text, player1, player2, goal_text, seconds_counter, countdown_timer;
+        std::optional<sf::Text> title_text, player1, player2, goal_text, seconds_counter, countdown_timer, win1, win2;
         std::optional<sf::Texture> bgTexture;
         std::optional<sf::Sprite> background;
         const std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
@@ -48,5 +48,7 @@ class PongGameState : public State {
         void collision();
         void p1_score();
         void p2_score();
+        void p1_win();
+        void p2_win();
         void match_start(unsigned short int dir);
 };
