@@ -2,6 +2,7 @@
 
 #include "../../Context.hpp"
 #include "../../AssetManager.hpp"
+#include "../../AudioManager.hpp"
 #include "../../KeyManager.hpp"
 #include "../GameStateManager.hpp"
 #include "../../IO/InputManager.hpp"
@@ -288,9 +289,11 @@ void PongGameState::collision() {
 
     //Ball top and bottom wall
     if (b->circ.getPosition().y - b->rad <= 0.0f) {
+        ctx -> audio -> playSound(ctx->assets->getSound("Bounce"));
         b->vely *= -1;
     }
     else if (b->circ.getPosition().y + b->rad >= winSize.y) {
+        ctx -> audio -> playSound(ctx->assets->getSound("Bounce"));
         b->vely *= -1;
     }
 
@@ -316,6 +319,8 @@ void PongGameState::collision() {
                 //If so...reflect y velocity too, or else it'll get stuck inside the paddle
 
                 //Also, it's just gg at that point
+
+                ctx -> audio -> playSound(ctx->assets->getSound("Hit"));
                 b->vely *= -1;
                 return;
             }
@@ -330,10 +335,13 @@ void PongGameState::collision() {
                 p1->rect.getPosition().y + p1->rect.getSize().y/2 <= b->circ.getPosition().y) {
                     b->velx *= -1;
                     b->vely *= -1;
+                    ctx -> audio -> playSound(ctx->assets->getSound("Hit"));
+
                     return;
             }
 
             //Reflect x velocity, and then return, as no other collisions are possible right now.
+            ctx -> audio -> playSound(ctx->assets->getSound("Hit"));
             b->velx *= -1;
             return;
         }
@@ -359,6 +367,7 @@ void PongGameState::collision() {
                 //If so...reflect y velocity too, or else it'll get stuck inside the paddle
 
                 //Also it's just gg at that point
+                ctx -> audio -> playSound(ctx->assets->getSound("Hit"));
                 b->vely *= -1;
                 return;
             }
@@ -371,12 +380,14 @@ void PongGameState::collision() {
             //then we know that they must be intersecting at the corner! And vice versa
             if (p2->rect.getPosition().y - p2->rect.getSize().y/2 >= b->circ.getPosition().y ||
                 p2->rect.getPosition().y + p2->rect.getSize().y/2 <= b->circ.getPosition().y) {
+                    ctx -> audio -> playSound(ctx->assets->getSound("Hit"));
                     b->velx *= -1;
                     b->vely *= -1;
                     return;
             }
             
             //Reflect x velocity, and then return, as no other collisions are possible right now.
+            ctx -> audio -> playSound(ctx->assets->getSound("Hit"));
             b->velx *= -1;
             return;
         }
