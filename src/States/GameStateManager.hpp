@@ -8,7 +8,7 @@ class Context;
 
 
 enum class States {
-    Idle, NameEntry, GameSelect, AirHockey, Tron, FruitNinja, Pong
+    Idle, NameEntry, GameSelect, AirHockey, Tron, FruitNinja, Pong, Leaderboard
 };
 
 inline const char* stateToString(States s){
@@ -18,6 +18,7 @@ inline const char* stateToString(States s){
 		case States::GameSelect: return "GameSelect";
         case States::AirHockey: return "AirHockey";
         case States::Tron: return "Tron";
+        case States::Leaderboard: return "Leaderboard";
         case States::FruitNinja: return "FruitNinja";
         case States::Pong: return "Pong";
         default: return "Unknown";

@@ -7,6 +7,7 @@
 #include "NameEntryState.hpp"
 #include "GameSelect/GameSelectState.hpp"
 #include "Pong/PongGameState.hpp"
+#include "Leaderboard/LeaderboardState.hpp"
 
 #include "../Context.hpp"
 #include "../AssetManager.hpp"
@@ -74,6 +75,10 @@ void GameStateManager::changeState(){
 			break;
         case States::Pong:
             currentState = new PongGameState();
+            currentState -> init(ctx);
+            break;
+        case States::Leaderboard:
+            currentState = new LeaderboardState();
             currentState -> init(ctx);
             break;
     }

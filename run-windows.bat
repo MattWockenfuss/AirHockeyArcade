@@ -21,12 +21,13 @@ src\States\GameStateManager.cpp ^
 src\States\State.cpp ^
 src\States\IdleState.cpp ^
 src\States\NameEntryState.cpp ^
-src\States\GameSelect\GameSelectState.cpp ^
 src\States\AirHockey\AirHockeyGameState.cpp ^
+src\States\FruitNinja\FruitNinjaGameState.cpp ^
+src\States\GameSelect\GameSelectState.cpp ^
+src\States\Leaderboard\LeaderboardState.cpp ^
+src\States\Pong\PongGameState.cpp ^
 src\States\Tron\TronGameState.cpp ^
 src\States\Tron\Tron.cpp ^
-src\States\FruitNinja\FruitNinjaGameState.cpp ^
-src\States\Pong\PongGameState.cpp ^
 src\AudioManager.cpp ^
 src\IO\KeyboardInput.cpp ^
 src\IO\InputManager.cpp ^

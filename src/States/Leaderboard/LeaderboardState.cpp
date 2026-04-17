@@ -1,0 +1,65 @@
+#include "LeaderboardState.hpp"
+#include <iostream>
+#include <cmath>
+#include <sstream>
+
+
+#include "../../Context.hpp"
+#include "../../AssetManager.hpp"
+#include "../../KeyManager.hpp"
+#include "../../IO/InputManager.hpp"
+#include "../GameStateManager.hpp"
+
+void LeaderboardState::init(Context* ctx){
+    State::init(ctx);
+
+    title_text.emplace(ctx -> assets -> getFont("SquareSansSerif"), "B J A M M  DUOCADE", 90);
+    play_text.emplace(ctx -> assets -> getFont("SquareSansSerif"), "Press A To Start!", 40);
+
+
+    std::cout << "LeaderboardState Created!" << std::endl;
+
+
+	const sf::FloatRect titleRect = title_text -> getLocalBounds();
+	title_text -> setOrigin(titleRect.getCenter());
+	title_text -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2.0f, ctx -> p1window -> getSize().y / 3.0f));
+
+	const sf::FloatRect textRect = play_text -> getLocalBounds();
+	play_text -> setOrigin(textRect.getCenter());
+	play_text -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2.0f, ctx -> p1window -> getSize().y / 1.3f));
+}
+
+void LeaderboardState::tick() {
+	if(ctx -> input -> P1A || ctx -> input -> P2A){
+		ctx -> gsm -> requestStateChange(States::NameEntry, 1.5f, 1.5f);
+	}
+	
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    std::chrono::duration elapsed = end - start;
+    sec = std::chrono::duration_cast<std::chrono::seconds>(elapsed).count();
+	if(sec >= 255){ // prevent difference in time from getting too big
+		start = std::chrono::steady_clock::now();
+	}
+}
+
+
+
+
+
+void LeaderboardState::p1render(sf::RenderWindow& p1window) {
+    //render 1 for idlestate
+    p1window.draw(*title_text);
+    
+    if ((sec = static_cast<unsigned int>(sec)) % 2 == 0) {
+        p1window.draw(*play_text);
+    }
+}
+
+void LeaderboardState::p2render(sf::RenderWindow& p2window) {
+    //render 2 for idlestate
+    p2window.draw(*title_text);
+    
+    if ((sec = static_cast<unsigned int>(sec)) % 2 == 0) {
+        p2window.draw(*play_text);
+    }
+}

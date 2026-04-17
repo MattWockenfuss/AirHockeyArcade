@@ -116,7 +116,7 @@ void GameSelectState::tick(){
 				ctx -> gsm -> requestStateChange(States::Pong, 1.5f, 1.5f);
 				break;
 			case 4: // Leaderboard
-				//ctx -> gsm -> requestStateChange(States::Leaderboard, 1.5f, 1.5f);
+				ctx -> gsm -> requestStateChange(States::Leaderboard, 1.5f, 1.5f);
 				break;
 			case 5: // Exit
 				ctx -> gsm -> requestStateChange(States::Idle, 1.5f, 1.5f);
