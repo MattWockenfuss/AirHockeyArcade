@@ -9,6 +9,7 @@
 #include "../KeyManager.hpp"
 #include "../IO/InputManager.hpp"
 #include "GameStateManager.hpp"
+#include "../AudioManager.hpp"
 
 void IdleState::init(Context* ctx){
     State::init(ctx);
@@ -31,6 +32,7 @@ void IdleState::init(Context* ctx){
 
 void IdleState::tick() {
 	if(ctx -> input -> P1A || ctx -> input -> P2A){
+        ctx->audio->playSound(ctx->assets->getSound("Boot"));
 		ctx -> gsm -> requestStateChange(States::NameEntry, 1.5f, 1.5f);
 	}
 	
