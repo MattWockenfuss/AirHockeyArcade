@@ -178,8 +178,8 @@ void FruitNinjaGameState::init(Context* ctx){
 	   Then the first fruit needs to start falling 3.933 - 1.2 seconds before the start of the song
 	   The first song should start 2.733 seconds after the first fruit spawns
 	 */
-	instances[0].fruitSongDelays.push_back(2.733); // only player 1 will play sounds, but I'm giving player 2 the info too just in case
-	instances[1].fruitSongDelays.push_back(2.733);
+	instances[0].fruitSongDelays.push_back(1.733); // only player 1 will play sounds, but I'm giving player 2 the info too just in case
+	instances[1].fruitSongDelays.push_back(1.733);
 	// song 1, player 1 // 45 notes
 	instances[0].fruitSongTimes.push_back( *(new std::vector<float>{ /*time delay relative to start of song : */2.0, 4.0, 2.0, 0.8, 0.8, 0.4, 0.8, 0.4, 1.2, 0.4, 0.8, 0.4, 0.4, 2.4, 0.4, 0.4, 0.4, 0.8, 0.4, 0.8, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.8, 0.8, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4}) );
 	// song 1, player 2 // 45 notes
@@ -190,8 +190,8 @@ void FruitNinjaGameState::init(Context* ctx){
 	   Then the first fruit needs to start falling 3.933 - 2 seconds before the start of the song
 	   The second song should start 1.933 seconds after the first fruit spawns
 	 */
-	instances[0].fruitSongDelays.push_back(1.933);
-	instances[1].fruitSongDelays.push_back(1.933);
+	instances[0].fruitSongDelays.push_back(0.933);
+	instances[1].fruitSongDelays.push_back(0.933);
 	// song 2, player 1 // 56 notes
 	instances[0].fruitSongTimes.push_back( *(new std::vector<float>{ /*time delay relative to start of song : */6.4, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0.8, 0.8, 0.8, 0.4, 0.4, 0.8, 0.4, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.8, 0.4, 0.4, 0.4, 0.8, 0.4, 0.8, 0.4, 0.8, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.8, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.4}) );
 	// song 2, player 2 // 56 notes
@@ -202,8 +202,8 @@ void FruitNinjaGameState::init(Context* ctx){
 	   Then the first fruit needs to start falling 3.933 - 0.8 seconds before the start of the song
 	   The third song should start 3.133 seconds after the first fruit spawns
 	 */
-	instances[0].fruitSongDelays.push_back(3.133);
-	instances[1].fruitSongDelays.push_back(3.133);
+	instances[0].fruitSongDelays.push_back(2.133);
+	instances[1].fruitSongDelays.push_back(2.133);
 	// song 3, player 1 // 54 notes
 	instances[0].fruitSongTimes.push_back( *(new std::vector<float>{ /*time delay relative to start of song : */6.0, 0.4, 0.4, 1.2, 0.4, 0.4, 1.2, 0.4, 0.4, 0.4, 0.8, 0.4, 0.4, 0.4, 0.8, 1.6, 0.8, 0.4, 0.4, 0.4, 0.8, 0.8, 0.4, 0.4, 0.8, 0.4, 0.8, 0.8, 1.6, 0.4, 0.4, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.8, 0.4, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.4, 0.4, 0.4}) );
 	// song 3, player 2 // 54 notes
