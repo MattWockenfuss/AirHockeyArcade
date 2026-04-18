@@ -41,7 +41,7 @@ class PongGameState : public State {
         Ball *b = new Ball();
         sf::Vector2f winSize;
         sf::RenderWindow *window1;
-        unsigned short int sub_steps = 64;
+        unsigned short int sub_steps = 128;
         int score1, score2;
         bool rendergoal;
 

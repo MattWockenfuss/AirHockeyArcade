@@ -158,7 +158,7 @@ void PongGameState::tick() {
     */
 
     //Sub steps is defined as a priv variable with unsigned short int as its data type.
-    //By default, it is set to 64 sub steps, but we can change this in the future if need be.
+    //By default, it is set to 128 sub steps, but we can change this in the future if need be.
 
     unsigned short int i = 0;
     tickCount++;
@@ -342,6 +342,9 @@ void PongGameState::collision() {
 
             //Reflect x velocity, and then return, as no other collisions are possible right now.
             ctx -> audio -> playSound(ctx->assets->getSound("Hit"));
+
+            //I am TIRED of the ball getting stuck in the paddles, so I'm making the ball snap to the edge
+            b->circ.setPosition(sf::Vector2f(((b->circ.getPosition().x + b->rad) + ((p1->rect.getPosition().x + p1->rect.getSize().x/2)-(b->circ.getPosition().x-b->rad))), b->circ.getPosition().y));
             b->velx *= -1;
             return;
         }
@@ -388,6 +391,9 @@ void PongGameState::collision() {
             
             //Reflect x velocity, and then return, as no other collisions are possible right now.
             ctx -> audio -> playSound(ctx->assets->getSound("Hit"));
+
+            //I am TIRED of the ball getting stuck in the paddles, so I'm making the ball snap to the edge
+            b->circ.setPosition(sf::Vector2f(((b->circ.getPosition().x - b->rad) - ((b->circ.getPosition().x + b->rad)-(p2->rect.getPosition().x - p2->rect.getSize().x/2))), b->circ.getPosition().y));
             b->velx *= -1;
             return;
         }
