@@ -210,7 +210,11 @@ void PongGameState::tick() {
             else if (ctx -> input -> P2_Down) {
                 p2->rect.setPosition(sf::Vector2f(p2->rect.getPosition().x, p2->rect.getPosition().y + 40.0f/sub_steps));
             }
-
+			// emergency game exit
+			if(ctx->input->P1B && ctx->input->P1Y && ctx->input->P2B && ctx->input->P2X){ // player 1 pressed B and Y, and player 2 pressed B and X at the same time to quit
+				ctx -> gsm -> requestStateChange(States::GameSelect, 3.0f, 1.5f);
+			}
+			
             //Move ball
             b->circ.setPosition(sf::Vector2f(b->circ.getPosition().x + b->velx/sub_steps, b->circ.getPosition().y + b->vely/sub_steps));
 
@@ -508,7 +512,7 @@ void PongGameState::p1_win() {
         ctx -> p2window -> display();
     }
 
-    ctx -> gsm -> requestStateChange(States::Idle, 1.5f, 1.5f);
+    ctx -> gsm -> requestStateChange(States::GameSelect, 1.5f, 1.5f);
 }
 
 void PongGameState::p2_win() {
@@ -584,7 +588,7 @@ void PongGameState::p2_win() {
         ctx -> p2window -> display();
     }
     
-    ctx -> gsm -> requestStateChange(States::Idle, 1.5f, 1.5f);
+    ctx -> gsm -> requestStateChange(States::GameSelect, 3.0f, 1.5f);
 }
 
 //Defines the match beginning, including ball direction and such.
