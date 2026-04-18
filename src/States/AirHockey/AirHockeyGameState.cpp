@@ -8,6 +8,7 @@
 #include "../../AssetManager.hpp"
 #include "../../KeyManager.hpp"
 #include "../../IO/InputManager.hpp"
+#include "../../AudioManager.hpp"
 
 
 double getScreenX(double x, double y, int screenWidth){
@@ -653,10 +654,12 @@ void AirHockeyGameState::moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle
 			if(pk_y_<0){ // give plr 1 the goal
 				player1.score++;
 				kickoff = 1;
+				ctx->audio->playSound(ctx->assets->getSound("goal1"));
 			}
 			else{ // give plr 2 the goal
 				player2.score++;
 				kickoff = 2;
+				ctx->audio->playSound(ctx->assets->getSound("goal2"));
 			}
 			pk_x_ = 300;
 			pk_y_ = 400;
@@ -664,6 +667,8 @@ void AirHockeyGameState::moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle
 			pk_vy = 0;
 			// end game
 			if(player1.score>=11 || player2.score>=11){
+				ctx->audio->stopSound();
+				ctx->audio->playSound(ctx->assets->getSound("inter"));
 				ctx -> gsm -> requestStateChange(States::GameSelect, 3.0f, 1.5f);
 			}
 			break;
@@ -696,6 +701,7 @@ void AirHockeyGameState::moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle
 			 */
 			collision = true;
 			Pad1Col = true;
+			ctx->audio->playSound(ctx->assets->getSound("Hit"));
 			if(minDist<pk_diam/2 + pd1_diam/2){ // we are colliding at the first point (highly unlikely)
 				ddt = 0; // after this step, ddt will be the best guess time of collision
 			}
@@ -840,6 +846,7 @@ void AirHockeyGameState::moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle
 			 */
 			collision = true;
 			Pad2Col = true;
+			ctx->audio->playSound(ctx->assets->getSound("Hit"));
 			if(minDist<pk_diam/2 + pd2_diam/2){ // we are colliding at the first point (highly unlikely)
 				ddt = 0; // after this step, ddt will be the best guess time of collision
 			}
@@ -958,6 +965,7 @@ void AirHockeyGameState::moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle
 		if(pk_x_ < pk_diam/2){ // left wall
 			collision = true;
 			WalCol = true;
+			ctx->audio->playSound(ctx->assets->getSound("Bounce"));
 			// find standard equation of line that the puck travels
 				// note that we will shift the entire line to the left by 25 units so that we are following the left side of the puck and set the exact intersection point
 			// calculate puck line like this to avoid errors with moving vertically
@@ -992,6 +1000,7 @@ void AirHockeyGameState::moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle
 		if(pk_x_ > 600 - pk_diam/2){ // right wall
 			collision = true;
 			WalCol = true;
+			ctx->audio->playSound(ctx->assets->getSound("Bounce"));
 			// find standard equation of line that the puck travels
 				// note that we will shift the entire line to the right by 25 units so that we are following the right side of the puck and set the exact intersection point
 			// calculate puck line like this to avoid errors with moving vertically
@@ -1026,6 +1035,7 @@ void AirHockeyGameState::moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle
 		if(pk_y_ < pk_diam/2 && (pk_x_<200+pk_diam/2 || pk_x_>400-pk_diam/2) ){ // top wall (exclude goal from collisions)
 			collision = true;
 			WalCol = true;
+			ctx->audio->playSound(ctx->assets->getSound("Bounce"));
 			// find standard equation of line that the puck travels
 				// note that we will shift the entire line up by 25 units so that we are following the top side of the puck and set the exact intersection point
 			// calculate puck line like this to avoid errors with moving vertically
@@ -1059,6 +1069,7 @@ void AirHockeyGameState::moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle
 		if(pk_y_ > 800 - pk_diam/2 && (pk_x_<200+pk_diam/2 || pk_x_>400-pk_diam/2) ){ // bottom wall (exclude goal from collisions)
 			collision = true;
 			WalCol = true;
+			ctx->audio->playSound(ctx->assets->getSound("Bounce"));
 			// find standard equation of line that the puck travels
 				// note that we will shift the entire line down by 25 units so that we are following the bottom side of the puck and set the exact intersection point
 			// calculate puck line like this to avoid errors with moving vertically
@@ -1294,6 +1305,9 @@ void AirHockeyGameState::tick() {
 		puck.vy = 0;
 		timer += dt;
 		if(timer >= 3){
+			if(player1.score % 2 == 0 || player2.score % 2 == 0) {
+				ctx->audio->playSound(ctx->assets->getSound("cheer"));
+			}
 			puck.setKickoff(kickoff);
 			timer = 0;
 			kickoff = -1;
