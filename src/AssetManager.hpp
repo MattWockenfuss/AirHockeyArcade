@@ -12,11 +12,11 @@ class AssetManager {
 
         sf::Texture& getAsset(std::string key);
         sf::Font& getFont(std::string key);
-        sf::SoundBuffer& getSound(std::string key);
+        sf::Music& getSound(std::string key);
     private:
         std::unordered_map<std::string, sf::Texture> assets;
         std::unordered_map<std::string, sf::Font> fonts;
-        std::unordered_map<std::string, sf::SoundBuffer> sounds;
+        std::unordered_map<std::string, sf::Music> sounds;
         
         void loadAsset(std::string key, std::string pathname);
         void loadFont(std::string key, std::string pathname);

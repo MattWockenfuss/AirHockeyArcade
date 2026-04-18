@@ -117,7 +117,7 @@ sf::Texture& AssetManager::getAsset(std::string key){
 sf::Font& AssetManager::getFont(std::string key){
     return fonts.at(key);  // throws std::out_of_range if missing
 }
-sf::SoundBuffer& AssetManager::getSound(std::string key){
+sf::Music& AssetManager::getSound(std::string key){
     return sounds.at(key);
 }
 
@@ -141,9 +141,13 @@ void AssetManager::loadAsset(std::string key, std::string pathname){
 }
 
 void AssetManager::loadSound(std::string key, std::string pathname){
-    sf::SoundBuffer sound;
-    if (!sound.loadFromFile("assets/sounds/" + pathname)){
-        std::cout << "Failed to SoundBuffer:: " << pathname << std::endl;
+    sf::Music sound;
+
+    try {
+        sound = sf::Music("assets/sounds/" + pathname);
+    } catch (sf::Exception e) {
+        std::cout << e.what() << std::endl;
+        std::cout << "Failed to load music " << pathname << std::endl;
         return;
     }
     sounds.emplace(key, std::move(sound));
