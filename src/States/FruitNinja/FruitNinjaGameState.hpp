@@ -47,9 +47,11 @@ struct FruitNinjaInstance{
 		// fruit
 		std::vector<Fruit*> fruits;
 		std::vector<std::vector<float>> fruitSongTimes;
+		std::vector<float> fruitSongDelays;
 		int fruitSong = 0;
 		int fruitNote = 0;
 		float fruitDelay = 0;
+		float songDelay = 0;
 		
 		// scoring
 		std::string name;

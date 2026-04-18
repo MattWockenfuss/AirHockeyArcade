@@ -9,6 +9,7 @@
 #include "../../AssetManager.hpp"
 #include "../../KeyManager.hpp"
 #include "../../IO/InputManager.hpp"
+#include "../../AudioManager.hpp"
 
 Fruit::Fruit(sf::Texture tileSet, int type, int state, int x, int y, int w, int h, double vx, double vy){
 	this->tileSet = tileSet;
@@ -170,18 +171,51 @@ void FruitNinjaGameState::init(Context* ctx){
 	
 	// set fruit timing lists for the songs
 	// fruit drop delay from spawn to sweet spot is roughly 3.933 seconds
+	
+	/* The first note in song 1 is 1.2s after the start
+	   The first fruit of the song should wait 2 seconds to fall to give players time to get ready
+	   If it takes a fruit 3.933s to fall from spawn to the perfect cut height,
+	   Then the first fruit needs to start falling 3.933 - 1.2 seconds before the start of the song
+	   The first song should start 2.733 seconds after the first fruit spawns
+	 */
+	instances[0].fruitSongDelays.push_back(2.733); // only player 1 will play sounds, but I'm giving player 2 the info too just in case
+	instances[1].fruitSongDelays.push_back(2.733);
 	// song 1, player 1 // 45 notes
-	instances[0].fruitSongTimes.push_back( *(new std::vector<float>{ /*time delay relative to start of song : */5.0, 4.0, 2.0, 0.8, 0.8, 0.4, 0.8, 0.4, 1.2, 0.4, 0.8, 0.4, 0.4, 2.4, 0.4, 0.4, 0.4, 0.8, 0.4, 0.8, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.8, 0.8, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4}) );
+	instances[0].fruitSongTimes.push_back( *(new std::vector<float>{ /*time delay relative to start of song : */2.0, 4.0, 2.0, 0.8, 0.8, 0.4, 0.8, 0.4, 1.2, 0.4, 0.8, 0.4, 0.4, 2.4, 0.4, 0.4, 0.4, 0.8, 0.4, 0.8, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.8, 0.8, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4}) );
 	// song 1, player 2 // 45 notes
-	instances[1].fruitSongTimes.push_back( *(new std::vector<float>{ /*time delay relative to start of song : */5.0, 2.4, 1.2, 0.8, 1.2, 0.4, 0.8, 0.4, 0.8, 0.4, 0.8, 0.4, 0.4, 0.8, 0.4, 0.4, 0.4, 2.8, 0.4, 0.8, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 1.2, 0.8, 0.4, 0.4, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4}) );
+	instances[1].fruitSongTimes.push_back( *(new std::vector<float>{ /*time delay relative to start of song : */4.0, 2.4, 1.2, 0.8, 1.2, 0.4, 0.8, 0.4, 0.8, 0.4, 0.8, 0.4, 0.4, 0.8, 0.4, 0.4, 0.4, 2.8, 0.4, 0.8, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 1.2, 0.8, 0.4, 0.4, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4}) );
+	/* The first note in song 2 is 2s after the start
+	   The first fruit of the song should wait 2 seconds to fall to give players time to get ready
+	   If it takes a fruit 3.933s to fall from spawn to the perfect cut height,
+	   Then the first fruit needs to start falling 3.933 - 2 seconds before the start of the song
+	   The second song should start 1.933 seconds after the first fruit spawns
+	 */
+	instances[0].fruitSongDelays.push_back(1.933);
+	instances[1].fruitSongDelays.push_back(1.933);
 	// song 2, player 1 // 56 notes
-	instances[0].fruitSongTimes.push_back( *(new std::vector<float>{ /*time delay relative to start of song : */5.0, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0.8, 0.8, 0.8, 0.4, 0.4, 0.8, 0.4, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.8, 0.4, 0.4, 0.4, 0.8, 0.4, 0.8, 0.4, 0.8, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.8, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.4}) );
+	instances[0].fruitSongTimes.push_back( *(new std::vector<float>{ /*time delay relative to start of song : */6.4, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0.8, 0.8, 0.8, 0.4, 0.4, 0.8, 0.4, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.8, 0.4, 0.4, 0.4, 0.8, 0.4, 0.8, 0.4, 0.8, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.8, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.4}) );
 	// song 2, player 2 // 56 notes
-	instances[1].fruitSongTimes.push_back( *(new std::vector<float>{ /*time delay relative to start of song : */5.0, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.8, 0.4, 0.4, 0.4, 0.8, 0.8, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0.8, 0.8, 0.8, 0.4, 0.4, 0.8, 0.4, 0.8, 0.4, 0.8, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.8, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.4}) );
+	instances[1].fruitSongTimes.push_back( *(new std::vector<float>{ /*time delay relative to start of song : */6.0, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.8, 0.4, 0.4, 0.4, 0.8, 0.8, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0.8, 0.8, 0.8, 0.4, 0.4, 0.8, 0.4, 0.8, 0.4, 0.8, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.8, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.4}) );
+	/* The first note in song 3 is 0.8s after the start
+	   The first fruit of the song should wait 2 seconds to fall to give players time to get ready
+	   If it takes a fruit 3.933s to fall from spawn to the perfect cut height,
+	   Then the first fruit needs to start falling 3.933 - 0.8 seconds before the start of the song
+	   The third song should start 3.133 seconds after the first fruit spawns
+	 */
+	instances[0].fruitSongDelays.push_back(3.133);
+	instances[1].fruitSongDelays.push_back(3.133);
 	// song 3, player 1 // 54 notes
-	instances[0].fruitSongTimes.push_back( *(new std::vector<float>{ /*time delay relative to start of song : */5.0, 0.4, 0.4, 1.2, 0.4, 0.4, 1.2, 0.4, 0.4, 0.4, 0.8, 0.4, 0.4, 0.4, 0.8, 1.6, 0.8, 0.4, 0.4, 0.4, 0.8, 0.8, 0.4, 0.4, 0.8, 0.4, 0.8, 0.8, 1.6, 0.4, 0.4, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.8, 0.4, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.4, 0.4, 0.4}) );
+	instances[0].fruitSongTimes.push_back( *(new std::vector<float>{ /*time delay relative to start of song : */6.0, 0.4, 0.4, 1.2, 0.4, 0.4, 1.2, 0.4, 0.4, 0.4, 0.8, 0.4, 0.4, 0.4, 0.8, 1.6, 0.8, 0.4, 0.4, 0.4, 0.8, 0.8, 0.4, 0.4, 0.8, 0.4, 0.8, 0.8, 1.6, 0.4, 0.4, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.8, 0.4, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.4, 0.4, 0.4}) );
 	// song 3, player 2 // 54 notes
-	instances[1].fruitSongTimes.push_back( *(new std::vector<float>{ /*time delay relative to start of song : */5.0, 0.4, 0.4, 1.2, 0.4, 0.4, 1.2, 0.4, 0.4, 0.4, 0.8, 0.4, 0.4, 0.8, 0.8, 0.4, 0.4, 0.8, 1.2, 0.4, 0.8, 0.8, 0.4, 0.4, 0.8, 0.4, 0.4, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 2.0, 0.4, 0.4, 0.4, 0.4, 0.8, 0.8, 0.8, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.4, 0.4, 0.4}) );
+	instances[1].fruitSongTimes.push_back( *(new std::vector<float>{ /*time delay relative to start of song : */6.0, 0.4, 0.4, 1.2, 0.4, 0.4, 1.2, 0.4, 0.4, 0.4, 0.8, 0.4, 0.4, 0.8, 0.8, 0.4, 0.4, 0.8, 1.2, 0.4, 0.8, 0.8, 0.4, 0.4, 0.8, 0.4, 0.4, 0.8, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 2.0, 0.4, 0.4, 0.4, 0.4, 0.8, 0.8, 0.8, 0.4, 0.8, 0.4, 0.4, 0.4, 0.4, 0.4, 0.4, 0.8, 0.4, 0.4, 0.4}) );
+	
+	// set the initial fruit vars
+	instances[0].fruitDelay = instances[0].fruitSongTimes[0][0];
+	instances[0].fruitNote = 1;
+	instances[0].songDelay = 60.0;
+	instances[1].fruitDelay = instances[1].fruitSongTimes[0][0];
+	instances[1].fruitNote = 1;
+	instances[1].songDelay = 60;
 }
 
 void FruitNinjaGameState::tick(){	
@@ -349,6 +383,21 @@ void FruitNinjaGameState::tick(){
 			}
 		}
 		
+		// start songs
+		instances[i].songDelay -= dt;
+		if(i==0 && instances[i].songDelay <= 0 && instances[i].songDelay+dt>0){
+			switch(instances[i].fruitSong){
+				case 0:
+					ctx->audio->playSound(ctx->assets->getSound("song1"));
+					break;
+				case 1:
+					ctx->audio->playSound(ctx->assets->getSound("song2"));
+					break;
+				case 2:
+					ctx->audio->playSound(ctx->assets->getSound("song3"));
+					break;
+			}
+		}
 		// spawn fruit
 		instances[i].fruitDelay -= dt;
 		if(instances[i].fruitDelay <= 10 && instances[i].fruitSong==-1){ // the game was triggered to close
@@ -364,13 +413,17 @@ void FruitNinjaGameState::tick(){
 			else
 				instances[i].fruits.push_back( new Fruit(fruitTexs[type],type,0,x*38,-12,8,8,0,0) ); // drop other fruit (they are all the same size)
 			
+			// set time delay before next song
+			if(instances[i].fruitNote==1){
+				instances[i].songDelay = instances[i].fruitSongDelays[instances[i].fruitSong];
+			}
 			// set time delay before next fruit
 			instances[i].fruitDelay = instances[i].fruitSongTimes[instances[i].fruitSong][instances[i].fruitNote];
 			instances[i].fruitNote++;
 			if(instances[i].fruitNote >= instances[i].fruitSongTimes[instances[i].fruitSong].size()){
 				instances[i].fruitNote = 0;
 				instances[i].fruitSong++;
-				if(instances[i].fruitSong >= 3){ // we finished the last song, set game to close and return to the game select menu
+				if(instances[i].fruitSong >= instances[i].fruitSongTimes.size() ){ // we finished the last song, set game to close and return to the game select menu
 					instances[i].fruitDelay = 16;
 					instances[i].fruitSong = -1;
 				}

@@ -87,6 +87,11 @@ AssetManager::AssetManager(){
 	loadAsset("apple_tileSet","apple_tileSet.png");
 	loadAsset("orange_tileSet","orange_tileSet.png");
 	loadAsset("lemon_tileSet","lemon_tileSet.png");
+	
+	// Fruit Ninja Sounds
+	loadSound("song1","song_1.wav");
+	loadSound("song2","song_2.wav");
+	loadSound("song3","song_3.wav");
 
     // Pong Images
     loadAsset("pongbg", "pong_bg.png");
