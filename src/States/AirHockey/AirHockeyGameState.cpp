@@ -1305,7 +1305,7 @@ void AirHockeyGameState::tick() {
 		puck.vy = 0;
 		timer += dt;
 		if(timer >= 3){
-			if(player1.score % 2 == 0 || player2.score % 2 == 0) {
+			if(kickoff == 0) {
 				ctx->audio->playSound(ctx->assets->getSound("cheer"));
 			}
 			puck.setKickoff(kickoff);
