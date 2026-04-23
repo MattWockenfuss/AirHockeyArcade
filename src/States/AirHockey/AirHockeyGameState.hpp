@@ -61,11 +61,10 @@ class AirHockeyGameState : public State {
 		Player player1 = Player("PLR");
 		Player player2 = Player("COM");
 		
-		//std::optional<sf::Text> nameText1, nameText2, scoreText1, scoreText2;
-		//sf::FloatRect textRect;
-		
         std::optional<sf::Sprite> field;
         std::optional<sf::Sprite> fieldBack;
+		
+		std::optional<sf::Text> errMsg_1, errMsg_2;
 		
         sf::Clock clock;
         sf::Time time;

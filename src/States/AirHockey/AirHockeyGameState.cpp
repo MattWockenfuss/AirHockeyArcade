@@ -233,7 +233,7 @@ void Puck::setKickoff(int type){
 	double direction = -1;
 	if(type==1)
 		direction = 1;
-	if(type==0){ // this is the kickoff for the very start of the game
+	if(type<1){ // this is the kickoff for the very start of the game
 		std::srand(std::time(0)); // seed the random numbers based on the current time at kickoff
 		direction = -1 + 2*(std::rand()%2); // make direction either -1 or 1;
 	}
@@ -534,7 +534,6 @@ Player::Player(std::string name){
 void Player::draw1(sf::RenderWindow* window1, sf::Font font){
 	double screenRatio = (double)(window1 -> getSize().x) / 320.0;
 	sf::Color blue(111,99,255);
-	//sf::Color red(223,0,0);
 	
 	sf::Text text(font, name, 16*screenRatio);
 	text.setFillColor(blue);
@@ -550,7 +549,6 @@ void Player::draw1(sf::RenderWindow* window1, sf::Font font){
 }
 void Player::draw2(sf::RenderWindow* window2, sf::Font font){
 	double screenRatio = (double)(window2 -> getSize().x) / 320.0;
-	//sf::Color blue(111,99,255);
 	sf::Color red(223,0,0);
 	
 	sf::Text text(font, name, 16*screenRatio);
@@ -595,6 +593,8 @@ void AirHockeyGameState::moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle
 	// physics vars
 	bool collision;
 	double m, pA, pB, pC, wA, wB, wC, interX, interY, ddt, minDDT, maxDDT, dist, minDist, maxDist, difX, difY, difVX, difVY;
+	// testing vars
+	int count = -1;
     
     // change velocity
     puckFriction(&pk_vx,&pk_vy,dt);
@@ -650,6 +650,16 @@ void AirHockeyGameState::moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle
 	bool WalCol = false;
 	
     while(collision && !((Pad1Col||Pad2Col) && WalCol) ){
+		count++;
+		if(count>iter){ // iter is the max allowable iterations within the collision detection before we abort // normal collision detection has never been seen to exceed 2 iterations
+			pk_x_ = 300;
+			pk_y_ = 400;
+			pk_vx = 0;
+			pk_vy = 0;
+			kickoff = -1; // random kickoff with error message
+			timer = -3;
+		}
+		
 		if(pk_y_<0-pk_diam/2 || pk_y_>800+pk_diam/2){ // the puck is in the goal
 			if(pk_y_<0){ // give plr 1 the goal
 				player1.score++;
@@ -751,7 +761,7 @@ void AirHockeyGameState::moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle
 					ddt = (minDDT+maxDDT)/2;
 				}
 				// we now, hopefully, have the closest non-collision value stored in minDDT
-				ddt = minDDT;//(minDDT+maxDDT)/2;
+				ddt = minDDT;
 			}
 			// here, ddt will hold our best guess of when the point of collision was
 			// set puck position to the point of collision
@@ -896,7 +906,7 @@ void AirHockeyGameState::moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle
 					ddt = (minDDT+maxDDT)/2;
 				}
 				// we now, hopefully, have the closest non-collision value stored in minDDT
-				ddt = minDDT;//(minDDT+maxDDT)/2;
+				ddt = minDDT;
 			}
 			// here, ddt will hold our best guess of when the point of collision was
 			// set puck position to the point of collision
@@ -1147,7 +1157,6 @@ void AirHockeyGameState::init(Context* ctx){
     float width = ctx -> p1window -> getSize().x;
     float height = ctx -> p1window -> getSize().y;
 	double screenRatio = width / 320.0;
-    //screenRatio = 6;
     std::cout << "Screen Ratio: " << screenRatio << std::endl;
 	
 	field.emplace(ctx -> assets -> getAsset("Field"));
@@ -1161,6 +1170,16 @@ void AirHockeyGameState::init(Context* ctx){
 		player1.name = ctx->p1name;
 	if(ctx -> p2name != "")
 		player2.name = ctx->p2name;
+	
+	errMsg_1.emplace(ctx->assets->getFont("ST-SimpleSquare"), "Oops, Something Went Wrong!", 10*screenRatio);
+	sf::FloatRect rect = errMsg_1->getLocalBounds();
+	errMsg_1->setOrigin(sf::Vector2f( rect.getCenter().x, rect.getCenter().y)); // centered horizontally
+	errMsg_1->setPosition(sf::Vector2f(160.0*screenRatio , 70.0*screenRatio));
+	
+	errMsg_2.emplace(ctx->assets->getFont("ST-SimpleSquare"), "Resetting Puck To Kickoff...", 10*screenRatio);
+	rect = errMsg_2->getLocalBounds();
+	errMsg_2->setOrigin(sf::Vector2f( rect.getCenter().x, rect.getCenter().y)); // centered horizontally
+	errMsg_2->setPosition(sf::Vector2f(160.0*screenRatio , 85.0*screenRatio));
 }
 
 void AirHockeyGameState::tick() {
@@ -1298,7 +1317,7 @@ void AirHockeyGameState::tick() {
 	}
 	
 	// kickoff
-    if(kickoff>=0){
+    if(kickoff>=-1){
 		puck.x = 300;
 		puck.y = 400;
 		puck.vx = 0;
@@ -1310,7 +1329,7 @@ void AirHockeyGameState::tick() {
 			}
 			puck.setKickoff(kickoff);
 			timer = 0;
-			kickoff = -1;
+			kickoff = -2; // null value to prevent perma-kickoff
 		}
 	}
 	
@@ -1325,7 +1344,7 @@ void AirHockeyGameState::p1render(sf::RenderWindow& p1window) {
 	
     p1window.draw(*field);
 	
-	if(kickoff>=0){
+	if(kickoff>=-1){
 		int num;
 		p2paddle.draw1(&p1window);
 		if(timer<1){
@@ -1344,6 +1363,18 @@ void AirHockeyGameState::p1render(sf::RenderWindow& p1window) {
 				puck.draw1(&p1window);
 		}
 		p1paddle.draw1(&p1window);
+		if(kickoff==-1){
+			if(timer<0){
+				errMsg_1->setFillColor(sf::Color(255,0,0));
+				errMsg_2->setFillColor(sf::Color(255,0,0));
+			}
+			else{
+				errMsg_1->setFillColor(sf::Color(255,0,0,255*(3-timer)/3));
+				errMsg_2->setFillColor(sf::Color(255,0,0,255*(3-timer)/3));
+			}
+			p1window.draw(*errMsg_1);
+			p1window.draw(*errMsg_2);
+		}
 	} else {
 		// decide drawing order
 		if(puck.y < p2paddle.y){
@@ -1371,7 +1402,7 @@ void AirHockeyGameState::p2render(sf::RenderWindow& p2window) {
 	
     p2window.draw(*field);
 	
-	if(kickoff>=0){
+	if(kickoff>=-1){
 		int num;
 		p2paddle.draw2(&p2window);
 		if(timer<1){
@@ -1388,6 +1419,18 @@ void AirHockeyGameState::p2render(sf::RenderWindow& p2window) {
 			num = round(timer*16);
 			if(num%2==0)
 				puck.draw2(&p2window);
+		}
+		if(kickoff==-1){
+			if(timer<0){
+				errMsg_1->setFillColor(sf::Color(255,0,0));
+				errMsg_2->setFillColor(sf::Color(255,0,0));
+			}
+			else{
+				errMsg_1->setFillColor(sf::Color(255,0,0,255*(3-timer)/3));
+				errMsg_2->setFillColor(sf::Color(255,0,0,255*(3-timer)/3));
+			}
+			p2window.draw(*errMsg_1);
+			p2window.draw(*errMsg_2);
 		}
 		p1paddle.draw2(&p2window);
 	} else {
