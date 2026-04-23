@@ -85,6 +85,19 @@ void GameSelectState::init(Context* ctx){
 	title.emplace(ctx->assets->getFont("ST-SimpleSquare"), "", 24*screenRatio);
 	description.emplace(ctx->assets->getFont("SquareSansSerif"),"",7*screenRatio);
 	
+	msg.emplace(ctx->assets->getFont("SquareSansSerif"),"To Exit The Game At Any Time, Press",10*screenRatio);
+	textRect = msg->getLocalBounds();
+	msg->setOrigin(sf::Vector2f(textRect.getCenter().x, textRect.getCenter().y));
+	msg->setPosition(sf::Vector2f(160*screenRatio, 75*screenRatio));
+	p1msg.emplace(ctx->assets->getFont("SquareSansSerif"),"'B' and 'Y' At the Same Time As Your Opponent",10*screenRatio);
+	textRect = p1msg->getLocalBounds();
+	p1msg->setOrigin(sf::Vector2f(textRect.getCenter().x, textRect.getCenter().y));
+	p1msg->setPosition(sf::Vector2f(160*screenRatio, 90*screenRatio));
+	p2msg.emplace(ctx->assets->getFont("SquareSansSerif"),"'B' and 'X' At the Same Time As Your Opponent",10*screenRatio);
+	textRect = p2msg->getLocalBounds();
+	p2msg->setOrigin(sf::Vector2f(textRect.getCenter().x, textRect.getCenter().y));
+	p2msg->setPosition(sf::Vector2f(160*screenRatio, 90*screenRatio));
+	
 	// initialize the scrolling menu
 	indexes = getIndexes(selection,size);
 }
@@ -94,34 +107,57 @@ void GameSelectState::tick(){
 	dt = time.asSeconds();
 	lap_Arrow += dt;
 	 // inputs
-	if(ctx -> input -> P1_Left && animate==0){ // animate forward
+	if(state==0 && ctx -> input -> P1_Left && animate==0){ // animate forward
 		animate = 1;
 	}
-	if(ctx -> input -> P1_Right && animate==0){ // animate backward
+	if(state==0 && ctx -> input -> P1_Right && animate==0){ // animate backward
 		animate = -1;
 	}
 	// enter games
-	if(ctx -> input -> P1A && animate==0){
-		switch(selection){
-			case 0: // air hockey
-				ctx -> gsm -> requestStateChange(States::AirHockey, 1.5f, 1.5f);
-				break;
-			case 1: // Tron
-				ctx -> gsm -> requestStateChange(States::Tron, 1.5f, 1.5f);
-				break;
-			case 2: // Fruit Ninja
-				ctx -> gsm -> requestStateChange(States::FruitNinja, 1.5f, 1.5f);
-				break;
-			case 3: // Pong
-				ctx -> gsm -> requestStateChange(States::Pong, 1.5f, 1.5f);
-				break;
+	if(state==0 && ctx->input->P1A && animate==0){ // select game, start loading animation
+		switch(selection){ // screens chosen here ignore the exit message, otherwise, they go through the extra animation
 			case 4: // Leaderboard
 				ctx -> gsm -> requestStateChange(States::Leaderboard, 1.5f, 1.5f);
 				break;
 			case 5: // Exit
 				ctx -> gsm -> requestStateChange(States::Idle, 1.5f, 1.5f);
 				break;
+			default:
+				state = 1;
+				timer = 0;
+				break;
 		}
+	}
+	// state logic
+	if(state!=0){
+		timer += dt;
+		if(timer >= 1.5){
+			timer = 0;
+			state++;
+			if(state==4){ // loading animation finished, switch to the selected game
+				switch(selection){
+					case 0: // air hockey
+						ctx -> gsm -> requestStateChange(States::AirHockey, 1.5f, 1.5f);
+						break;
+					case 1: // Tron
+						ctx -> gsm -> requestStateChange(States::Tron, 1.5f, 1.5f);
+						break;
+					case 2: // Fruit Ninja
+						ctx -> gsm -> requestStateChange(States::FruitNinja, 1.5f, 1.5f);
+						break;
+					case 3: // Pong
+						ctx -> gsm -> requestStateChange(States::Pong, 1.5f, 1.5f);
+						break;
+					case 4: // Leaderboard
+						ctx -> gsm -> requestStateChange(States::Leaderboard, 1.5f, 1.5f);
+						break;
+					case 5: // Exit
+						ctx -> gsm -> requestStateChange(States::Idle, 1.5f, 1.5f);
+						break;
+				}
+			}
+		}
+		
 	}
 	
 	// animation logic
@@ -235,7 +271,104 @@ void GameSelectState::p1render(sf::RenderWindow& p1window) {
 		iconSprite->setScale(sf::Vector2f( xyz[2]/128*screenRatio , xyz[2]/128*screenRatio ));
 		p1window.draw(*iconSprite);
 	}
+	
+	// loading animation
+	if(state==1){
+		sf::RectangleShape r(sf::Vector2f(320*screenRatio, 180*screenRatio));
+		r.setFillColor(sf::Color(0,0,0,255*timer/1.5));
+		p1window.draw(r);
+	}
+	if(state==2){
+		sf::RectangleShape r(sf::Vector2f(320*screenRatio, 180*screenRatio));
+		r.setFillColor(sf::Color(0,0,0,255));
+		p1window.draw(r);
+		
+		msg->setFillColor(sf::Color(255,255,255,255*timer/1.5));
+		p1msg->setFillColor(sf::Color(255,255,255,255*timer/1.5));
+		p1window.draw(*msg);
+		p1window.draw(*p1msg);
+	}
+	if(state>2){
+		sf::RectangleShape r(sf::Vector2f(320*screenRatio, 180*screenRatio));
+		r.setFillColor(sf::Color(0,0,0,255));
+		p1window.draw(r);
+		
+		msg->setFillColor(sf::Color(255,255,255,255));
+		p1msg->setFillColor(sf::Color(255,255,255,255));
+		p1window.draw(*msg);
+		p1window.draw(*p1msg);
+	}
 }
 void GameSelectState::p2render(sf::RenderWindow& p2window){ // call the first render function using the p2 window because the screens should be the same
-	p1render(p2window);
+	// title
+	title->setPosition(sf::Vector2f( (width/2)+screenRatio , (14+1)*screenRatio ));
+	title->setFillColor(gameOptions[selection].backColor);
+	p2window.draw(*title);
+	
+	title->setPosition(sf::Vector2f( width/2 , 14*screenRatio ));
+	title->setFillColor(gameOptions[selection].foreColor);
+	p2window.draw(*title);
+	
+	// description
+	description->setPosition(sf::Vector2f( width/2 , height - (14*screenRatio) ));
+	description->setFillColor(gameOptions[selection].foreColor);
+	p2window.draw(*description);
+	
+	// arrows
+	if(lap_Arrow<=0.75){ // alternate frames every 0.75s
+		// left arrow
+		arrowSprite->setTexture(arrows[0], false); // false keeps the same sprite rectangle with the new texture // each texture is the same size, so this works
+		arrowSprite->setPosition(sf::Vector2f(48.0*screenRatio,64.0*screenRatio));
+		p2window.draw(*arrowSprite);
+		// right arrow
+		arrowSprite->setTexture(arrows[2], false); // false keeps the same sprite rectangle with the new texture // each texture is the same size, so this works
+		arrowSprite->setPosition(sf::Vector2f(240.0*screenRatio,64.0*screenRatio));
+		p2window.draw(*arrowSprite);
+	}
+	else{
+		// left arrow
+		arrowSprite->setTexture(arrows[1], false); // false keeps the same sprite rectangle with the new texture // each texture is the same size, so this works
+		arrowSprite->setPosition(sf::Vector2f(48.0*screenRatio,64.0*screenRatio));
+		p2window.draw(*arrowSprite);
+		// right arrow
+		arrowSprite->setTexture(arrows[3], false); // false keeps the same sprite rectangle with the new texture // each texture is the same size, so this works
+		arrowSprite->setPosition(sf::Vector2f(240.0*screenRatio,64.0*screenRatio));
+		p2window.draw(*arrowSprite);
+	}
+	
+	// icons
+	for(int i = 0; i<3; i++){
+		xyz = getAnimXYZ(frames[i]);
+		iconSprite->setTexture(gameOptions[indexes[i]].image,true);
+		iconSprite->setPosition(sf::Vector2f( xyz[0]*screenRatio , xyz[1]*screenRatio ));
+		iconSprite->setScale(sf::Vector2f( xyz[2]/128*screenRatio , xyz[2]/128*screenRatio ));
+		p2window.draw(*iconSprite);
+	}
+	
+	// loading animation
+	if(state==1){
+		sf::RectangleShape r(sf::Vector2f(320*screenRatio, 180*screenRatio));
+		r.setFillColor(sf::Color(0,0,0,255*timer/1.5));
+		p2window.draw(r);
+	}
+	if(state==2){
+		sf::RectangleShape r(sf::Vector2f(320*screenRatio, 180*screenRatio));
+		r.setFillColor(sf::Color(0,0,0,255));
+		p2window.draw(r);
+		
+		msg->setFillColor(sf::Color(255,255,255,255*timer/1.5));
+		p2msg->setFillColor(sf::Color(255,255,255,255*timer/1.5));
+		p2window.draw(*msg);
+		p2window.draw(*p2msg);
+	}
+	if(state>2){
+		sf::RectangleShape r(sf::Vector2f(320*screenRatio, 180*screenRatio));
+		r.setFillColor(sf::Color(0,0,0,255));
+		p2window.draw(r);
+		
+		msg->setFillColor(sf::Color(255,255,255,255));
+		p2msg->setFillColor(sf::Color(255,255,255,255));
+		p2window.draw(*msg);
+		p2window.draw(*p2msg);
+	}
 }

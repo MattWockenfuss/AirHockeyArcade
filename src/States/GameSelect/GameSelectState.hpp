@@ -31,6 +31,7 @@ class GameSelectState : public State {
 		sf::Time time;
 		float dt;
 		float lap_Arrow;
+		float timer;
 		
 		// game options
 		std::vector<GameOption> gameOptions;
@@ -42,9 +43,11 @@ class GameSelectState : public State {
 		
 		// text
 		std::optional<sf::Text> title, description;
+		std::optional<sf::Text> msg, p1msg, p2msg;
 		sf::FloatRect textRect;
 		
 		// animation vars
+		int state = 0;
 		int animate = 0;
 		int selection = 0;
 		std::vector<int> indexes;// = getIndexes(selection,3); // this will be loaded in init()
