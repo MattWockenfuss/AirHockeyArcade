@@ -95,7 +95,7 @@ void Tron::tick(){
 
     
     if(ctx -> input -> P1A) growNextTick = true;
-
+	
     std::cout << "Facing: " << (int)facing << std::endl;
 
     move();

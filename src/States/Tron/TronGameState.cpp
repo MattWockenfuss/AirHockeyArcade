@@ -6,6 +6,7 @@
 #include "../../Context.hpp"
 #include "../../AssetManager.hpp"
 #include "../../KeyManager.hpp"
+#include "../../IO/InputManager.hpp"
 #include "../GameStateManager.hpp"
 
 
@@ -49,7 +50,12 @@ void TronGameState::init(Context* ctx){
 
 void TronGameState::tick() {
 	//assume about 60 ticks per second, it can be slightly less, but good enough
-
+	
+	// emergency game exit
+	if(ctx->input->P1B && ctx->input->P1Y && ctx->input->P2B && ctx->input->P2X){ // player 1 pressed B and Y, and player 2 pressed B and X at the same time to quit
+		ctx -> gsm -> requestStateChange(States::GameSelect, 3.0f, 1.5f);
+	}
+	
     tickCount++;
     if(tickCount >= 6){
         tickCount = 0;
