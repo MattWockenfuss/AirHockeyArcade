@@ -143,6 +143,10 @@ void PongGameState::init(Context *ctx) {
 
     std::cout << "PongGameState Initialized!" << std::endl;
 
+    //False indicates that the match is in (countdown) phase
+    matchphase = false;
+    initial = true;
+    gameover = false;
     match_start(0);
 }
 
@@ -163,63 +167,109 @@ void PongGameState::tick() {
     unsigned short int i = 0;
     tickCount++;
     if(tickCount >= 2){
+
         tickCount = 0;
 
-        //Increase ball velocity overtime
-        if ((b->velx <= 50.0f && b->vely <= 50.0f) && (b->velx >= -50.0f && b->vely >= -50.0f)) {
-            int val = 0;
-            if (b->velx < 0) val = b->velx * -1;
-            else val = b->velx;
+        if (matchphase) {
 
-            float ratechange = ((1.0f/64.0f) * powf(val, 0.25f));
+            //Increase ball velocity over time
+            if ((b->velx <= 50.0f && b->vely <= 50.0f) && (b->velx >= -50.0f && b->vely >= -50.0f)) {
+                int val = 0;
+                if (b->velx < 0) val = b->velx * -1;
+                else val = b->velx;
 
-            // std::cout << "Rate change: " << ratechange << std::endl;
-            // std::cout << "val: " << val << std::endl;
+                float ratechange = ((1.0f/64.0f) * powf(val, 0.25f));
 
-            if (b->velx < 0) {
-                //Make sure value remains negative 
-                b->velx -= ratechange;
+                // std::cout << "Rate change: " << ratechange << std::endl;
+                // std::cout << "val: " << val << std::endl;
+
+                if (b->velx < 0) {
+                    //Make sure value remains negative 
+                    b->velx -= ratechange;
+                }
+                else {
+                    b->velx += ratechange;
+                }
+
+                if (b->vely < 0) {
+                    //Make sure value remains negative
+                    b->vely -= ratechange;
+                }
+                else {
+                    b->vely += ratechange;
+                }
             }
-            else {
-                b->velx += ratechange;
-            }
 
-            if (b->vely < 0) {
-                //Make sure value remains negative
-                b->vely -= ratechange;
-            }
-            else {
-                b->vely += ratechange;
+            // std::cout << "Velx: " << b->velx << std::endl;
+            // std::cout << "Vely: " << b->vely << std::endl;
+
+            for(i = 0; i < sub_steps; i++) {
+                //Move player based on input
+                if (ctx -> input -> P1_Up) {
+                    p1->rect.setPosition(sf::Vector2f(p1->rect.getPosition().x, p1->rect.getPosition().y - 40.0f/sub_steps));
+                }
+                else if (ctx -> input -> P1_Down) {
+                    p1->rect.setPosition(sf::Vector2f(p1->rect.getPosition().x, p1->rect.getPosition().y + 40.0f/sub_steps));
+                }
+                if (ctx -> input -> P2_Up) {
+                    p2->rect.setPosition(sf::Vector2f(p2->rect.getPosition().x, p2->rect.getPosition().y - 40.0f/sub_steps));
+                }
+                else if (ctx -> input -> P2_Down) {
+                    p2->rect.setPosition(sf::Vector2f(p2->rect.getPosition().x, p2->rect.getPosition().y + 40.0f/sub_steps));
+                }
+                // emergency game exit
+                if(ctx->input->P1B && ctx->input->P1Y && ctx->input->P2B && ctx->input->P2X){ // player 1 pressed B and Y, and player 2 pressed B and X at the same time to quit
+                    ctx -> gsm -> requestStateChange(States::GameSelect, 3.0f, 1.5f);
+                }
+                
+                //Move ball
+                b->circ.setPosition(sf::Vector2f(b->circ.getPosition().x + b->velx/sub_steps, b->circ.getPosition().y + b->vely/sub_steps));
+
+                //Check for and solve collisions
+                collision();
             }
         }
+        else {
+            for(i = 0; i < sub_steps; i++) {
+                //Move player based on input
+                if (ctx -> input -> P1_Up) {
+                    p1->rect.setPosition(sf::Vector2f(p1->rect.getPosition().x, p1->rect.getPosition().y - 40.0f/sub_steps));
+                }
+                else if (ctx -> input -> P1_Down) {
+                    p1->rect.setPosition(sf::Vector2f(p1->rect.getPosition().x, p1->rect.getPosition().y + 40.0f/sub_steps));
+                }
+                if (ctx -> input -> P2_Up) {
+                    p2->rect.setPosition(sf::Vector2f(p2->rect.getPosition().x, p2->rect.getPosition().y - 40.0f/sub_steps));
+                }
+                else if (ctx -> input -> P2_Down) {
+                    p2->rect.setPosition(sf::Vector2f(p2->rect.getPosition().x, p2->rect.getPosition().y + 40.0f/sub_steps));
+                }
+                // emergency game exit
+                if(ctx->input->P1B && ctx->input->P1Y && ctx->input->P2B && ctx->input->P2X){ // player 1 pressed B and Y, and player 2 pressed B and X at the same time to quit
+                    ctx -> gsm -> requestStateChange(States::GameSelect, 3.0f, 1.5f);
+                }
 
-        // std::cout << "Velx: " << b->velx << std::endl;
-        // std::cout << "Vely: " << b->vely << std::endl;
+                collision();
+            }
 
-        for(i = 0; i < sub_steps; i++) {
-            //Move player based on input
-            if (ctx -> input -> P1_Up) {
-                p1->rect.setPosition(sf::Vector2f(p1->rect.getPosition().x, p1->rect.getPosition().y - 40.0f/sub_steps));
-            }
-            else if (ctx -> input -> P1_Down) {
-                p1->rect.setPosition(sf::Vector2f(p1->rect.getPosition().x, p1->rect.getPosition().y + 40.0f/sub_steps));
-            }
-            if (ctx -> input -> P2_Up) {
-                p2->rect.setPosition(sf::Vector2f(p2->rect.getPosition().x, p2->rect.getPosition().y - 40.0f/sub_steps));
-            }
-            else if (ctx -> input -> P2_Down) {
-                p2->rect.setPosition(sf::Vector2f(p2->rect.getPosition().x, p2->rect.getPosition().y + 40.0f/sub_steps));
-            }
-			// emergency game exit
-			if(ctx->input->P1B && ctx->input->P1Y && ctx->input->P2B && ctx->input->P2X){ // player 1 pressed B and Y, and player 2 pressed B and X at the same time to quit
-				ctx -> gsm -> requestStateChange(States::GameSelect, 3.0f, 1.5f);
-			}
-			
-            //Move ball
-            b->circ.setPosition(sf::Vector2f(b->circ.getPosition().x + b->velx/sub_steps, b->circ.getPosition().y + b->vely/sub_steps));
+            time_remaining = std::chrono::duration_cast<std::chrono::seconds>(countdown-std::chrono::steady_clock::now());
 
-            //Check for and solve collisions
-            collision();
+            if (std::to_string(time_remaining.count()) != "0") {
+                countdown_timer -> setString(std::to_string(time_remaining.count()));
+            }
+            else if (!gameover) {
+                rendergoal = false;
+                initial = false;
+                matchphase = true;
+                countdown_timer -> setString("Go!");
+            }
+            else {
+                ctx -> gsm -> requestStateChange(States::Idle, 0.0f, 1.5f);
+            }
+
+            const sf::FloatRect countdownRect = countdown_timer -> getLocalBounds();
+            countdown_timer -> setOrigin(countdownRect.getCenter());
+            countdown_timer -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2.0f, ctx -> p1window -> getSize().y / 2.0f));
         }
     }
 }
@@ -233,6 +283,25 @@ void PongGameState::p1render(sf::RenderWindow &window) {
     window.draw(p1->rect);
     window.draw(p2->rect);
     window.draw(b->circ);
+    if (rendergoal) {
+       window.draw(goal_text.value());
+       window.draw(countdown_timer.value());
+    }
+    else if (initial) {
+       window.draw(countdown_timer.value());
+    }
+    if (gameover) {
+        long long tr = std::chrono::duration_cast<std::chrono::seconds>(time_remaining).count();
+        //Draw win text
+        if (static_cast<unsigned int>(tr) % 2 == 0) {
+            if (score1 == 10) {
+                window.draw(win1.value());
+            }
+            else if (score2 == 10) {
+                window.draw(win2.value());
+            }
+        }
+    }
 }
 
 void PongGameState::p2render(sf::RenderWindow &window) {
@@ -244,6 +313,25 @@ void PongGameState::p2render(sf::RenderWindow &window) {
     window.draw(p1->rect);
     window.draw(p2->rect);
     window.draw(b->circ);
+    if (rendergoal) {
+        window.draw(goal_text.value());
+        window.draw(countdown_timer.value());
+    }
+    else if (initial) {
+       window.draw(countdown_timer.value());
+    }
+    if (gameover) {
+        long long tr = std::chrono::duration_cast<std::chrono::seconds>(time_remaining).count();
+        //Draw win text
+        if (static_cast<unsigned int>(tr) % 2 == 0) {
+            if (score1 == 10) {
+                window.draw(win1.value());
+            }
+            else if (score2 == 10) {
+                window.draw(win2.value());
+            }
+        }
+    }
 }
 
 //Handles all collision calculations for paddles and ball
@@ -279,7 +367,7 @@ void PongGameState::collision() {
     if (p1->rect.getPosition().y + p1->rect.getSize().y/2 >= winSize.y) {
         p1->rect.setPosition(sf::Vector2f(p1->rect.getPosition().x, winSize.y - p1->rect.getSize().y/2));
     }
-    else if (p2->rect.getPosition().y + p2->rect.getSize().y/2 >= winSize.y) {
+    if (p2->rect.getPosition().y + p2->rect.getSize().y/2 >= winSize.y) {
         p2->rect.setPosition(sf::Vector2f(p2->rect.getPosition().x, winSize.y - p2->rect.getSize().y/2));
     }
 
@@ -287,16 +375,18 @@ void PongGameState::collision() {
     if (p1->rect.getPosition().y - p1->rect.getSize().y/2 <= 0.0f) {
         p1->rect.setPosition(sf::Vector2f(p1->rect.getPosition().x, 0.0f + p1->rect.getSize().y/2));
     }
-    else if (p2->rect.getPosition().y - p2->rect.getSize().y/2 <= 0.0f) {
+    if (p2->rect.getPosition().y - p2->rect.getSize().y/2 <= 0.0f) {
         p2->rect.setPosition(sf::Vector2f(p2->rect.getPosition().x, 0.0f + p2->rect.getSize().y/2));
     }
 
     //Ball top and bottom wall
     if (b->circ.getPosition().y - b->rad <= 0.0f) {
+        b -> circ.setPosition(sf::Vector2f(b->circ.getPosition().x, 0.0f + b->rad));
         ctx -> audio -> playSound(ctx->assets->getSound("Bounce"));
         b->vely *= -1;
     }
     else if (b->circ.getPosition().y + b->rad >= winSize.y) {
+        b -> circ.setPosition(sf::Vector2f(b->circ.getPosition().x, winSize.y - b->rad));
         ctx -> audio -> playSound(ctx->assets->getSound("Bounce"));
         b->vely *= -1;
     }
@@ -416,7 +506,7 @@ void PongGameState::collision() {
 void PongGameState::p1_score() {
     //Reset ball velocity
     b->velx = 10.0f;
-    b->vely = -10.0f;
+    b->vely = 10.0f;
 
     rendergoal = true;
     score1 += 1;
@@ -429,7 +519,7 @@ void PongGameState::p1_score() {
 void PongGameState::p2_score() {
     //Reset ball velocity
     b->velx = 10.0f;
-    b->vely = -10.0f;
+    b->vely = 10.0f;
 
     rendergoal = true;
     score2 += 1;
@@ -439,156 +529,27 @@ void PongGameState::p2_score() {
 }
 
 void PongGameState::p1_win() {
-    //We want to flash the "win" text on the screen, using clock with modulus
+    gameover = true;
 
     p1->rect.setPosition(sf::Vector2f(padding, winSize.y/2.0f));
     p2->rect.setPosition(sf::Vector2f((winSize.x - padding), winSize.y/2.0f));
     b->circ.setPosition(sf::Vector2f(winSize.x/2.0f, winSize.y/2.0f));
 
     //Begin end countdown!
-    short int sec = 10;
-    auto countdown = std::chrono::steady_clock::now() + std::chrono::seconds(sec);
-    while (std::chrono::steady_clock::now() < countdown) {
-        auto time_remaining = std::chrono::duration_cast<std::chrono::seconds>(countdown-std::chrono::steady_clock::now());
-
-        //Draw order
-
-        //Clear window
-        ctx -> p1window -> clear();
-
-        //Draw background
-        ctx -> p1window -> draw(background.value());
-
-        //Draw score text
-        ctx -> p1window -> draw(title_text.value());
-        ctx -> p1window -> draw(player1.value());
-        ctx -> p1window -> draw(player2.value());
-
-        if (rendergoal) {
-            ctx -> p1window -> draw(goal_text.value());
-        }
-
-        //Draw game objects
-        ctx -> p1window -> draw(p1->rect);
-        ctx -> p1window -> draw(p2->rect);
-        ctx -> p1window -> draw(b->circ);
-
-        long long tr = std::chrono::duration_cast<std::chrono::seconds>(time_remaining).count();
-        //Draw win text
-        if (static_cast<unsigned int>(tr) % 2 == 0) {
-            ctx -> p1window -> draw(win1.value());
-        }
-
-        ctx -> p1window -> display();
-
-        //Draw order
-
-        //Clear window
-        ctx -> p2window -> clear();
-
-        //Draw background
-        ctx -> p2window -> draw(background.value());
-
-        //Draw score text
-        ctx -> p2window -> draw(title_text.value());
-        ctx -> p2window -> draw(player1.value());
-        ctx -> p2window -> draw(player2.value());
-
-        if (rendergoal) {
-            ctx -> p2window -> draw(goal_text.value());
-        }
-
-        //Draw game objects
-        ctx -> p2window -> draw(p1->rect);
-        ctx -> p2window -> draw(p2->rect);
-        ctx -> p2window -> draw(b->circ);
-
-        //Draw win text
-        if (static_cast<unsigned int>(tr) % 2 == 0) {
-            ctx -> p2window -> draw(win1.value());
-        }
-
-
-        ctx -> p2window -> display();
-    }
-
-    ctx -> gsm -> requestStateChange(States::GameSelect, 1.5f, 1.5f);
+    sec = 10;
+    countdown = std::chrono::steady_clock::now() + std::chrono::seconds(sec);
 }
 
 void PongGameState::p2_win() {
-    //We want to flash the "win" text on the screen, using clock with modulus
+    gameover = true;
 
     p1->rect.setPosition(sf::Vector2f(padding, winSize.y/2.0f));
     p2->rect.setPosition(sf::Vector2f((winSize.x - padding), winSize.y/2.0f));
     b->circ.setPosition(sf::Vector2f(winSize.x/2.0f, winSize.y/2.0f));
 
     //Begin match countdown!
-    short int sec = 10;
-    auto countdown = std::chrono::steady_clock::now() + std::chrono::seconds(sec);
-    while (std::chrono::steady_clock::now() < countdown) {
-        auto time_remaining = std::chrono::duration_cast<std::chrono::seconds>(countdown-std::chrono::steady_clock::now());
-
-        //Draw order
-
-        //Clear window
-        ctx -> p1window -> clear();
-
-        //Draw background
-        ctx -> p1window -> draw(background.value());
-
-        //Draw score text
-        ctx -> p1window -> draw(title_text.value());
-        ctx -> p1window -> draw(player1.value());
-        ctx -> p1window -> draw(player2.value());
-
-        if (rendergoal) {
-            ctx -> p1window -> draw(goal_text.value());
-        }
-
-        //Draw game objects
-        ctx -> p1window -> draw(p1->rect);
-        ctx -> p1window -> draw(p2->rect);
-        ctx -> p1window -> draw(b->circ);
-
-        long long tr = std::chrono::duration_cast<std::chrono::seconds>(time_remaining).count();
-        //Draw win text
-        if (static_cast<unsigned int>(tr) % 2 == 0) {
-            ctx -> p1window -> draw(win2.value());
-        }
-
-        ctx -> p1window -> display();
-
-        //Draw order
-
-        //Clear window
-        ctx -> p2window -> clear();
-
-        //Draw background
-        ctx -> p2window -> draw(background.value());
-
-        //Draw score text
-        ctx -> p2window -> draw(title_text.value());
-        ctx -> p2window -> draw(player1.value());
-        ctx -> p2window -> draw(player2.value());
-
-        if (rendergoal) {
-            ctx -> p2window -> draw(goal_text.value());
-        }
-
-        //Draw game objects
-        ctx -> p2window -> draw(p1->rect);
-        ctx -> p2window -> draw(p2->rect);
-        ctx -> p2window -> draw(b->circ);
-
-        //Draw win text
-        if (static_cast<unsigned int>(tr) % 2 == 0) {
-            ctx -> p2window -> draw(win2.value());
-        }
-
-        ctx -> p2window -> display();
-    }
-    
-    ctx -> gsm -> requestStateChange(States::GameSelect, 3.0f, 1.5f);
+    sec = 10;
+    countdown = std::chrono::steady_clock::now() + std::chrono::seconds(sec);
 }
 
 //Defines the match beginning, including ball direction and such.
@@ -602,11 +563,13 @@ void PongGameState::match_start(unsigned short int dir) {
     unsigned int time = std::chrono::duration_cast<std::chrono::seconds>(elapsed).count();
     std::srand(time);
 
+    //Produces a randomized direction for the ball to begin
+    direction = -1 + 2*(std::rand()%2);
+
     //Check to see if we should randomize x-direction or not
     if(dir ==  0) {
-        //Produces a randomized direction for the ball to begin
-        direction = -1 + 2*(std::rand()%2);
         b->velx *= direction;
+        b->vely *= direction;
     }
     else if (dir == 1) {
         //If 1 was passed, this means player 1 scored, and therefore the ball gets thrown in p2's direction (which is positive).
@@ -614,6 +577,8 @@ void PongGameState::match_start(unsigned short int dir) {
             //Check to see if the velocity is negative, if it is, then flip
             b->velx *= -1;
         }
+        //Randomize y
+        b->vely *= direction;
     }
     else if (dir == 2) {
         //If 2 was passed, this means player 2 scored, and therefore the ball gets thrown in p1's direction (which is negative).
@@ -621,15 +586,18 @@ void PongGameState::match_start(unsigned short int dir) {
             //Check to see if the velocity is positive, if it is, then flip
             b->velx *= -1;
         }
+        //Randomize y
+        b->vely *= direction;
     }
     else {
         std::perror("Invalid argument passed, choosing random direction as if 0 was passed");
         //Produces a randomized direction for the ball to begin
         direction = -1 + 2*(std::rand()%2);
         b->velx *= direction;
+        b->vely *= direction;
     }
 
-    //Now let's randomize the y-direction to keep the player's on their toes
+    //Now let's randomize the y-direction again to keep the player's on their toes
     direction = -1 + 2*(std::rand()%2);
     b->vely *= direction;
 
@@ -639,77 +607,11 @@ void PongGameState::match_start(unsigned short int dir) {
     b->circ.setPosition(sf::Vector2f(winSize.x/2.0f, winSize.y/2.0f));
     countdown_timer->setPosition(sf::Vector2f(winSize.x/2.0f, winSize.y/2.0f));
 
+    matchphase = false;
+
     //Begin match countdown!
-    short int sec = 6;
-    auto countdown = std::chrono::steady_clock::now() + std::chrono::seconds(sec);
-    while (std::chrono::steady_clock::now() < countdown) {
-        auto time_remaining = std::chrono::duration_cast<std::chrono::seconds>(countdown-std::chrono::steady_clock::now());
-        if (std::to_string(time_remaining.count()) != "0") {
-            countdown_timer -> setString(std::to_string(time_remaining.count()));
-        }
-        else {
-            rendergoal = false;
-            countdown_timer -> setString("Go!");
-        }
-
-        const sf::FloatRect countdownRect = countdown_timer -> getLocalBounds();
-        countdown_timer -> setOrigin(countdownRect.getCenter());
-        countdown_timer -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2.0f, ctx -> p1window -> getSize().y / 2.0f));
-
-        //Draw order
-
-        //Clear window
-        ctx -> p1window -> clear();
-
-        //Draw background
-        ctx -> p1window -> draw(background.value());
-
-        //Draw score text
-        ctx -> p1window -> draw(title_text.value());
-        ctx -> p1window -> draw(player1.value());
-        ctx -> p1window -> draw(player2.value());
-
-        if (rendergoal) {
-            ctx -> p1window -> draw(goal_text.value());
-        }
-
-        //Draw game objects
-        ctx -> p1window -> draw(p1->rect);
-        ctx -> p1window -> draw(p2->rect);
-        ctx -> p1window -> draw(b->circ);
-
-        //Render countdown timer
-        ctx -> p1window -> draw(countdown_timer.value());
-
-        ctx -> p1window -> display();
-
-        //Draw order
-
-        //Clear window
-        ctx -> p2window -> clear();
-
-        //Draw background
-        ctx -> p2window -> draw(background.value());
-
-        //Draw score text
-        ctx -> p2window -> draw(title_text.value());
-        ctx -> p2window -> draw(player1.value());
-        ctx -> p2window -> draw(player2.value());
-
-        if (rendergoal) {
-            ctx -> p2window -> draw(goal_text.value());
-        }
-
-        //Draw game objects
-        ctx -> p2window -> draw(p1->rect);
-        ctx -> p2window -> draw(p2->rect);
-        ctx -> p2window -> draw(b->circ);
-
-        //Render countdown timer
-        ctx -> p2window -> draw(countdown_timer.value());
-
-        ctx -> p2window -> display();
-    }
+    sec = 6;
+    countdown = std::chrono::steady_clock::now() + std::chrono::seconds(sec);
 }
 
 PongGameState::PongGameState() {}

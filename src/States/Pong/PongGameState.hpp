@@ -41,9 +41,11 @@ class PongGameState : public State {
         Ball *b = new Ball();
         sf::Vector2f winSize;
         sf::RenderWindow *window1;
-        unsigned short int sub_steps = 128;
+        unsigned short int sub_steps = 128, sec;
         int score1, score2;
-        bool rendergoal;
+        bool rendergoal, initial, matchphase, gameover;
+        std::chrono::_V2::steady_clock::time_point countdown;
+        std::chrono::seconds time_remaining;
 
         void collision();
         void p1_score();
