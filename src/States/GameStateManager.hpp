@@ -3,13 +3,32 @@
 #include "State.hpp"
 #include <SFML/Graphics.hpp>
 #include <optional>
+#include <string>
+#include <unordered_map>
+
+
 
 class Context;
+
+
 
 
 enum class States {
     Idle, NameEntry, GameSelect, AirHockey, Tron, FruitNinja, Pong, Leaderboard
 };
+
+/*
+    A Hash map of our games that anyone can access
+    int p1 = GAMES["AirHockey"]; returns 0
+
+*/
+inline const std::unordered_map<int, std::string> GAMES = {
+    {0, "Air Hockey"},
+    {1, "Pong"},
+    {2, "Fruit Ninja"},
+    {3, "Tron"}
+};
+
 
 inline const char* stateToString(States s){
     switch (s){

@@ -13,6 +13,7 @@ Game::Game(){
     ctx.input = &input;
     ctx.gsm = &gsm;
     ctx.audio = &audio;
+    ctx.leaderboard = &leaderboardInterface;
 }
 
 void Game::initialization(){
@@ -23,7 +24,7 @@ void Game::initialization(){
         SFML 3.0.2 does NOT support multiple windows in fullscreen, we have to set them as borderless and
         position them manually. This is fine in the final build on the pi with a few manual tweaks, but
         for development on all of our different machines it will be a pain in the ass. It is also worth mentioning
-        that input is handling for each window separately, not a problem for our project.
+        that input is handled for each window separately, not a problem for our project.
 
         If you wish to enable both windows to display, set the boolean to True
         This will create 2 separate windows, render both of them, with player2 being rendered exactly 1920 to the left
@@ -45,7 +46,9 @@ void Game::initialization(){
         p2window.setPosition({-1920, 0});
     }
 
-
+    //open the leaderboard
+    leaderboardInterface.openDB();
+    leaderboardInterface.printTest();
 
 
     gsm.requestStateChange(States::Idle, 0.0f, 1.5f);
@@ -64,6 +67,9 @@ void Game::stop(){
     //SFML will close down window and its resources needed
     p1window.close();
     if(renderPlayer2) p2window.close();
+
+    //close the database interface
+    leaderboardInterface.closeDB();
 }
 
 void Game::tick(){

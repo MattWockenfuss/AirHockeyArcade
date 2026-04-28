@@ -8,6 +8,7 @@
 #include "KeyManager.hpp"
 #include "IO/InputManager.hpp"
 #include "AudioManager.hpp"
+#include "States/Leaderboard/LeaderboardInterface.hpp"
 
 class Game {
     public:
@@ -34,4 +35,5 @@ class Game {
         InputManager input;
         GameStateManager gsm;
         AudioManager audio;
+        LeaderboardInterface leaderboardInterface;
 };

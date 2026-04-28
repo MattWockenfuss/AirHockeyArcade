@@ -14,24 +14,28 @@ if not exist build (
     mkdir build
 )
 
+gcc -c src\sqlite\sqlite3.c -o build\sqlite3.o
+
 g++ ^
 src\Game.cpp ^
 src\AssetManager.cpp ^
-src\States\GameStateManager.cpp ^
+src\AudioManager.cpp ^
+src\IO\InputManager.cpp ^
+src\KeyManager.cpp ^
+src\IO\KeyboardInput.cpp ^
 src\States\State.cpp ^
+src\States\GameStateManager.cpp ^
 src\States\IdleState.cpp ^
 src\States\NameEntryState.cpp ^
+src\States\GameSelect\GameSelectState.cpp ^
 src\States\AirHockey\AirHockeyGameState.cpp ^
 src\States\FruitNinja\FruitNinjaGameState.cpp ^
-src\States\GameSelect\GameSelectState.cpp ^
-src\States\Leaderboard\LeaderboardState.cpp ^
 src\States\Pong\PongGameState.cpp ^
 src\States\Tron\TronGameState.cpp ^
 src\States\Tron\Tron.cpp ^
-src\AudioManager.cpp ^
-src\IO\KeyboardInput.cpp ^
-src\IO\InputManager.cpp ^
-src\KeyManager.cpp ^
+src\States\Leaderboard\LeaderboardState.cpp ^
+src\States\Leaderboard\LeaderboardInterface.cpp ^
+build\sqlite3.o ^
 -I"%~dp0SFML\include" ^
 -L"%~dp0SFML\lib" ^
 -static-libgcc ^

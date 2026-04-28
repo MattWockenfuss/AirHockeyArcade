@@ -11,6 +11,7 @@ class KeyManager;
 class GameStateManager;
 class InputManager;
 class AudioManager;
+class LeaderboardInterface;
 
 
 
@@ -25,6 +26,7 @@ struct Context {
     GameStateManager*   gsm = nullptr;
     InputManager*       input = nullptr;
     AudioManager*       audio = nullptr;
+    LeaderboardInterface* leaderboard = nullptr;
 
     //audio manager
     //etc
