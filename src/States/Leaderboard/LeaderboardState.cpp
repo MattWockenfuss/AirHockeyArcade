@@ -139,6 +139,10 @@ void LeaderboardState::tick() {
         }
     }
 
+    if(ctx -> input -> P1B){
+        ctx -> gsm -> requestStateChange(States::GameSelect, 1.5f, 1.5f);
+    }
+
     prevEnter = nowEnter;
     prevLeft = leftNow;
     prevRight = rightNow;
@@ -194,6 +198,13 @@ void LeaderboardState::p1render(sf::RenderWindow& p1window) {
     borderSquare.setFillColor(sf::Color::Yellow);
     p1window.draw(borderSquare);
 
+    //render the back button at the top
+    record_text -> setCharacterSize(28);
+    record_text -> setString(" <-- Back To Menu (Press B)");
+    record_text -> setOrigin({0.0f, 0.0f});
+    record_text -> setPosition({(w + p) * 1  + 50.0f, 50.0f});
+    record_text -> setFillColor(sf::Color::Yellow);
+    p1window.draw(*record_text);
 
     for(int i = 1; i <= 6; i++){
         //we draw the top square for all of them with the appropriate text
