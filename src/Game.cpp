@@ -49,7 +49,7 @@ void Game::initialization(){
     //open the leaderboard
     leaderboardInterface.openDB();
     leaderboardInterface.printTest();
-
+    leaderboardInterface.removeAllRecords();
 
     gsm.requestStateChange(States::Idle, 0.0f, 1.5f);
 }

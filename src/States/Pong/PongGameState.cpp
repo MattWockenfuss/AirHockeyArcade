@@ -6,6 +6,8 @@
 #include "../../KeyManager.hpp"
 #include "../GameStateManager.hpp"
 #include "../../IO/InputManager.hpp"
+#include "../Leaderboard/LeaderboardInterface.hpp"
+
 
 /*
     Shape funcs and defs
@@ -264,7 +266,15 @@ void PongGameState::tick() {
                 countdown_timer -> setString("Go!");
             }
             else {
-                ctx -> gsm -> requestStateChange(States::Idle, 0.0f, 1.5f);
+                //then the game is over, add scores to the leaderboard
+                std::string player1name = ctx -> p1name;
+                std::string player2name = ctx -> p2name;
+
+                if(player1name == "") player1name = "COM";
+                if(player2name == "") player2name = "COM";
+
+                ctx -> leaderboard -> addScore(player1name, player2name, score1, score2, 1);
+                ctx -> gsm -> requestStateChange(States::GameSelect, 0.0f, 1.5f);
             }
 
             const sf::FloatRect countdownRect = countdown_timer -> getLocalBounds();

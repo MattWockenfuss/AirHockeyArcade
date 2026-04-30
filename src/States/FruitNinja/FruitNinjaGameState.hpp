@@ -71,6 +71,8 @@ class FruitNinjaGameState : public State {
         void p1render(sf::RenderWindow& p1render) override;
 		void p2render(sf::RenderWindow& p2render) override;
     private:
+		bool triggerGameEnd = true; // this is used to make sure the game end is only triggered once, since the tick function will continue to run until the state is changed
+	
 		// screen
 		float width, height;
 		double screenRatio;

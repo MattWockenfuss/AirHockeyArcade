@@ -25,7 +25,7 @@ class LeaderboardInterface {
         struct leaderboardrecord* tail = nullptr;
         int recordLength = -1;
 
-        
+
 
 
         void addRecord(struct leaderboardrecord record);
@@ -37,6 +37,7 @@ class LeaderboardInterface {
 
         void addScore(std::string p1name, std::string p2name, int p1score, int p2score, int game_type);
         void printTest();
+        void removeAllRecords();
     private:
         void executeSQL(std::string sql);
 };
