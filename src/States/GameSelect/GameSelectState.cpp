@@ -8,6 +8,7 @@
 #include "../../AssetManager.hpp"
 #include "../../KeyManager.hpp"
 #include "../../IO/InputManager.hpp"
+#include "../../AudioManager.hpp"
 #include "../GameStateManager.hpp"
 
 std::vector<int> getIndexes(int center, int size){ // determine which 3 games to display in the rotating menu (size must be at least 1)
@@ -100,6 +101,9 @@ void GameSelectState::init(Context* ctx){
 	
 	// initialize the scrolling menu
 	indexes = getIndexes(selection,size);
+	
+	// stop sounds
+	ctx -> audio -> stopSound();
 }
 
 void GameSelectState::tick(){
@@ -116,9 +120,9 @@ void GameSelectState::tick(){
 	// enter games
 	if(state==0 && ctx->input->P1A && animate==0){ // select game, start loading animation
 		switch(selection){ // screens chosen here ignore the exit message, otherwise, they go through the extra animation
-			case 4: // Leaderboard
-				ctx -> gsm -> requestStateChange(States::Leaderboard, 1.5f, 1.5f);
-				break;
+			//case 4: // Leaderboard
+			//	ctx -> gsm -> requestStateChange(States::Leaderboard, 1.5f, 1.5f);
+			//	break;
 			case 5: // Exit
 				ctx -> gsm -> requestStateChange(States::Idle, 1.5f, 1.5f);
 				break;

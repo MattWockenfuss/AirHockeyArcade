@@ -148,6 +148,11 @@ void LeaderboardState::tick() {
     prevRight = rightNow;
     prevUp = upNow;
     prevDown = downNow;
+	
+	// emergency game exit
+	if(ctx->input->P1B && ctx->input->P1Y && ctx->input->P2B && ctx->input->P2X){ // player 1 pressed B and Y, and player 2 pressed B and X at the same time to quit
+		ctx -> gsm -> requestStateChange(States::GameSelect, 3.0f, 1.5f);
+	}
 }
 
 
