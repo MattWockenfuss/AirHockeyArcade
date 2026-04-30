@@ -8,6 +8,7 @@
 #include "../../AssetManager.hpp"
 #include "../../KeyManager.hpp"
 #include "../../IO/InputManager.hpp"
+#include "../../AudioManager.hpp"
 #include "../GameStateManager.hpp"
 
 std::vector<int> getIndexes(int center, int size){ // determine which 3 games to display in the rotating menu (size must be at least 1)
@@ -100,6 +101,9 @@ void GameSelectState::init(Context* ctx){
 	
 	// initialize the scrolling menu
 	indexes = getIndexes(selection,size);
+	
+	// stop sounds
+	ctx -> audio -> stopSound();
 }
 
 void GameSelectState::tick(){
