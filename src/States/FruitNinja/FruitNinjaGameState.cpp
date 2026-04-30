@@ -315,7 +315,6 @@ void FruitNinjaGameState::tick(){
 	}
 	// emergency game exit
 	if(ctx->input->P1B && ctx->input->P1Y && ctx->input->P2B && ctx->input->P2X){ // player 1 pressed B and Y, and player 2 pressed B and X at the same time to quit
-		ctx -> audio -> stopSound();
 		ctx -> gsm -> requestStateChange(States::GameSelect, 3.0f, 1.5f);
 	}
 	
@@ -404,7 +403,7 @@ void FruitNinjaGameState::tick(){
 		if(instances[i].fruitDelay <= 10 && instances[i].fruitSong==-1 && triggerGameEnd){ // the game was triggered to close
 			//add player scores to the leaderboard
 			triggerGameEnd = false;
-			ctx -> leaderboard -> addScore(instances[0].name, instances[1].name, instances[0].totalPoints, instances[1].totalPoints, 2);
+			ctx -> leaderboard -> addScore(instances[0].name, instances[1].name, instances[0].totalPoints*10, instances[1].totalPoints*10, 2); // points are kept small and artificially increased for performance
 			ctx -> gsm -> requestStateChange(States::GameSelect, 5.0f, 1.5f);
 		}
 		if(instances[i].fruitDelay <= 0){
