@@ -26,11 +26,15 @@ void LeaderboardInterface::addScore(std::string p1name, std::string p2name, int 
     executeSQL(sql);
 }
 
-void LeaderboardInterface::refreshRecordsList(){
+void LeaderboardInterface::refreshRecordsList(int columnFilter, bool isDescending){
     /*
         This function will update our linked list of records from the db.
         It is called when open the leaderboard gamestate, as the sqlite interface is always open
         but when the gamestate is opened it is recreated, thus we need to update the list.
+
+        it takes 2 parameters as input, the columnFilter and isDescending. columnFilter is a value between 1 and 6,
+        corresponding to which column of the table we want to sort by, and isDescending is the boolean, whether we are 
+        ascending or descending. 
     */
 
     leaderboardrecord* current = head;
@@ -45,7 +49,25 @@ void LeaderboardInterface::refreshRecordsList(){
 
     //okay the list is completely cleared, no old memory is being leaked
 
-    std::string sql = "SELECT * FROM leaderboard;";
+    std::string columnFilterStr = "";
+    std::string order = "ASC";
+    
+    switch (columnFilter){
+        case 1: columnFilterStr = "p1name"; break;
+        case 2: columnFilterStr = "p1score"; break;
+        case 3: columnFilterStr = "p2score"; break;
+        case 4: columnFilterStr = "p2name"; break;
+        case 5: columnFilterStr = "game_type"; break;
+        case 6: columnFilterStr = "timestamp"; break;
+        default: columnFilterStr = "p1name"; break;
+    }
+
+    if(isDescending) {
+        order = "DESC";
+    }
+
+
+    std::string sql = "SELECT * FROM leaderboard ORDER BY " + columnFilterStr + " " + order + ";";
     executeSQL(sql);
     
     /*
@@ -122,7 +144,7 @@ void LeaderboardInterface::printTest(){
 
 
     
-    refreshRecordsList();
+    refreshRecordsList(6, true);
 }
 
 

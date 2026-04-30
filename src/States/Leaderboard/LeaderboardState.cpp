@@ -13,7 +13,7 @@
 void LeaderboardState::init(Context* ctx){
     State::init(ctx);
 
-    ctx -> leaderboard -> refreshRecordsList();
+    ctx -> leaderboard -> refreshRecordsList(1, false);
 
     /*
         okay so in order to do this, we want to list all records and be able to scroll if there is more.
@@ -111,7 +111,33 @@ void LeaderboardState::tick() {
         }
     }
 
+    /*
+        okay now if we hit enter on an index less than 7, we want to sort by that column, starting with ascending, but then descending
+        no visual feedback for descending besides the list changing?
 
+        okay so we want every column to flip descending if it was ascending and u hit it again, or if it descending and hit it it goes back to ascending
+
+        how can we accomplish this goal. well we have a descending boolean that flips every time we hit enter on a column starting with false, and we keep track
+        of the last hit column, it its different, reset it.
+
+
+
+    */
+
+    if(nowEnter && !prevEnter){
+        if(index < 7){
+            //this value is static, so it wont be forgotten when we leave the scope of the tick method,
+            //essentially a shortcut to having a member variable for the sort order of each column.
+
+            //okay so we just hit enter on a column, first, flip descending
+            isDescending = !isDescending;
+            //then if we are hitting a different column, set it to false
+            if(index != lastSortedColumnIndex) isDescending = false;
+
+            lastSortedColumnIndex = index;
+            ctx -> leaderboard -> refreshRecordsList(index, isDescending);
+        }
+    }
 
     prevEnter = nowEnter;
     prevLeft = leftNow;

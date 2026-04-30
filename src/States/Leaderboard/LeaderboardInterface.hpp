@@ -25,11 +25,14 @@ class LeaderboardInterface {
         struct leaderboardrecord* tail = nullptr;
         int recordLength = -1;
 
+        
+
+
         void addRecord(struct leaderboardrecord record);
 
 
         void openDB();
-        void refreshRecordsList();
+        void refreshRecordsList(int columnFilter, bool isDescending);
         void closeDB();
 
         void addScore(std::string p1name, std::string p2name, int p1score, int p2score, int game_type);
