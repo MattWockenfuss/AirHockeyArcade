@@ -314,9 +314,9 @@ void FruitNinjaGameState::tick(){
 	}
 	// emergency game exit
 	if(ctx->input->P1B && ctx->input->P1Y && ctx->input->P2B && ctx->input->P2X){ // player 1 pressed B and Y, and player 2 pressed B and X at the same time to quit
+		ctx -> audio -> stopSound();
 		ctx -> gsm -> requestStateChange(States::GameSelect, 3.0f, 1.5f);
 	}
-	
 	
 	// logic for each instance
 	for(int i = 0; i<instances.size(); i++){
