@@ -13,7 +13,7 @@
 void LeaderboardState::init(Context* ctx){
     State::init(ctx);
 
-    ctx -> leaderboard -> refreshRecordsList(1, false);
+    ctx -> leaderboard -> refreshRecordsList(6, true);
 
     /*
         okay so in order to do this, we want to list all records and be able to scroll if there is more.

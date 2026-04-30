@@ -22,6 +22,12 @@ void LeaderboardInterface::openDB() {
 }
 
 void LeaderboardInterface::addScore(std::string p1name, std::string p2name, int p1score, int p2score, int game_type){
+    /*
+        This function adds a score to the SQLite3 database, where p1name and p2name are the
+        player names, p1score and p2score are their respective scores as integers, and game_type
+        is also an integer matched with each game can be found at gsm.GAMES
+    */
+   
     std::string sql = "INSERT INTO leaderboard (p1name, p2name, p1score, p2score, game_type) VALUES ('" + p1name + "', '" + p2name + "', " + std::to_string(p1score) + ", " + std::to_string(p2score) + ", " + std::to_string(game_type) + ");";
     executeSQL(sql);
 }
@@ -147,7 +153,9 @@ void LeaderboardInterface::printTest(){
     refreshRecordsList(6, true);
 }
 
-
+void LeaderboardInterface::removeAllRecords(){
+    executeSQL("DELETE FROM leaderboard;");
+}
 
 
 void LeaderboardInterface::closeDB() {

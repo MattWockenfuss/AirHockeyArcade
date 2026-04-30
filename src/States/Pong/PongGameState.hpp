@@ -7,6 +7,7 @@
 #include <optional>
 #include <cmath>
 #include "../State.hpp"
+#include <chrono>
 
 struct PongPaddle {
     float x, y;
@@ -44,7 +45,7 @@ class PongGameState : public State {
         unsigned short int sub_steps = 128, sec;
         int score1, score2;
         bool rendergoal, initial, matchphase, gameover;
-        std::chrono::_V2::steady_clock::time_point countdown;
+        std::chrono::steady_clock::time_point countdown;
         std::chrono::seconds time_remaining;
 
         void collision();

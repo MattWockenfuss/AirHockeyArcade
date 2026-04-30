@@ -49,7 +49,8 @@ void Game::initialization(){
     //open the leaderboard
     leaderboardInterface.openDB();
     leaderboardInterface.printTest();
-
+    //Uncomment to remove all records on startup, used in testing
+    //leaderboardInterface.removeAllRecords();
 
     gsm.requestStateChange(States::Idle, 0.0f, 1.5f);
 }

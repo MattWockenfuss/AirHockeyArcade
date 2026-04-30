@@ -9,6 +9,7 @@
 #include "../../KeyManager.hpp"
 #include "../../IO/InputManager.hpp"
 #include "../../AudioManager.hpp"
+#include "../../States/Leaderboard/LeaderboardInterface.hpp"
 
 
 double getScreenX(double x, double y, int screenWidth){
@@ -679,6 +680,10 @@ void AirHockeyGameState::moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle
 			if(player1.score>=11 || player2.score>=11){
 				ctx->audio->stopSound();
 				ctx->audio->playSound(ctx->assets->getSound("inter"));
+
+				//add player scores to the leaderboard
+				ctx -> leaderboard -> addScore(player1.name, player2.name, player1.score, player2.score, 0);
+
 				ctx -> gsm -> requestStateChange(States::GameSelect, 3.0f, 1.5f);
 			}
 			break;

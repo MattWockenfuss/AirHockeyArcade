@@ -10,6 +10,7 @@
 #include "../../KeyManager.hpp"
 #include "../../IO/InputManager.hpp"
 #include "../../AudioManager.hpp"
+#include "../Leaderboard/LeaderboardInterface.hpp"
 
 Fruit::Fruit(sf::Texture tileSet, int type, int state, int x, int y, int w, int h, double vx, double vy){
 	this->tileSet = tileSet;
@@ -400,7 +401,10 @@ void FruitNinjaGameState::tick(){
 		}
 		// spawn fruit
 		instances[i].fruitDelay -= dt;
-		if(instances[i].fruitDelay <= 10 && instances[i].fruitSong==-1){ // the game was triggered to close
+		if(instances[i].fruitDelay <= 10 && instances[i].fruitSong==-1 && triggerGameEnd){ // the game was triggered to close
+			//add player scores to the leaderboard
+			triggerGameEnd = false;
+			ctx -> leaderboard -> addScore(instances[0].name, instances[1].name, instances[0].totalPoints, instances[1].totalPoints, 2);
 			ctx -> gsm -> requestStateChange(States::GameSelect, 5.0f, 1.5f);
 		}
 		if(instances[i].fruitDelay <= 0){
