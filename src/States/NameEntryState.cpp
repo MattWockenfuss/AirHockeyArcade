@@ -562,9 +562,9 @@ void NameEntryState::p2render(sf::RenderWindow& p2window) {
     }
 
     //Rendering Debug Keyboard coords
-    charLabel -> setOrigin({0.0f, 0.0f});
-    charLabel -> setString(std::to_string(p2x) + ", " + std::to_string(p2y));
-    charLabel -> setFillColor(sf::Color::Yellow);
-    charLabel -> setPosition({150.0f, 150.0f});
-    p2window.draw(*charLabel);
+    //charLabel -> setOrigin({0.0f, 0.0f});
+    //charLabel -> setString(std::to_string(p2x) + ", " + std::to_string(p2y));
+    //charLabel -> setFillColor(sf::Color::Yellow);
+    //charLabel -> setPosition({150.0f, 150.0f});
+    //p2window.draw(*charLabel);
 }
