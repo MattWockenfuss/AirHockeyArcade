@@ -25,6 +25,7 @@ src/States/Tron/TronGameState.cpp \
 src/States/Tron/Tron.cpp \
 src/States/Leaderboard/LeaderboardState.cpp \
 src/States/Leaderboard/LeaderboardInterface.cpp \
+build/sqlite3.o \
 -lsfml-graphics \
 -lsfml-window \
 -lsfml-system \

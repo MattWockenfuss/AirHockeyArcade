@@ -31,7 +31,7 @@ void Game::initialization(){
         This works on my pc, but idk about u guys
 
     */
-    renderPlayer2 = false;
+    renderPlayer2 = true;
     ctx.renderp2 = renderPlayer2;
 
 
@@ -43,7 +43,7 @@ void Game::initialization(){
         p2window.create(sf::VideoMode({1920, 1080}), "Player2", sf::Style::None);
         
         p1window.setPosition({0, 0});
-        p2window.setPosition({-1920, 0});
+        p2window.setPosition({1920, 0});
     }
 
     //open the leaderboard

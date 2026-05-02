@@ -147,6 +147,13 @@ void LeaderboardInterface::printTest(){
     // addScore("Quin", "Zoro", 11, 9, 1);
     // addScore("Grit", "Haze", 62, 58, 0);
     // addScore("Nyte", "Skye", 29, 35, 3);
+    // addScore("GKoda", "Talon", 16, 25, 1);
+    // addScore("GLynx", "Bram", 90, 84, 0);
+    // addScore("GFaze", "Rook", 38, 44, 3);
+    // addScore("GDrift", "Vorn", 57, 49, 2);
+    // addScore("GQuin", "Zoro", 11, 9, 1);
+    // addScore("GGrit", "Haze", 62, 58, 0);
+    // addScore("GNyte", "Skye", 29, 35, 3);
 
 
     

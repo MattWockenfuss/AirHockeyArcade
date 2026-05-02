@@ -199,7 +199,7 @@ void LeaderboardState::p1render(sf::RenderWindow& p1window) {
     p1window.draw(borderSquare);
 
     //render the back button at the top
-    record_text -> setCharacterSize(28);
+    record_text -> setCharacterSize(24);
     record_text -> setString(" <-- Back To Menu (Press B)");
     record_text -> setOrigin({0.0f, 0.0f});
     record_text -> setPosition({(w + p) * 1  + 50.0f, 50.0f});
@@ -218,7 +218,7 @@ void LeaderboardState::p1render(sf::RenderWindow& p1window) {
 
         
         //make the text is centered in the box
-        record_text -> setCharacterSize(38);
+        record_text -> setCharacterSize(28);
         
         record_text -> setString(words[i - 1]);
         record_text -> setOrigin(record_text -> getLocalBounds().getCenter());
@@ -298,7 +298,7 @@ void LeaderboardState::p1render(sf::RenderWindow& p1window) {
                 break;
             }
             
-            record_text -> setCharacterSize(28);
+            record_text -> setCharacterSize(22);
 
             if(i == 4 || i == 5){
                 record_field_x_offset = 0.0f;
@@ -331,6 +331,146 @@ void LeaderboardState::p1render(sf::RenderWindow& p1window) {
 }
 
 void LeaderboardState::p2render(sf::RenderWindow& p2window) {
-    //render 2 for idlestate
+
+    //okay to do the rendering, we need to render boxes for the sorting criteria
+    //then render each record
+
+    //maybe for rendering, each square is the same length?
+    //split into 7ths
+
+    float w = p2window.getSize().x / 8.0f;
+    float h = 100.0f;
+    float p = 4.0f;
+    float bw = 6.0f;
+
+    float row_spacing = 36.0f;
+
+    //they are being rendered partially inside the box, kick them down a little
+    float record_field_y_fix = 15.0f;
+
+    //They are hugging the left side to close
+    float record_field_x_offset = 10.0f;
+
+    std::string words[] = {"P1", "P1 Score", "P2 Score", "P2", "Game", "Date"};
+
+    //render the index for debugging
+    // record_text -> setCharacterSize(28);
+    // record_text -> setString(std::to_string(index) + ", " + std::to_string(renderOffset));
+    // record_text -> setOrigin(record_text -> getLocalBounds().getCenter());
+    // record_text -> setPosition({p1window.getSize().x - 100.0f, p1window.getSize().y - 100.0f});
+    // record_text -> setFillColor(sf::Color::Yellow);
+    // p1window.draw(*record_text);
+
+    //render the side bars
+    //left
+    borderSquare.setSize({bw, p2window.getSize().y + 0.0f});
+    borderSquare.setPosition({(w + p) * 1, 0.0f});
+    borderSquare.setFillColor(sf::Color::Yellow);
+    p2window.draw(borderSquare);
+
+    //right
+    borderSquare.setSize({bw, p2window.getSize().y + 0.0f});
+    borderSquare.setPosition({(w + p) * 7 - p - bw, 0.0f});
+    borderSquare.setFillColor(sf::Color::Yellow);
+    p2window.draw(borderSquare);
+
+    //render the back button at the top
+    record_text -> setCharacterSize(24);
+    record_text -> setString(" <-- Back To Menu (Press B)");
+    record_text -> setOrigin({0.0f, 0.0f});
+    record_text -> setPosition({(w + p) * 1  + 50.0f, 50.0f});
+    record_text -> setFillColor(sf::Color::Yellow);
     p2window.draw(*record_text);
+
+    for(int i = 1; i <= 6; i++){
+        //we draw the top square for all of them with the appropriate text
+        borderSquare.setSize({w, h});
+        borderSquare.setPosition({(w + p) * i, h});
+        
+        insideSquare.setSize({w - (bw * 2), h - (bw * 2)});
+        insideSquare.setPosition({(w + p) * i + bw, h + bw});
+        
+        //make the text is centered in the box
+        record_text -> setCharacterSize(28);
+        
+        record_text -> setString(words[i - 1]);
+        record_text -> setOrigin(record_text -> getLocalBounds().getCenter());
+        record_text -> setPosition({(w + p) * i + (w / 2), h + (h / 2)});
+
+        //okay, depending on index change render colors
+        if(i == index){
+            //then we are hovering over this one
+            borderSquare.setFillColor(sf::Color::Yellow);
+            insideSquare.setFillColor(sf::Color::Yellow);
+            record_text -> setFillColor(sf::Color::Black);
+        }else{
+            borderSquare.setFillColor(sf::Color::Yellow);
+            insideSquare.setFillColor(sf::Color::Black);
+            record_text -> setFillColor(sf::Color::Yellow);
+        }
+
+        p2window.draw(borderSquare);
+        p2window.draw(insideSquare);
+        p2window.draw(*record_text);
+    }
+
+    //okay now render for each record, we want them to be left aligned?
+    leaderboardrecord* curr = ctx -> leaderboard -> head;
+    int curr_index = 0;
+    while(curr != nullptr){
+        if(curr_index < renderOffset){
+            curr = curr -> next;
+            curr_index++;
+            continue;
+        }
+
+        if(curr_index == index - 7){
+            //then we are hovering over this one
+            borderSquare.setSize({(w * 6 + (p * 5)), row_spacing});
+            borderSquare.setPosition({(w + p), record_field_y_fix + (h * 2) + ((curr_index - renderOffset) * row_spacing)});
+            borderSquare.setFillColor(sf::Color::Yellow);
+            record_text -> setFillColor(sf::Color::Black);
+
+            p2window.draw(borderSquare);
+        }else{
+            //then we arent hovering hover this one
+            borderSquare.setSize({0.0f, 0.0f});
+            borderSquare.setFillColor(sf::Color::Blue);
+            record_text -> setFillColor(sf::Color::Yellow);
+        }
+
+        //okay so for each record, render all 6 fields
+        for(int i = 0; i < 6; i++){
+            switch (i){
+                case 0: record_text -> setString(curr -> p1name); break;
+                case 1: record_text -> setString(std::to_string(curr -> p1score)); break;
+                case 2: record_text -> setString(std::to_string(curr -> p2score)); break;
+                case 3: record_text -> setString(curr -> p2name); break;
+                case 4: record_text -> setString(GAMES.at(curr -> game_type)); break;
+                case 5: record_text -> setString(curr -> timestamp.substr(0, 10)); break;
+            }
+            
+            record_text -> setCharacterSize(22);
+
+            if(i == 4 || i == 5){
+                record_field_x_offset = 0.0f;
+                record_text -> setOrigin({record_text -> getLocalBounds().getCenter().x, 0.0f});
+                record_text -> setPosition({(w + p) * (i + 1) + (w / 2), record_field_y_fix + (h * 2) + ((curr_index - renderOffset) * row_spacing)});
+            }else{
+                record_field_x_offset = 10.0f;
+                record_text -> setOrigin({0.0f, 0.0f});
+                record_text -> setPosition({(w + p) * (i + 1) + bw + record_field_x_offset, record_field_y_fix + (h * 2) + ((curr_index - renderOffset) * row_spacing)});
+            }
+            p2window.draw(*record_text);
+        }
+
+        curr = curr -> next;
+        curr_index++;
+    }
+    //render 1 for idlestate
+    //p1window.draw(*record_text);
+    
+    //record_text -> setString(ctx -> leaderboard -> head -> p1name + " vs " + ctx -> leaderboard -> head -> p2name + " | " + std::to_string(ctx -> leaderboard -> head -> p1score) + " - " + std::to_string(ctx -> leaderboard -> head -> p2score) + " | " + ctx -> leaderboard -> head -> timestamp);
+    //record_text -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 5.0f, ctx -> p1window -> getSize().y / 5.0f));
+    //p1window.draw(*record_text);
 }

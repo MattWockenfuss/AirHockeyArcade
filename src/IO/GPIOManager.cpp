@@ -70,7 +70,7 @@ void GPIOManager::init(Context* ctx, InputManager* input){
     gpiod_line_settings* inSettings = gpiod_line_settings_new();
     gpiod_line_settings_set_direction(inSettings, GPIOD_LINE_DIRECTION_INPUT);
 
-    gpiod_line_settings_set_bias(inSettings, GPIOD_LINE_BIAS_PULL_DOWN);
+    gpiod_line_settings_set_bias(inSettings, GPIOD_LINE_BIAS_PULL_UP);
 
     // If your buttons have no external resistors, you typically want a pull-up.
     // NOTE: with pull-ups, buttons are commonly "active-low" (pressed reads 0).
