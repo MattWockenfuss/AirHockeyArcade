@@ -31,6 +31,7 @@ src\States\GameSelect\GameSelectState.cpp ^
 src\States\AirHockey\AirHockeyGameState.cpp ^
 src\States\FruitNinja\FruitNinjaGameState.cpp ^
 src\States\Pong\PongGameState.cpp ^
+src\States\Briar_Tron\bTronGameState.cpp ^
 src\States\Tron\TronGameState.cpp ^
 src\States\Tron\Tron.cpp ^
 src\States\Leaderboard\LeaderboardState.cpp ^

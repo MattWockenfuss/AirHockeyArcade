@@ -2,6 +2,7 @@
 
 #include "IdleState.hpp"
 #include "AirHockey/AirHockeyGameState.hpp"
+#include "Briar_Tron/bTronGameState.hpp"
 #include "Tron/TronGameState.hpp"
 #include "FruitNinja/FruitNinjaGameState.hpp"
 #include "NameEntryState.hpp"
@@ -81,6 +82,10 @@ void GameStateManager::changeState(){
             currentState = new LeaderboardState();
             currentState -> init(ctx);
             break;
+		case States::bTron:
+			currentState = new bTronGameState();
+			currentState -> init(ctx);
+			break;
     }
     currentStateType = pendingState;
 }

@@ -144,7 +144,7 @@ void GameSelectState::tick(){
 						ctx -> gsm -> requestStateChange(States::AirHockey, 1.5f, 1.5f);
 						break;
 					case 1: // Tron
-						ctx -> gsm -> requestStateChange(States::Tron, 1.5f, 1.5f);
+						ctx -> gsm -> requestStateChange(States::bTron, 1.5f, 1.5f);
 						break;
 					case 2: // Fruit Ninja
 						ctx -> gsm -> requestStateChange(States::FruitNinja, 1.5f, 1.5f);

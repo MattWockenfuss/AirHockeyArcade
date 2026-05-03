@@ -14,7 +14,7 @@ class Context;
 
 
 enum class States {
-    Idle, NameEntry, GameSelect, AirHockey, Tron, FruitNinja, Pong, Leaderboard
+    Idle, NameEntry, GameSelect, AirHockey, Tron, FruitNinja, Pong, Leaderboard, bTron
 };
 
 /*
@@ -40,6 +40,7 @@ inline const char* stateToString(States s){
         case States::Leaderboard: return "Leaderboard";
         case States::FruitNinja: return "FruitNinja";
         case States::Pong: return "Pong";
+        case States::bTron: return "bTon";
         default: return "Unknown";
     }
 }
