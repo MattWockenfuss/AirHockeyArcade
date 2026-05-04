@@ -17,6 +17,9 @@ Bike::Bike(std::string name, int x, int y, int dir){
 	this->x = x;
 	this->y = y;
 	this->dir = dir;
+	this->speed = 1;
+	this->visOffset = 0;
+	this->virOffset = 0;
 }
 void Bike::draw1(sf::RenderWindow* window1, sf::Font font){
 	// vars
@@ -39,7 +42,7 @@ void Bike::draw1(sf::RenderWindow* window1, sf::Font font){
 		bRect.setSize(sf::Vector2f(2.0*screenRatio,6.0*screenRatio));
 	else
 		bRect.setSize(sf::Vector2f(6*screenRatio,2*screenRatio));
-	bRect.setPosition(sf::Vector2f( (2*x+16)*screenRatio + (dir==3?-4*screenRatio:0) , (2*y+20)*screenRatio + (dir==0?-4*screenRatio:0) ));
+	bRect.setPosition(sf::Vector2f( (2*x+16)*screenRatio + (dir==3?-4*screenRatio:0) + (dir%2==1?visOffset:0) , (2*y+20)*screenRatio + (dir==0?-4*screenRatio:0) + (dir%2==0?visOffset:0) ));
 	window1->draw(bRect);
 }
 void Bike::draw2(sf::RenderWindow* window2, sf::Font font){
@@ -67,12 +70,169 @@ void Bike::draw2(sf::RenderWindow* window2, sf::Font font){
 		bRect.setSize(sf::Vector2f(2*screenRatio,6*screenRatio));
 	else
 		bRect.setSize(sf::Vector2f(6*screenRatio,2*screenRatio));
-	bRect.setPosition(sf::Vector2f( (2*x+16)*screenRatio + (dir==3?-4*screenRatio:0) , (2*y+20)*screenRatio + (dir==0?-4*screenRatio:0) ));
+	bRect.setPosition(sf::Vector2f( (2*x+16)*screenRatio + (dir==3?-4*screenRatio:0) + (dir%2==1?visOffset:0) , (2*y+20)*screenRatio + (dir==0?-4*screenRatio:0) + (dir%2==0?visOffset:0) ));
 	window2->draw(bRect);
 }
 
-void bTronGameState::moveObjects(Bike* player1, Bike* player2){
+void bTronGameState::moveObjects(Bike* player1, Bike* player2, std::vector<std::vector<int>> grid, int gridSX, int gridSY, float dt){
+	// player 1 vars
+	int p1score = player1->score;
+	int p1x = player1->x;
+	int p1y = player1->y;
+	float p1visOffset = player1->visOffset;
+	float p1virOffset = player1->virOffset;
+	int p1dir = player1->dir;
+	float p1speed = player1->speed;
+	// player 2 vars
+	int p2score = player2->score;
+	int p2x = player2->x;
+	int p2y = player2->y;
+	float p2visOffset = player2->visOffset;
+	float p2virOffset = player2->virOffset;
+	int p2dir = player2->dir;
+	float p2speed = player2->speed;
+	// general vars
+	float minSpeed = gridSX/8; // 144/8 = 18
+	float maxSpeed = minSpeed*3;
+	float decConst = gridSX/16;
+	float accConst = minSpeed+decConst;
+	bool moved = false;
+	bool turned = false;
 	
+	// code
+	// speed up
+	if(p1dir%2==0){ // dir is 0 or 2, up or down
+		if(p1x>0 && p1x<gridSX-1 && p1y>0 && p1y<gridSY-1){ // player is within bounds to check for immediate walls
+			if( grid[p1x-1][p1y-1]!=0 && grid[p1x-1][p1y]!=0 && grid[p1x-1][p1y+1]!=0 ){ // wall immediately to the left
+				p1speed += accConst;
+			}
+			if( grid[p1x+1][p1y-1]!=0 && grid[p1x+1][p1y]!=0 && grid[p1x+1][p1y+1]!=0 ){ // wall immediately to the right
+				p1speed += accConst;
+			}
+		}
+		else if(p1x>1 && p1x<gridSX-2 && p1y>1 && p1y<gridSY-2){ // player is within bounds to check for 1-gap walls
+			if( grid[p1x-2][p1y-1]!=0 && grid[p1x-2][p1y]!=0 && grid[p1x-2][p1y+1]!=0 ){ // wall 1-gap to the left
+				p1speed += accConst;
+			}
+			if( grid[p1x+2][p1y-1]!=0 && grid[p1x+2][p1y]!=0 && grid[p1x+2][p1y+1]!=0 ){ // wall 1-gap to the right
+				p1speed += accConst;
+			}
+		}
+		else if(p1x>2 && p1x<gridSX-3 && p1y>2 && p1y<gridSY-3){ // player is within bounds to check for 2-gap walls
+			if( grid[p1x-3][p1y-1]!=0 && grid[p1x-3][p1y]!=0 && grid[p1x-2][p1y+1]!=0 ){ // wall 2-gap to the left
+				p1speed += accConst;
+			}
+			if( grid[p1x+3][p1y-1]!=0 && grid[p1x+3][p1y]!=0 && grid[p1x+2][p1y+1]!=0 ){ // wall 2-gap to the right
+				p1speed += accConst;
+			}
+		}
+	}
+	else{ // dir is 1 or 3, left or right
+		if(p1x>0 && p1x<gridSX-1 && p1y>0 && p1y<gridSY-1){ // player is within bounds to check for immediate walls
+			if( grid[p1x-1][p1y-1]!=0 && grid[p1x][p1y-1]!=0 && grid[p1x+1][p1y-1]!=0 ){ // wall immediately to the top
+				p1speed += accConst;
+			}
+			if( grid[p1x-1][p1y+1]!=0 && grid[p1x][p1y+1]!=0 && grid[p1x+1][p1y+1]!=0 ){ // wall immediately to the bottom
+				p1speed += accConst*dt;
+			}
+		}
+		else if(p1x>1 && p1x<gridSX-2 && p1y>1 && p1y<gridSY-2){ // player is within bounds to check for 1-gap walls
+			if( grid[p1x-1][p1y-2]!=0 && grid[p1x][p1y-2]!=0 && grid[p1x+1][p1y-2]!=0 ){ // wall immediately to the top
+				p1speed += accConst;
+			}
+			if( grid[p1x-1][p1y+2]!=0 && grid[p1x][p1y+2]!=0 && grid[p1x+1][p1y+2]!=0 ){ // wall immediately to the bottom
+				p1speed += accConst;
+			}
+		}
+		else if(p1x>2 && p1x<gridSX-3 && p1y>2 && p1y<gridSY-3){ // player is within bounds to check for 2-gap walls
+			if( grid[p1x-1][p1y-3]!=0 && grid[p1x][p1y-3]!=0 && grid[p1x+1][p1y-3]!=0 ){ // wall immediately to the top
+				p1speed += accConst;
+			}
+			if( grid[p1x-1][p1y+3]!=0 && grid[p1x][p1y+3]!=0 && grid[p1x+1][p1y+3]!=0 ){ // wall immediately to the bottom
+				p1speed += accConst;
+			}
+		}
+	}
+	
+	// slow down
+	p1speed -= decConst;
+	// keep speed between min and max
+	if(p1speed<minSpeed)
+		p1speed = minSpeed;
+	if(p1speed>maxSpeed)
+		p1speed = maxSpeed;
+	
+	// move bike
+	switch(p1dir){
+		case 0:{ // up
+			p1visOffset -= p1speed*dt;
+			while(p1visOffset<=-1){ // we initially move within the visual offset, we transfer it to the actual position in discrete increments
+				p1y--;
+				p1visOffset += 1;
+				moved = true;
+			}
+			break;
+		}
+		case 1:{ // right
+			p1visOffset += p1speed*dt;
+			while(p1visOffset>=1){ // we initially move within the visual offset, we transfer it to the actual position in discrete increments
+				p1x++;
+				p1visOffset -= 1;
+				moved = true;
+			}
+			break;
+		}
+		case 2:{ // down
+			p1visOffset += p1speed*dt;
+			while(p1visOffset>=1){ // we initially move within the visual offset, we transfer it to the actual position in discrete increments
+				p1y++;
+				p1visOffset -= 1;
+				moved = true;
+			}
+			break;
+		}
+		case 3:{ // left
+			p1visOffset -= p1speed*dt;
+			while(p1visOffset<=-1){ // we initially move within the visual offset, we transfer it to the actual position in discrete increments
+				p1x--;
+				p1visOffset += 1;
+				moved = true;
+			}
+			break;
+		}
+	}
+	
+	// place trail
+	
+	// turning
+	if(moved){
+		while(!turned && player1->queue.size()>0){
+			if(player1->queue[0] != p1dir){
+				p1dir = player1->queue[0];
+				turned = true;
+			}
+			player1->queue.erase(player1->queue.begin());
+			p1visOffset = 0;
+		}
+	}
+	
+	// reinstate vars
+	// player 1
+	player1->score = p1score;
+	player1->x = p1x;
+	player1->y = p1y;
+	player1->visOffset = p1visOffset;
+	player1->virOffset = p1virOffset;
+	player1->dir = p1dir;
+	player1->speed = p1speed;
+	// player 2
+	player2->score = p2score;
+	player2->x = p2x;
+	player2->y = p2y;
+	player2->visOffset = p2visOffset;
+	player2->virOffset = p2virOffset;
+	player2->dir = p2dir;
+	player2->speed = p2speed;
 }
 
 void bTronGameState::init(Context* ctx){
@@ -119,72 +279,64 @@ void bTronGameState::tick() {
 	
 	//bike movement (need to virtually unpress keys so only one press is registered at a time
     // player 1
-	//if (ctx -> input -> P1_Up && !W){
-    //    if(p1paddle.yPos>=11)
-    //        p1paddle.yPos -= 1;
-    //    Up = true;
-    //}
-    //if (!ctx -> input -> P1_Up && W){
-    //    Up = false;
-    //}
-    //if (ctx -> input -> P1_Down && !S){
-    //    if(p1paddle.yPos<=11)
-    //        p1paddle.yPos += 1;
-    //    Down = true;
-    //}
-    //if (!ctx -> input -> P1_Down && S){
-    //    Down = false;
-    //}
-    //if (ctx -> input -> P1_Left && !A){
-    //    if(p1paddle.xPos>=2)
-    //        p1paddle.xPos -= 1;
-    //    Left = true;
-    //}
-    //if (!ctx -> input -> P1_Left && A){
-    //    Left = false;
-    //}
-    //if (ctx -> input -> P1_Right && !D){
-    //    if(p1paddle.xPos <= 4)
-    //        p1paddle.xPos += 1;
-    //    Right = true;
-    //}
-    //if (!ctx -> input -> P1_Right && D){
-    //    Right = false;
-    //}
-    //// player 2
-	//if (ctx -> input -> P2_Up && !UP){
-	//	if(p2paddle.yPos<=2)
-    //        p2paddle.yPos += 1;
-    //    W = true;
-    //}
-    //if (!ctx -> input -> P2_Up && UP){
-    //    W = false;
-    //}
-    //if (ctx -> input -> P2_Down && !DOWN){
-    //    if(p2paddle.yPos>=2)
-    //        p2paddle.yPos -= 1;
-    //    S = true;
-    //}
-    //if (!ctx -> input -> P2_Down && DOWN){
-    //    S = false;
-    //}
-    //if (ctx -> input -> P2_Left && !LEFT){
-	//	if(p2paddle.xPos<=4)
-    //        p2paddle.xPos += 1;
-    //    A = true;
-    //}
-    //if (!ctx -> input -> P2_Left && LEFT){
-    //    A = false;
-    //}
-    //if (ctx -> input -> P2_Right && !RIGHT){
-    //    if(p2paddle.xPos>=2)
-    //        p2paddle.xPos -= 1;
-    //    D = true;
-    //}
-    //if (!ctx -> input -> P2_Right && RIGHT){
-    //    D = false;
-    //}
-    //
+	if (ctx -> input -> P1_Up && !W){
+        player1.queue.push_back(0);
+		W = true;
+    }
+    if (!ctx -> input -> P1_Up && W){
+        W = false;
+    }
+    if (ctx -> input -> P1_Down && !S){
+        player1.queue.push_back(2);
+		S = true;
+    }
+    if (!ctx -> input -> P1_Down && S){
+        S = false;
+    }
+    if (ctx -> input -> P1_Left && !A){
+        player1.queue.push_back(3);
+		A = true;
+    }
+    if (!ctx -> input -> P1_Left && A){
+        A = false;
+    }
+    if (ctx -> input -> P1_Right && !D){
+        player1.queue.push_back(1);
+		D = true;
+    }
+    if (!ctx -> input -> P1_Right && D){
+        D = false;
+    }
+    // player 2
+	if (ctx -> input -> P2_Up && !Up){
+        player2.queue.push_back(0);
+		Up = true;
+    }
+    if (!ctx -> input -> P2_Up && Up){
+        Up = false;
+    }
+    if (ctx -> input -> P2_Down && !Down){
+        player2.queue.push_back(2);
+        Down = true;
+    }
+    if (!ctx -> input -> P2_Down && Down){
+        Down = false;
+    }
+    if (ctx -> input -> P2_Left && !Left){
+        player2.queue.push_back(3);
+        Left = true;
+    }
+    if (!ctx -> input -> P2_Left && Left){
+        Left = false;
+    }
+    if (ctx -> input -> P2_Right && !Right){
+        player2.queue.push_back(1);
+        Right = true;
+    }
+    if (!ctx -> input -> P2_Right && Right){
+        Right = false;
+    }
+    
 	// emergency game exit
 	if(ctx->input->P1B && ctx->input->P1Y && ctx->input->P2B && ctx->input->P2X){ // player 1 pressed B and Y, and player 2 pressed B and X at the same time to quit
 		ctx -> gsm -> requestStateChange(States::GameSelect, 3.0f, 1.5f);
@@ -195,7 +347,7 @@ void bTronGameState::tick() {
 		
 	}
 	
-	moveObjects(&player1, &player2);
+	moveObjects(&player1, &player2, gameGrid, gridSX, gridSY, dt);
 }
 
 void bTronGameState::p1render(sf::RenderWindow& p1window) {
