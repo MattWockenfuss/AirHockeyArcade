@@ -50,5 +50,5 @@ class bTronGameState : public State {
         bool Up = true, Down = true, Left = true, Right = true, W = true, S = true, A = true, D = true; // virtual keys to prevent one press from registering 1000 times
 		int kickoff = 0;
 		
-		void moveObjects(Bike* player1, Bike* player2, std::vector<std::vector<int>> grid, int gridSX, int gridSY, float dt);
+		void moveObjects(Bike* player1, Bike* player2, std::vector<std::vector<int>> *grid, int gridSX, int gridSY, float dt);
 };
