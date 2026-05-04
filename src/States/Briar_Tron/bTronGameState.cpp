@@ -92,70 +92,73 @@ void bTronGameState::moveObjects(Bike* player1, Bike* player2, std::vector<std::
 	int p2dir = player2->dir;
 	float p2speed = player2->speed;
 	// general vars
-	float minSpeed = gridSX/8; // 144/8 = 18
+	float minSpeed = gridSX/6; // div 6 meaning 6 seconds to cross the field going base speed
 	float maxSpeed = minSpeed*3;
-	float decConst = gridSX/16;
-	float accConst = minSpeed+decConst;
+	float accConst = minSpeed; // this should amount to doubling your base speed after 1 second of acceleration
 	bool moved = false;
 	bool turned = false;
+	bool drafting = false;
 	
 	// code
-	// speed up
+	// check if drafting
 	if(p1dir%2==0){ // dir is 0 or 2, up or down
-		if(p1x>0 && p1x<gridSX-1 && p1y>0 && p1y<gridSY-1){ // player is within bounds to check for immediate walls
+		if(p1x>0 && p1x<gridSX-1 && p1y>0 && p1y<gridSY-1){ // player is within bounds to check for immediate walls (WORKS)
 			if( grid[p1x-1][p1y-1]!=0 && grid[p1x-1][p1y]!=0 && grid[p1x-1][p1y+1]!=0 ){ // wall immediately to the left
-				p1speed += accConst;
+				drafting = true;
 			}
 			if( grid[p1x+1][p1y-1]!=0 && grid[p1x+1][p1y]!=0 && grid[p1x+1][p1y+1]!=0 ){ // wall immediately to the right
-				p1speed += accConst;
+				drafting = true;
 			}
 		}
-		else if(p1x>1 && p1x<gridSX-2 && p1y>1 && p1y<gridSY-2){ // player is within bounds to check for 1-gap walls
+		if(p1x>1 && p1x<gridSX-2 && p1y>1 && p1y<gridSY-2){ // player is within bounds to check for 1-gap walls
 			if( grid[p1x-2][p1y-1]!=0 && grid[p1x-2][p1y]!=0 && grid[p1x-2][p1y+1]!=0 ){ // wall 1-gap to the left
-				p1speed += accConst;
+				drafting = true;
 			}
 			if( grid[p1x+2][p1y-1]!=0 && grid[p1x+2][p1y]!=0 && grid[p1x+2][p1y+1]!=0 ){ // wall 1-gap to the right
-				p1speed += accConst;
+				drafting = true;
 			}
 		}
-		else if(p1x>2 && p1x<gridSX-3 && p1y>2 && p1y<gridSY-3){ // player is within bounds to check for 2-gap walls
+		if(p1x>2 && p1x<gridSX-3 && p1y>2 && p1y<gridSY-3){ // player is within bounds to check for 2-gap walls
 			if( grid[p1x-3][p1y-1]!=0 && grid[p1x-3][p1y]!=0 && grid[p1x-2][p1y+1]!=0 ){ // wall 2-gap to the left
-				p1speed += accConst;
+				drafting = true;
 			}
 			if( grid[p1x+3][p1y-1]!=0 && grid[p1x+3][p1y]!=0 && grid[p1x+2][p1y+1]!=0 ){ // wall 2-gap to the right
-				p1speed += accConst;
+				drafting = true;
 			}
 		}
 	}
 	else{ // dir is 1 or 3, left or right
-		if(p1x>0 && p1x<gridSX-1 && p1y>0 && p1y<gridSY-1){ // player is within bounds to check for immediate walls
+		if(p1x>0 && p1x<gridSX-1 && p1y>0 && p1y<gridSY-1){ // player is within bounds to check for immediate walls (WORKS)
 			if( grid[p1x-1][p1y-1]!=0 && grid[p1x][p1y-1]!=0 && grid[p1x+1][p1y-1]!=0 ){ // wall immediately to the top
-				p1speed += accConst;
+				drafting = true;
 			}
 			if( grid[p1x-1][p1y+1]!=0 && grid[p1x][p1y+1]!=0 && grid[p1x+1][p1y+1]!=0 ){ // wall immediately to the bottom
-				p1speed += accConst*dt;
+				drafting = true;
 			}
 		}
-		else if(p1x>1 && p1x<gridSX-2 && p1y>1 && p1y<gridSY-2){ // player is within bounds to check for 1-gap walls
-			if( grid[p1x-1][p1y-2]!=0 && grid[p1x][p1y-2]!=0 && grid[p1x+1][p1y-2]!=0 ){ // wall immediately to the top
-				p1speed += accConst;
+		if(p1x>1 && p1x<gridSX-2 && p1y>1 && p1y<gridSY-2){ // player is within bounds to check for 1-gap walls
+			if( grid[p1x-1][p1y-2]!=0 && grid[p1x][p1y-2]!=0 && grid[p1x+1][p1y-2]!=0 ){ // wall 1-gap to the top
+				drafting = true;
 			}
-			if( grid[p1x-1][p1y+2]!=0 && grid[p1x][p1y+2]!=0 && grid[p1x+1][p1y+2]!=0 ){ // wall immediately to the bottom
-				p1speed += accConst;
+			if( grid[p1x-1][p1y+2]!=0 && grid[p1x][p1y+2]!=0 && grid[p1x+1][p1y+2]!=0 ){ // wall 1-gap to the bottom
+				drafting = true;
 			}
 		}
-		else if(p1x>2 && p1x<gridSX-3 && p1y>2 && p1y<gridSY-3){ // player is within bounds to check for 2-gap walls
-			if( grid[p1x-1][p1y-3]!=0 && grid[p1x][p1y-3]!=0 && grid[p1x+1][p1y-3]!=0 ){ // wall immediately to the top
-				p1speed += accConst;
+		if(p1x>2 && p1x<gridSX-3 && p1y>2 && p1y<gridSY-3){ // player is within bounds to check for 2-gap walls
+			if( grid[p1x-1][p1y-3]!=0 && grid[p1x][p1y-3]!=0 && grid[p1x+1][p1y-3]!=0 ){ // wall 2-gap to the top
+				drafting = true;
 			}
-			if( grid[p1x-1][p1y+3]!=0 && grid[p1x][p1y+3]!=0 && grid[p1x+1][p1y+3]!=0 ){ // wall immediately to the bottom
-				p1speed += accConst;
+			if( grid[p1x-1][p1y+3]!=0 && grid[p1x][p1y+3]!=0 && grid[p1x+1][p1y+3]!=0 ){ // wall 2-gap to the bottom
+				drafting = true;
 			}
 		}
 	}
 	
-	// slow down
-	p1speed -= decConst;
+	// accelerate
+	if(drafting)
+		p1speed += accConst*dt;
+	else
+		p1speed -= (accConst/2)*dt; // slow down half as fast to let the speed last longer
 	// keep speed between min and max
 	if(p1speed<minSpeed)
 		p1speed = minSpeed;
@@ -206,13 +209,13 @@ void bTronGameState::moveObjects(Bike* player1, Bike* player2, std::vector<std::
 	
 	// turning
 	if(moved){
-		while(!turned && player1->queue.size()>0){
-			if(player1->queue[0] != p1dir){
+		while(!turned && player1->queue.size()>0){ // while we haven't turned yet and there are still turn inputs in the queue
+			if(player1->queue[0] != p1dir && player1->queue[0] != (p1dir+2)%4){ // if the direction is not the way we are facing / opposite, then we can use it
 				p1dir = player1->queue[0];
+				p1visOffset = 0;
 				turned = true;
 			}
-			player1->queue.erase(player1->queue.begin());
-			p1visOffset = 0;
+			player1->queue.erase(player1->queue.begin()); // remove the turn input from queue regardless
 		}
 	}
 	
