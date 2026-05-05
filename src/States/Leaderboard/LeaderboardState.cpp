@@ -56,9 +56,6 @@ void LeaderboardState::tick() {
 
         (1) upon going up or down, we start a tick timer, this resets if we ever let go
         (2) upon reaching the scrollThreshold, we will start scrolling every TicksPerScroll
-    
-
-    
     */
 
     if(upNow) ticksPressingUp++;
