@@ -95,13 +95,14 @@ void bTronGameState::moveObjects(Bike* player1, Bike* player2, std::vector<std::
 	float minSpeed = gridSX/8; // div 8 meaning 8 seconds to cross the field going base speed
 	float maxSpeed = minSpeed*3;
 	float accConst = minSpeed*2; // this should amount to doubling your base speed after 0.5 seconds of acceleration
-	bool moved = false;
+	bool p1moved = false;
+	bool p2moved = false;
 	bool turned = false;
 	bool drafting = false;
 	int crash = 0; // 0-none, 1-player1 crashed, 2-player2 crashed, 3-both crashed
 	
-	// code
 	// check if drafting
+	// p1
 	if(p1dir%2==0){ // dir is 0 or 2, up or down
 		if(p1x>0 && p1x<gridSX-1 && p1y>0 && p1y<gridSY-1){ // player is within bounds to check for immediate walls (WORKS)
 			if( (*grid)[p1x-1][p1y-1]!=0 && (*grid)[p1x-1][p1y]!=0 && (*grid)[p1x-1][p1y+1]!=0 ){ // wall immediately to the left
@@ -154,7 +155,6 @@ void bTronGameState::moveObjects(Bike* player1, Bike* player2, std::vector<std::
 			}
 		}
 	}
-	
 	// accelerate
 	if(drafting)
 		p1speed += accConst*dt;
@@ -166,6 +166,71 @@ void bTronGameState::moveObjects(Bike* player1, Bike* player2, std::vector<std::
 	if(p1speed>maxSpeed)
 		p1speed = maxSpeed;
 	
+	// p2
+	drafting = false;
+	if(p2dir%2==0){ // dir is 0 or 2, up or down
+		if(p2x>0 && p2x<gridSX-1 && p2y>0 && p2y<gridSY-1){ // player is within bounds to check for immediate walls (WORKS)
+			if( (*grid)[p2x-1][p2y-1]!=0 && (*grid)[p2x-1][p2y]!=0 && (*grid)[p2x-1][p2y+1]!=0 ){ // wall immediately to the left
+				drafting = true;
+			}
+			if( (*grid)[p2x+1][p2y-1]!=0 && (*grid)[p2x+1][p2y]!=0 && (*grid)[p2x+1][p2y+1]!=0 ){ // wall immediately to the right
+				drafting = true;
+			}
+		}
+		if(p2x>1 && p2x<gridSX-2 && p2y>1 && p2y<gridSY-2){ // player is within bounds to check for 1-gap walls
+			if( (*grid)[p2x-2][p2y-1]!=0 && (*grid)[p2x-2][p2y]!=0 && (*grid)[p2x-2][p2y+1]!=0 ){ // wall 1-gap to the left
+				drafting = true;
+			}
+			if( (*grid)[p2x+2][p2y-1]!=0 && (*grid)[p2x+2][p2y]!=0 && (*grid)[p2x+2][p2y+1]!=0 ){ // wall 1-gap to the right
+				drafting = true;
+			}
+		}
+		if(p2x>2 && p2x<gridSX-3 && p2y>2 && p2y<gridSY-3){ // player is within bounds to check for 2-gap walls
+			if( (*grid)[p2x-3][p2y-1]!=0 && (*grid)[p2x-3][p2y]!=0 && (*grid)[p2x-2][p2y+1]!=0 ){ // wall 2-gap to the left
+				drafting = true;
+			}
+			if( (*grid)[p2x+3][p2y-1]!=0 && (*grid)[p2x+3][p2y]!=0 && (*grid)[p2x+2][p2y+1]!=0 ){ // wall 2-gap to the right
+				drafting = true;
+			}
+		}
+	}
+	else{ // dir is 1 or 3, left or right
+		if(p2x>0 && p2x<gridSX-1 && p2y>0 && p2y<gridSY-1){ // player is within bounds to check for immediate walls (WORKS)
+			if( (*grid)[p2x-1][p2y-1]!=0 && (*grid)[p2x][p2y-1]!=0 && (*grid)[p2x+1][p2y-1]!=0 ){ // wall immediately to the top
+				drafting = true;
+			}
+			if( (*grid)[p2x-1][p2y+1]!=0 && (*grid)[p2x][p2y+1]!=0 && (*grid)[p2x+1][p2y+1]!=0 ){ // wall immediately to the bottom
+				drafting = true;
+			}
+		}
+		if(p2x>1 && p2x<gridSX-2 && p2y>1 && p2y<gridSY-2){ // player is within bounds to check for 1-gap walls
+			if( (*grid)[p2x-1][p2y-2]!=0 && (*grid)[p2x][p2y-2]!=0 && (*grid)[p2x+1][p2y-2]!=0 ){ // wall 1-gap to the top
+				drafting = true;
+			}
+			if( (*grid)[p2x-1][p2y+2]!=0 && (*grid)[p2x][p2y+2]!=0 && (*grid)[p2x+1][p2y+2]!=0 ){ // wall 1-gap to the bottom
+				drafting = true;
+			}
+		}
+		if(p2x>2 && p2x<gridSX-3 && p2y>2 && p2y<gridSY-3){ // player is within bounds to check for 2-gap walls
+			if( (*grid)[p2x-1][p2y-3]!=0 && (*grid)[p2x][p2y-3]!=0 && (*grid)[p2x+1][p2y-3]!=0 ){ // wall 2-gap to the top
+				drafting = true;
+			}
+			if( (*grid)[p2x-1][p2y+3]!=0 && (*grid)[p2x][p2y+3]!=0 && (*grid)[p2x+1][p2y+3]!=0 ){ // wall 2-gap to the bottom
+				drafting = true;
+			}
+		}
+	}
+	// accelerate
+	if(drafting)
+		p2speed += accConst*dt;
+	else
+		p2speed -= (accConst/4)*dt; // slow down a quarter as fast to let the speed last longer
+	// keep speed between min and max
+	if(p2speed<minSpeed)
+		p2speed = minSpeed;
+	if(p2speed>maxSpeed)
+		p2speed = maxSpeed;
+	
 	/* MOVE BIKE STEPS
 	 * add/sub speed*dt to/from virOffset, this is the distance that the bike wants to move
 	 * in increments of 1 unit, take from virOffset and add to x/y pos
@@ -175,19 +240,18 @@ void bTronGameState::moveObjects(Bike* player1, Bike* player2, std::vector<std::
 		* if so, set visOffset to bring bike back so it is not colliding with the wall (we don't really need to worry about losing any movement within visOffset here, because the moment the player turns to avoid the obstacle, visOffset  and virOffset will be reset to 0
 		* if not, dump rest of virOffset into visOffset to make bike movement smooth
 	 */
-	
-	// new movement code
+	// p1
 	switch(p1dir){
 		case 0:{
 			p1virOffset -= p1speed*dt;
 			while(p1virOffset<=-1){
 				p1y--;
 				p1virOffset += 1;
-				if( (*grid)[p1x][p1y] != 0){ // we just moved into a wall, we crashed
+				if( (*grid)[p1x][p1y] != 0){ // we just p1moved into a wall, we crashed
 					crash += 1;
 					break;
 				}
-				moved = true;
+				p1moved = true;
 			}
 			if(crash>0){ // exit the switch case on crash
 				break;
@@ -212,11 +276,11 @@ void bTronGameState::moveObjects(Bike* player1, Bike* player2, std::vector<std::
 			while(p1virOffset>=1){
 				p1x++;
 				p1virOffset -= 1;
-				if( (*grid)[p1x][p1y] != 0){ // we just moved into a wall, we crashed
+				if( (*grid)[p1x][p1y] != 0){ // we just p1moved into a wall, we crashed
 					crash += 1;
 					break;
 				}
-				moved = true;
+				p1moved = true;
 			}
 			if(crash>0){ // exit the switch case on crash
 				break;
@@ -244,11 +308,11 @@ void bTronGameState::moveObjects(Bike* player1, Bike* player2, std::vector<std::
 			while(p1virOffset>=1){
 				p1y++;
 				p1virOffset -= 1;
-				if( (*grid)[p1x][p1y] != 0){ // we just moved into a wall, we crashed
+				if( (*grid)[p1x][p1y] != 0){ // we just p1moved into a wall, we crashed
 					crash += 1;
 					break;
 				}
-				moved = true;
+				p1moved = true;
 			}
 			if(crash>0){ // exit the switch case on crash
 				break;
@@ -273,11 +337,11 @@ void bTronGameState::moveObjects(Bike* player1, Bike* player2, std::vector<std::
 			while(p1virOffset<=-1){
 				p1x--;
 				p1virOffset += 1;
-				if( (*grid)[p1x][p1y] != 0){ // we just moved into a wall, we crashed
+				if( (*grid)[p1x][p1y] != 0){ // we just p1moved into a wall, we crashed
 					crash += 1;
 					break;
 				}
-				moved = true;
+				p1moved = true;
 			}
 			if(crash>0){ // exit the switch case on crash
 				break;
@@ -298,8 +362,133 @@ void bTronGameState::moveObjects(Bike* player1, Bike* player2, std::vector<std::
 			break;
 		}
 	}
+	// p2
+	switch(p2dir){
+		case 0:{
+			p2virOffset -= p2speed*dt;
+			while(p2virOffset<=-1){
+				p2y--;
+				p2virOffset += 1;
+				if( (*grid)[p2x][p2y] != 0){ // we just p2moved into a wall, we crashed
+					crash += 2;
+					break;
+				}
+				p2moved = true;
+			}
+			if(crash>1){ // exit the switch case on crash
+				break;
+			}
+			
+			if(p2y>0 && (*grid)[p2x][p2y-1] != 0){ // there is a wall directly in front of us
+				p2visOffset = 2;
+			}
+			else if(p2y>1 && (*grid)[p2x][p2y-2] != 0){ // there is a wall 1-gap in front of us
+				p2visOffset = 1;
+			}
+			else if(p2y>2 && (*grid)[p2x][p2y-3] != 0){ // there is a wall 2-gap in front of us
+				p2visOffset = 0;
+			}
+			else{ // no wall in front of us
+				p2visOffset = p2virOffset;
+			}
+			break;
+		}
+		case 1:{
+			p2virOffset += p2speed*dt;
+			while(p2virOffset>=1){
+				p2x++;
+				p2virOffset -= 1;
+				if( (*grid)[p2x][p2y] != 0){ // we just p2moved into a wall, we crashed
+					crash += 2;
+					break;
+				}
+				p2moved = true;
+			}
+			if(crash>1){ // exit the switch case on crash
+				break;
+			}
+			
+			if(p2x<gridSX-1 && (*grid)[p2x+1][p2y] != 0){ // there is a wall directly in front of us
+				std::cout<<"immediate collision!"<<std::endl;
+				p2visOffset = -2;
+			}
+			else if(p2x<gridSX-2 && (*grid)[p2x+2][p2y] != 0){ // there is a wall 1-gap in front of us
+				std::cout<<"1-gap collision!"<<std::endl;
+				p2visOffset = -1;
+			}
+			else if(p2x<gridSX-3 && (*grid)[p2x+3][p2y] != 0){ // there is a wall 2-gap in front of us
+				std::cout<<"2-gap collision!"<<std::endl;
+				p2visOffset = 0;
+			}
+			else{ // no wall in front of us
+				p2visOffset = p2virOffset;
+			}
+			break;
+		}
+		case 2:{
+			p2virOffset += p2speed*dt;
+			while(p2virOffset>=1){
+				p2y++;
+				p2virOffset -= 1;
+				if( (*grid)[p2x][p2y] != 0){ // we just p2moved into a wall, we crashed
+					crash += 2;
+					break;
+				}
+				p2moved = true;
+			}
+			if(crash>1){ // exit the switch case on crash
+				break;
+			}
+			
+			if(p2y<gridSY-1 && (*grid)[p2x][p2y+1] != 0){ // there is a wall directly in front of us
+				p2visOffset = -2;
+			}
+			else if(p2y<gridSY-2 && (*grid)[p2x][p2y+2] != 0){ // there is a wall 1-gap in front of us
+				p2visOffset = -1;
+			}
+			else if(p2y<gridSY-3 && (*grid)[p2x][p2y+3] != 0){ // there is a wall 2-gap in front of us
+				p2visOffset = 0;
+			}
+			else{ // no wall in front of us
+				p2visOffset = p2virOffset;
+			}
+			break;
+		}
+		case 3:{
+			p2virOffset -= p2speed*dt;
+			while(p2virOffset<=-1){
+				p2x--;
+				p2virOffset += 1;
+				if( (*grid)[p2x][p2y] != 0){ // we just p2moved into a wall, we crashed
+					crash += 2;
+					break;
+				}
+				p2moved = true;
+			}
+			if(crash>1){ // exit the switch case on crash
+				break;
+			}
+			
+			if(p2x>0 && (*grid)[p2x-1][p2y] != 0){ // there is a wall directly in front of us
+				p2visOffset = 2;
+			}
+			else if(p2x>1 && (*grid)[p2x-2][p2y] != 0){ // there is a wall 1-gap in front of us
+				p2visOffset = 1;
+			}
+			else if(p2x>2 && (*grid)[p2x-3][p2y] != 0){ // there is a wall 2-gap in front of us
+				p2visOffset = 0;
+			}
+			else{ // no wall in front of us
+				p2visOffset = p2virOffset;
+			}
+			break;
+		}
+	}
 	
 	// handle crashes
+	if(p1x==p2x && p1y==p2y){ // if players are pixel-perfect, they can drive through each other's bikes without crashing, this should prevent that
+		crash = 3;
+	}
 	if(crash!=0){
 		// reset field
 		for(int i = 0; i<gridSX; i++){
@@ -337,22 +526,29 @@ void bTronGameState::moveObjects(Bike* player1, Bike* player2, std::vector<std::
 			p1score++;
 		
 		// set variable to manage kickoffs here
+		kickoff = true;
 		
 		if(p1score>=11 || p2score >= 11){
 			//add player scores to the leaderboard
-			ctx -> leaderboard -> addScore(player1->name, player2->name, p1score, p2score, 1);
+			ctx -> leaderboard -> addScore(player1->name, player2->name, p1score, p2score, 3);
 
 			ctx -> gsm -> requestStateChange(States::GameSelect, 3.0f, 1.5f);
 		}
 	}
 	
 	// place trail
-	if(moved){
+	// p1
+	if(p1moved){
 		(*grid)[p1x][p1y] = 1;
+	}
+	// p2
+	if(p2moved){
+		(*grid)[p2x][p2y] = 2;
 	}
 	
 	// turning
-	if(moved){
+	// p1
+	if(p1moved){
 		while(!turned && player1->queue.size()>0){ // while we haven't turned yet and there are still turn inputs in the queue
 			if(player1->queue[0] != p1dir && player1->queue[0] != (p1dir+2)%4){ // if the direction is not the way we are facing / opposite, then we can use it
 				p1dir = player1->queue[0];
@@ -361,6 +557,18 @@ void bTronGameState::moveObjects(Bike* player1, Bike* player2, std::vector<std::
 				turned = true;
 			}
 			player1->queue.erase(player1->queue.begin()); // remove the turn input from queue regardless
+		}
+	}
+	// p2
+	if(p2moved){
+		while(!turned && player2->queue.size()>0){ // while we haven't turned yet and there are still turn inputs in the queue
+			if(player2->queue[0] != p2dir && player2->queue[0] != (p2dir+2)%4){ // if the direction is not the way we are facing / opposite, then we can use it
+				p2dir = player2->queue[0];
+				p2visOffset = 0;
+				p2virOffset = 0;
+				turned = true;
+			}
+			player2->queue.erase(player2->queue.begin()); // remove the turn input from queue regardless
 		}
 	}
 	
@@ -415,10 +623,7 @@ void bTronGameState::init(Context* ctx){
 	
 	
 	// on-screen message initializing
-	//errMsg_1.emplace(ctx->assets->getFont("ST-SimpleSquare"), "Oops, Something Went Wrong!", 10*screenRatio);
-	//sf::FloatRect rect = errMsg_1->getLocalBounds();
-	//errMsg_1->setOrigin(sf::Vector2f( rect.getCenter().x, rect.getCenter().y)); // centered horizontally
-	//errMsg_1->setPosition(sf::Vector2f(160.0*screenRatio , 70.0*screenRatio));
+	countdown.emplace(ctx->assets->getFont("ST-SimpleSquare"), "3", 60*screenRatio);
 }
 
 void bTronGameState::tick() {
@@ -491,11 +696,48 @@ void bTronGameState::tick() {
 	}
 	
 	// kickoff
-    if(kickoff!=0){
-		
+    if(kickoff){
+		timer += dt;
+		if(timer<1){
+			countdown->setString("3");
+			countdown->setCharacterSize(40*screenRatio);
+			countdown->setFillColor(sf::Color( 255,255,255,255-(255*timer) ));
+			sf::FloatRect rect = countdown->getLocalBounds();
+			countdown->setOrigin(sf::Vector2f( rect.getCenter().x, rect.getCenter().y)); // centered horizontally
+			countdown->setPosition(sf::Vector2f(160*screenRatio , 90*screenRatio));
+		}
+		else if(timer<2){
+			countdown->setString("2");
+			countdown->setCharacterSize(40*screenRatio);
+			countdown->setFillColor(sf::Color( 255,255,255,255-(255*(timer-1)) ));
+			sf::FloatRect rect = countdown->getLocalBounds();
+			countdown->setOrigin(sf::Vector2f( rect.getCenter().x, rect.getCenter().y)); // centered horizontally
+			countdown->setPosition(sf::Vector2f(160*screenRatio , 90*screenRatio));
+		}
+		else if(timer<3){
+			countdown->setString("1");
+			countdown->setCharacterSize(40*screenRatio);
+			countdown->setFillColor(sf::Color( 255,255,255,255-(255*(timer-2)) ));
+			sf::FloatRect rect = countdown->getLocalBounds();
+			countdown->setOrigin(sf::Vector2f( rect.getCenter().x, rect.getCenter().y)); // centered horizontally
+			countdown->setPosition(sf::Vector2f(160*screenRatio , 90*screenRatio));
+		}
+		else if(timer<4){
+			countdown->setString("GO!");
+			countdown->setCharacterSize(40*screenRatio);
+			countdown->setFillColor(sf::Color( 255,255,255,255-(255*(timer-3)) ));
+			sf::FloatRect rect = countdown->getLocalBounds();
+			countdown->setOrigin(sf::Vector2f( rect.getCenter().x, rect.getCenter().y)); // centered horizontally
+			countdown->setPosition(sf::Vector2f(160*screenRatio , 90*screenRatio));
+		}
+		if(timer>=4){
+			kickoff = false;
+			timer = 0;
+		}
 	}
-	
-	moveObjects(&player1, &player2, &gameGrid, gridSX, gridSY, dt);
+	else{
+		moveObjects(&player1, &player2, &gameGrid, gridSX, gridSY, dt);
+	}
 }
 
 void bTronGameState::p1render(sf::RenderWindow& p1window) {
@@ -543,10 +785,13 @@ void bTronGameState::p1render(sf::RenderWindow& p1window) {
 	// bikes / names / scores
 	player1.draw1(&p1window, ctx->assets->getFont("ST-SimpleSquare"));
 	player2.draw2(&p1window, ctx->assets->getFont("ST-SimpleSquare"));
+	
+	// countdown
+	if(kickoff)
+		p1window.draw(*countdown);
 }
 
 void bTronGameState::p2render(sf::RenderWindow& p2window) {
-    p2window.clear();
-	
-	// copy/paste p1render, then switch all draw1 functions with draw2, and vice-versa
+    // call p1render because flipping the screen in tron is going to be a LOT of effort
+	p1render(p2window);
 }

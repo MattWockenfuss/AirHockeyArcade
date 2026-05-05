@@ -35,7 +35,7 @@ class bTronGameState : public State {
 		Bike player1 = Bike("PLR",32.0f,37.0f,1);
 		Bike player2 = Bike("COM",112.0f,37.0f,3);
 		
-		// std::optional<sf::Text> on-screen message
+		std::optional<sf::Text> countdown;
 		
         sf::Clock clock;
         sf::Time time;
@@ -48,7 +48,7 @@ class bTronGameState : public State {
 		int gridSY = 74;
         
         bool Up = true, Down = true, Left = true, Right = true, W = true, S = true, A = true, D = true; // virtual keys to prevent one press from registering 1000 times
-		int kickoff = 0;
+		bool kickoff = true;
 		
 		void moveObjects(Bike* player1, Bike* player2, std::vector<std::vector<int>> *grid, int gridSX, int gridSY, float dt);
 };
