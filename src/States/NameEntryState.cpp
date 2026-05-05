@@ -238,6 +238,10 @@ void NameEntryState::tick() {
         //then start the game
         gameStartingFlag = true;
         ctx -> gsm -> requestStateChange(States::GameSelect, 3.0f, 1.5f);
+
+        if(this -> p1name == "") this -> p1name = "COM";
+        if(this -> p2name == "") this -> p2name = "COM";
+
         ctx -> p1name = this -> p1name;
         ctx -> p2name = this -> p2name;
     }
