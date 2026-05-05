@@ -40,6 +40,7 @@ void Game::initialization(){
         p1window.create(sf::VideoMode({1920, 1080}), "Arcade", sf::Style::None);
         p1window.setPosition({0, 0});
         p1window.setFramerateLimit(60);
+        p1window.setVerticalSyncEnabled(false);
     }else{
         p1window.create(sf::VideoMode({1920, 1080}), "Player1", sf::Style::None);
         p2window.create(sf::VideoMode({1920, 1080}), "Player2", sf::Style::None);
@@ -49,6 +50,9 @@ void Game::initialization(){
 
         p1window.setFramerateLimit(60);
         p2window.setFramerateLimit(60);
+
+        p1window.setVerticalSyncEnabled(false);
+        p2window.setVerticalSyncEnabled(false);
     }
 
 
