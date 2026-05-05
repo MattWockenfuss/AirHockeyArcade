@@ -55,7 +55,9 @@ void Game::initialization(){
         p2window.setVerticalSyncEnabled(false);
     }
 
-
+    tpsCounter.emplace(ctx.assets -> getFont("ArcadeNormal"), "", 18);
+    tpsCounter -> setPosition({10.0f, 10.0f});
+    tpsCounter -> setFillColor(sf::Color::Magenta);
 
     //open the leaderboard
     leaderboardInterface.openDB();
@@ -85,6 +87,7 @@ void Game::stop(){
 }
 
 void Game::tick(){
+    tpsCounter -> setString("ticks:  " + std::to_string(ticksLastSecond) + "\nframes: " + std::to_string(framesLastSecond));
     /*
         This loop processes all pending window events by repeatedly calling window.pollEvent(), which returns an std::optional containing 
         an event if one is available. For each event, it checks whether the event is of type sf::Event::Closed using the templated is<>()
@@ -167,6 +170,10 @@ void Game::render(){
     input.render(p1window);
     if(renderPlayer2) input.render(p2window);
 
+    if(renderFPSCounter) p1window.draw(*tpsCounter);
+
+
+    //display the windows
     p1window.display();
     if(renderPlayer2) p2window.display();
 }
@@ -187,17 +194,19 @@ void Game::run(){
     long long timePerTick = 1'000'000'000 / fps;   //16,666,666 or 16 million nanoseconds per tick
     long long delta = 0;
 
+    int nsSinceLastSecond = 0;
+
+
     std::chrono::steady_clock::time_point now;
     std::chrono::steady_clock::time_point lastTime = std::chrono::steady_clock::now();
 
-    int ticks = 0;
-    int frames = 0;
     bool shouldRender = false;
 
     while(running) {
         now = std::chrono::steady_clock::now();
         long long duration = std::chrono::duration_cast<std::chrono::nanoseconds>(now - lastTime).count();
         delta += duration;
+        nsSinceLastSecond += duration; //for keeping track of seconds
         lastTime = now;
 
         if(delta >= timePerTick){
@@ -213,6 +222,17 @@ void Game::run(){
             render();
             shouldRender = false;
         }
+
+        if(nsSinceLastSecond >= 1'000'000'000){
+            //then a second has occured
+            ticksLastSecond = ticks;
+            framesLastSecond = frames;
+
+            ticks = 0;
+            frames = 0;
+            nsSinceLastSecond = 0;
+        }
+
     }
 
     stop();

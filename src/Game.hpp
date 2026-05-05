@@ -20,6 +20,14 @@ class Game {
         void tick();
         void render();
     private:
+        bool renderFPSCounter = true;
+        std::optional<sf::Text> tpsCounter;
+        int ticks = 0;
+        int frames = 0;
+
+        int ticksLastSecond = 0;
+        int framesLastSecond = 0;
+
         bool running = false;
         bool shouldRender = false;
         bool renderPlayer2 = false;
