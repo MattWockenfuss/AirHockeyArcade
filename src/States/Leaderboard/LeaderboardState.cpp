@@ -43,12 +43,52 @@ void LeaderboardState::init(Context* ctx){
 void LeaderboardState::tick() {
     //okay so we have a GUI with an index value to move around
     
+
     //so we can do edge detection
     bool nowEnter = ctx -> input -> P1A;
     bool leftNow  = ctx -> input -> P1_Left;
     bool rightNow = ctx -> input -> P1_Right;
     bool upNow    = ctx -> input -> P1_Up;
     bool downNow  = ctx -> input -> P1_Down;
+
+    /*
+        okay so currently, we just do edge detection.
+
+        (1) upon going up or down, we start a tick timer, this resets if we ever let go
+        (2) upon reaching the scrollThreshold, we will start scrolling every TicksPerScroll
+    
+
+    
+    */
+
+    if(upNow) ticksPressingUp++;
+    if(downNow) ticksPressingDown++;
+
+    if(!upNow) ticksPressingUp = 0;
+    if(!downNow) ticksPressingDown = 0;
+
+    int scrollTickThreshold = 30;
+    int TicksPerScroll = 8;
+
+    if(index >= 7){
+        if(ticksPressingUp > scrollTickThreshold){
+            //then we should be scrolling
+            if(ticksPressingUp % TicksPerScroll == 0) index--;
+        }
+        if(ticksPressingDown > scrollTickThreshold){
+            if(ticksPressingDown % TicksPerScroll == 0){
+                if(index - 7 + 1 < ctx -> leaderboard -> recordLength){
+                    index++;
+                }
+            }
+        }
+    }
+
+    
+
+
+
+
 
     /*
         okay so we have 2 situations
@@ -84,32 +124,32 @@ void LeaderboardState::tick() {
         }
     }
 
+
+
+
+
+
     /*
-        Okay so we just updated which index we are currently hovering over, now we want to adjust the
-        render such that that index is in the middle of the screen. To do so, we will try and put 16
-        entries before or 18 after.
-
-        we have some offset variable, offset which is the number of rows not rendered.
-        we are trying to determine when to update this offset. We can increase it, when we move down, and we are greater than index - 7 > 16
-
-
-        if less than 34 total do nothing
-        if index - 7 < 16, then do nothing, we are at the top
-        if index + 18 > recordLength, then we are at the bottom, so stop their
-    
+        This calculates renderOffset (the number of rows not rendered above the view) from the selected record. 
+        It keeps the list pinned at the top when near the start, pinned at the bottom when near the end, and otherwise 
+        shifts the offset so the selected record stays roughly centered on screen.
     */
 
-    if(downNow && !prevDown){
-        if(index >= 16 && index + 18 < ctx -> leaderboard -> recordLength){
-            //then we can move the offset up
-            renderOffset += 1;
-        }
-    }else if(upNow && !prevUp){
-        if(index >= 15 && index + 18 < ctx -> leaderboard -> recordLength){
-            //then we can move the offset up
-            if(renderOffset > 0) renderOffset -= 1;
-        }
-    }
+    int numberOfRecords = ctx -> leaderboard -> recordLength;
+    int MaxRecordsOnScreen = 24; //at 1920x1080
+    int recordIndex = index - 7;
+    
+    int MaxAbove = 11;
+    int MaxBelow = 12;
+
+    if(recordIndex <= MaxAbove) renderOffset = 0;
+    else if(recordIndex >= (numberOfRecords - MaxBelow)) renderOffset = std::max(0, numberOfRecords - MaxRecordsOnScreen);
+    else renderOffset = recordIndex - MaxAbove;
+
+
+
+
+
 
     /*
         okay now if we hit enter on an index less than 7, we want to sort by that column, starting with ascending, but then descending
@@ -119,12 +159,10 @@ void LeaderboardState::tick() {
 
         how can we accomplish this goal. well we have a descending boolean that flips every time we hit enter on a column starting with false, and we keep track
         of the last hit column, it its different, reset it.
-
-
-
     */
 
     if(nowEnter && !prevEnter){
+        std::cout << index << std::endl;
         if(index < 7){
             //this value is static, so it wont be forgotten when we leave the scope of the tick method,
             //essentially a shortcut to having a member variable for the sort order of each column.
@@ -177,13 +215,15 @@ void LeaderboardState::p1render(sf::RenderWindow& p1window) {
 
     std::string words[] = {"P1", "P1 Score", "P2 Score", "P2", "Game", "Date"};
 
-    //render the index for debugging
-    // record_text -> setCharacterSize(28);
-    // record_text -> setString(std::to_string(index) + ", " + std::to_string(renderOffset));
+    // //render the index for debugging
+    // record_text -> setCharacterSize(14);
+    // record_text -> setString("ticksPressingUp: " + std::to_string(ticksPressingUp) + "\nticksPressingDown: " + std::to_string(ticksPressingDown));
     // record_text -> setOrigin(record_text -> getLocalBounds().getCenter());
-    // record_text -> setPosition({p1window.getSize().x - 100.0f, p1window.getSize().y - 100.0f});
-    // record_text -> setFillColor(sf::Color::Yellow);
+    // record_text -> setPosition({(w + p) * 5, 50.0f});
+    // record_text -> setFillColor(sf::Color::Cyan);
     // p1window.draw(*record_text);
+
+
 
     //render the side bars
     //left

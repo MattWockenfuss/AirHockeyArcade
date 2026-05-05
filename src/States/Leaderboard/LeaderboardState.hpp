@@ -15,6 +15,9 @@ class LeaderboardState : public State {
         int cacheIndex = 1; //used to store the index when we move left and right, so we can return to it when we move up and down
         int renderOffset = 0; //the number of rows of the leaderboard table not rendered.
 
+        int ticksPressingDown = 0;
+        int ticksPressingUp = 0;
+
         int lastSortedColumnIndex = 1; //the index of the column we are currently sorted by
         bool isDescending = false; //whether we are currently sorted in descending order or not 
 
