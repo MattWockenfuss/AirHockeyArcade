@@ -31,20 +31,27 @@ void Game::initialization(){
         This works on my pc, but idk about u guys
 
     */
-    renderPlayer2 = true;
+    renderPlayer2 = false;
     ctx.renderp2 = renderPlayer2;
 
 
     if(!renderPlayer2){
         std::vector<sf::VideoMode> modes = sf::VideoMode::getFullscreenModes();
-        p1window.create(modes[0], "Arcade", sf::State::Fullscreen);
+        p1window.create(sf::VideoMode({1920, 1080}), "Arcade", sf::Style::None);
+        p1window.setPosition({0, 0});
+        p1window.setFramerateLimit(60);
     }else{
         p1window.create(sf::VideoMode({1920, 1080}), "Player1", sf::Style::None);
         p2window.create(sf::VideoMode({1920, 1080}), "Player2", sf::Style::None);
         
         p1window.setPosition({0, 0});
         p2window.setPosition({1920, 0});
+
+        p1window.setFramerateLimit(60);
+        p2window.setFramerateLimit(60);
     }
+
+
 
     //open the leaderboard
     leaderboardInterface.openDB();
