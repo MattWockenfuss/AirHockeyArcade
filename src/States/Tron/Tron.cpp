@@ -26,7 +26,7 @@ std::string directionToString(Direction d){
     return "North"; //should never reach here
 }
 
-Tron::Tron(Context* ctx, Direction facing, int length, int headX, int headY, int tailX, int tailY,sf::Color color, float yOffset){
+Tron::Tron(Context* ctx, Direction facing, int length, int headX, int headY, int tailX, int tailY,sf::Color color, sf::Color headColor, float yOffset){
     this -> ctx = ctx;
     this -> facing = facing;
     this -> headX = headX;
@@ -35,6 +35,7 @@ Tron::Tron(Context* ctx, Direction facing, int length, int headX, int headY, int
     this -> tailY = tailY;
     this -> length = length;
     this -> color = color;
+    this -> headColor = headColor;
     this -> debugYOffset = yOffset;
     this -> lastFacing = facing;
     text.emplace(ctx -> assets -> getFont("Consolas"), "", 22);
@@ -84,22 +85,6 @@ Joint Tron::peek(){
 //okay so how can the Tron move?
 //every tick they move in the direction we are facing, we need to update the head and tail, and the joints list, possible dequeue
 
-void Tron::tick(){
-    //the Trons tick function, it updates its location and checks for collision
-
-    //now lets get the input
-    if(ctx -> input -> P1_Up) facing = Direction::North;
-    if(ctx -> input -> P1_Down) facing = Direction::South;
-    if(ctx -> input -> P1_Left) facing = Direction::West;
-    if(ctx -> input -> P1_Right) facing = Direction::East;
-
-    
-    if(ctx -> input -> P1A) growNextTick = true;
-	
-    std::cout << "Facing: " << (int)facing << std::endl;
-
-    move();
-}
 void Tron::render(sf::RenderWindow& window){
     //okay how do we render?
     //render all of the squares from the tail to the head, changing directions at joints
@@ -124,7 +109,7 @@ void Tron::render(sf::RenderWindow& window){
         current = current -> next;
     }
 
-    std::cout << "Done with joints, going to head!, (tx, ty)(" << tx << ", " << ty << "), (headX, headY)(" << headX << ", " << headY << ")" << std::endl;
+    //std::cout << "Done with joints, going to head!, (tx, ty)(" << tx << ", " << ty << "), (headX, headY)(" << headX << ", " << headY << ")" << std::endl;
     //if there was no joints then we are here with tx and ty at the tail, and we want to loop to the head
     //otherwise tx and ty are at the location of the last joint, so we want to loop to the head from there
     //okay so since we going to the head, we check facing direction
@@ -132,7 +117,7 @@ void Tron::render(sf::RenderWindow& window){
     renderTronSegment(window, tx, ty, headX, headY);
 
     //next render the head of the Tron!
-    square.setFillColor(sf::Color::Magenta);
+    square.setFillColor(headColor);
     square.setPosition({headX * squareWidth, headY * squareWidth});
     window.draw(square);
 
@@ -159,7 +144,7 @@ void Tron::render(sf::RenderWindow& window){
     text -> setString(debug);
     text -> setPosition({20.0f, debugYOffset + 20.0f});
     text -> setRotation(sf::degrees(0.0f));
-    window.draw(*text);
+    //window.draw(*text);
 }
 
 void Tron::renderTronSegment(sf::RenderWindow& window, int tx, int ty, int ex, int ey){
@@ -173,16 +158,16 @@ void Tron::renderTronSegment(sf::RenderWindow& window, int tx, int ty, int ex, i
     */
 
     while(tx != ex || ty != ey){
-        std::cout << "\t\tRendering square at: (" << tx << ", " << ty << ")" << std::endl;
+        //std::cout << "\t\tRendering square at: (" << tx << ", " << ty << ")" << std::endl;
         
         square.setPosition({tx * squareWidth, ty * squareWidth});
         window.draw(square);
         
-        text -> setFillColor(sf::Color::Black);
-        text -> setRotation(sf::degrees(45.0f));
-        text -> setString("(" + std::to_string(tx) + ", " + std::to_string(ty) + ")");
-        text -> setPosition({tx * squareWidth + 16.0f, ty * squareWidth});
-        window.draw(*text);
+        // text -> setFillColor(sf::Color::White);
+        // text -> setRotation(sf::degrees(45.0f));
+        // text -> setString("(" + std::to_string(tx) + ", " + std::to_string(ty) + ")");
+        // text -> setPosition({tx * squareWidth + 16.0f, ty * squareWidth});
+        // window.draw(*text);
 
         if(ex > tx) tx++;
         else if(ex < tx) tx--;
@@ -195,15 +180,13 @@ void Tron::renderTronSegment(sf::RenderWindow& window, int tx, int ty, int ex, i
 void Tron::move(){
 
     /*
-            Okay how does the Tron move? well depending on the direction they are facing, we need to update
-            the coordinates of the head and tail as well as all of the joints
-            If the tail is at a joint, then dequeue said joint.
+        Okay how does the Tron move? well depending on the direction they are facing, we need to update
+        the coordinates of the head and tail as well as all of the joints
 
-            (1) If we are changing direction, enqueue a new joint at the head 
-            (2) Move head in direction we are facing
-            (3) If we are NOT growing, move tail in direction of last joint if it exists, otherwise in direction we are facing
-            (4) If the tail is at a joint, dequeue the joint
-
+        (1) If we are changing direction, enqueue a new joint at the head 
+        (2) Move head in direction we are facing
+        (3) If we are NOT growing, move tail in direction of last joint if it exists, otherwise in direction we are facing
+        (4) If the tail is at a joint, dequeue the joint
     */
 
 
@@ -243,10 +226,11 @@ void Tron::move(){
             else if(jy < tailY) tailY--;
         }
     }else{
-        std::cout << "Growing Tron by 1!" << std::endl;
+        //std::cout << "Growing Tron by 1!" << std::endl;
         //then we are growing, so we skip moving the tail, and just set growNextTick to false for the next tick
-
-        growNextTick = false;
+        length++;
+        //we dont do this because this is tron, not snake
+        //growNextTick = false;
     }
 
 
@@ -258,4 +242,147 @@ void Tron::move(){
 
 
 
+}
+
+
+bool squarePartOfLine(int tx, int ty, int x1, int y1, int x2, int y2){
+    /*
+        This function checks whether the point (tx, ty) lies on the line segment
+        defined by (x1, y1) and (x2, y2).
+
+        Steps:
+        (1) Identify whether the segment is vertical (x1 == x2) or horizontal (y1 == y2)
+        (2) Check that the point shares the same fixed coordinate
+        (3) Verify that the other coordinate lies within the inclusive range of the segment endpoints
+    */
+
+    if(x1 == x2){
+        //then x1 == x2
+        if(tx == x1){
+            if(std::min(y1, y2) <= ty && ty <= std::max(y1, y2)){
+                return true;
+            }
+        }
+    }else{
+        //then y1 == y2
+        if(ty == y1){
+            if(std::min(x1, x2) <= tx && tx <= std::max(x1, x2)){
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+bool Tron::checkForCollision(Tron& otherSnake){
+    /*
+        Okay we are determining whether or not this snake has collided with something. Here We 
+        define collide as the head of the snake being inside the walls or inside the other snake.
+        
+        The only edge case, is that if the two snakes collide head on, then the left snake collides
+        and the right snake wins
+
+        To Determine if there was a collision
+        (1) Check if the head is inside any of the walls
+        (2) Check if the head is between any two consectutive joints, including the head and tail
+            (2.A) NOTE: the 'front' of the list, is closest to the tail, as we enqueue there
+        (3) Finally we check if the snake is colliding with itself anywhere, we can skip between the head as that is impossible
+    */
+
+
+
+    //(1) Check if the head is inside any of the walls
+    //(0, 23) -> (0, 89) -> (159, 23) -> (159, 89)
+    if(headX == 0 || headX == 159){
+        if(23 <= headY && headY <= 89){
+            return true;
+        }
+    }else if(headY == 23 || headY == 89){
+        if(0 <= headX && headX <= 159){
+            return true;
+        }
+    }
+
+
+
+
+    //(2) Check if the head is between any two consectutive joints, including the head and tail
+
+    /*
+        Okay, starting at the head, we want to loop through all joints and then tail, check if we
+        are between any two. of the other snake!
+    */
+
+    int x1 = otherSnake.tailX;
+    int y1 = otherSnake.tailY;
+    int x2 = 0;
+    int y2 = 0;
+
+    if(otherSnake.front == nullptr){
+        std::cout << "THIS SNAKE HAS NO JOINTS!" << std::endl;
+        //then the queue is empty, this snake has no joints!
+        x2 = otherSnake.headX;
+        y2 = otherSnake.headY;
+
+        if(squarePartOfLine(headX, headY, x1, y1, x2, y2)){
+            return true;
+        }
+    }else{
+        /*
+            We will start at the head, and loop through x amount of joints, we know there is at least
+            one, then the last joint and the tail. We want to be sure that the calling snake's head is not
+            colliding with any of the joints
+        */
+        Joint* curr = otherSnake.front;
+        while(curr != nullptr){
+            x2 = curr -> x;
+            y2 = curr -> y;
+            
+            if(squarePartOfLine(headX, headY, x1, y1, x2, y2)){
+                return true;
+            }
+
+            //okay so they dont collide, set x1 and y1 to current joint, and we will check next
+            x1 = x2;
+            y1 = y2;
+            curr = curr -> next;
+        }
+        //now check the last joint, and tail
+        x2 = otherSnake.headX;
+        y2 = otherSnake.headY;
+
+        if(squarePartOfLine(headX, headY, x1, y1, x2, y2)){
+            return true;
+        }
+
+    }
+
+    //(3) Finally we check if the snake is colliding with itself anywhere, we can skip between the head as that is impossible
+    x1 = tailX;
+    y1 = tailY;
+    x2 = 0;
+    y2 = 0;
+    if(front != nullptr){
+        Joint* curr = front;
+        while(curr != nullptr){
+            x2 = curr -> x;
+            y2 = curr -> y;
+            
+            if(squarePartOfLine(headX, headY, x1, y1, x2, y2)){
+                return true;
+            }
+
+            //okay so they dont collide, set x1 and y1 to current joint, and we will check next
+            x1 = x2;
+            y1 = y2;
+            curr = curr -> next;
+        }
+    }
+
+
+
+
+    //then we are sure they dont collide
+    return false;
 }

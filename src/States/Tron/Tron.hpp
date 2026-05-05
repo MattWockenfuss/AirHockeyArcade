@@ -18,23 +18,27 @@ struct Joint {
 
 struct Tron {
     public:
+        
+        int score = 0;
         sf::RectangleShape square;
-        float squareWidth = 8.0f;
+        float squareWidth = 12.0f;
 
         Direction facing, lastFacing;
         int headX, headY;
         int tailX, tailY;
         int length;
-        sf::Color color;
+        sf::Color color, headColor;
         bool growNextTick = true;
 
         Joint *front = nullptr, *back = nullptr;
-
-        void tick();
+        
+        void move();
         void render(sf::RenderWindow& window);
 
+        bool checkForCollision(Tron& otherSnake);
+
         Tron() = default;
-        Tron(Context* ctx, Direction facing, int length, int headX, int headY, int tailX, int tailY, sf::Color color, float yOffset = 0.0f);
+        Tron(Context* ctx, Direction facing, int length, int headX, int headY, int tailX, int tailY, sf::Color color, sf::Color headColor, float yOffset = 0.0f);
     private:
         Context* ctx;
         void enqueue(int x, int y);
@@ -43,7 +47,7 @@ struct Tron {
 
         void renderTronSegment(sf::RenderWindow& window, int tx, int ty, int ex, int ey);
 
-        void move();
+        
         void grow(int lengthToGrow);
         float debugYOffset = 0.0f;
         std::optional<sf::Text> text;
