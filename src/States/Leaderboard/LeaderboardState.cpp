@@ -67,8 +67,8 @@ void LeaderboardState::tick() {
     if(!upNow) ticksPressingUp = 0;
     if(!downNow) ticksPressingDown = 0;
 
-    int scrollTickThreshold = 30;
-    int TicksPerScroll = 8;
+    int scrollTickThreshold = 20;
+    int TicksPerScroll = 6;
 
     if(index >= 7){
         if(ticksPressingUp > scrollTickThreshold){
