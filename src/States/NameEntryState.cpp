@@ -51,6 +51,35 @@ void NameEntryState::init(Context* ctx){
 
 }
 
+void moveUp(int& x, int& y){
+    if(x == 10 && (y == 2 || y == 3)){
+        y = 0;
+    }else if(y > 0){
+        y--;
+    }
+}
+void moveLeft(int& x, int& y){
+    if(x == 10 && (y == 0 || y == 1)){
+        x = 9;
+        y = 0;
+    }else if(x == 10 && (y == 2 || y == 3)){
+        x = 9;
+        y = 2;
+    }else if(x > 0){
+        x--;
+    }
+}
+void moveDown(int& x, int& y){
+    if(x == 10 && (y == 0 || y == 1)){
+        y = 2;
+    }else if(y < 3){
+        y++;
+    }
+}
+void moveRight(int& x, int& y){
+    if(x < 10) x++;
+}
+
 void NameEntryState::tick() {
     //so each player has their own screen being rendered?
     //we render essentially the same thing, except each screen one of the keys is highlighted because its selected,
@@ -70,45 +99,43 @@ void NameEntryState::tick() {
     bool upNow    = ctx -> input -> P1_Up;
     bool downNow  = ctx -> input -> P1_Down;
 
-    /*
-        This is more messy than it needs to be, but all of the extra logic is here to ensure
-        that we stay in bounds with 2 odd sized buttons, namely the enter and back
-    */
+
+    if(upNow) p1_ticksPressingUp++;
+    if(leftNow) p1_ticksPressingLeft++;
+    if(downNow) p1_ticksPressingDown++;
+    if(rightNow) p1_ticksPressingRight++;
+
+    if(!upNow) p1_ticksPressingUp = 0;
+    if(!leftNow) p1_ticksPressingLeft = 0;
+    if(!downNow) p1_ticksPressingDown = 0;
+    if(!rightNow) p1_ticksPressingRight = 0;
+
+    int scrollTickThreshold = 18;
+    int TicksPerScroll = 6;
+
+
     if(!p1ready){
-        if (upNow && !p1prevUp){
-            if(p1x == 10 && (p1y == 2 || p1y == 3)){
-                p1y = 0;
-            }else{
-                p1y--;
-            }
-        }else if (leftNow && !p1prevLeft){
-            if(p1x == 10 && (p1y == 0 || p1y == 1)){
-                p1x = 9;
-                p1y = 0;
-            }else if(p1x == 10 && (p1y == 2 || p1y == 3)){
-                p1x = 9;
-                p1y = 2;
-            }else{
-                p1x--;
-            }
-        }else if (downNow && !p1prevDown){
-            if(p1x == 10 && (p1y == 0 || p1y == 1)){
-                p1y = 2;
-            }else{
-                p1y++;
-            }
-        }else if (rightNow && !p1prevRight){
-            p1x++;
+        if (upNow && !p1prevUp) moveUp(p1x, p1y);
+        else if (leftNow && !p1prevLeft) moveLeft(p1x, p1y);
+        else if (downNow && !p1prevDown) moveDown(p1x, p1y);
+        else if (rightNow && !p1prevRight) moveRight(p1x, p1y);
+
+        if(p1_ticksPressingUp > scrollTickThreshold){
+            if(p1_ticksPressingUp % TicksPerScroll == 0) moveUp(p1x, p1y);
+        }
+        if(p1_ticksPressingLeft > scrollTickThreshold){
+            if(p1_ticksPressingLeft % TicksPerScroll == 0) moveLeft(p1x, p1y);
+        }
+        if(p1_ticksPressingDown > scrollTickThreshold){
+            if(p1_ticksPressingDown % TicksPerScroll == 0) moveDown(p1x, p1y);
+        }
+        if(p1_ticksPressingRight > scrollTickThreshold){
+            if(p1_ticksPressingRight % TicksPerScroll == 0) moveRight(p1x, p1y);
         }
     }
 
-    if(p1x < 0) p1x = 0;
-    if(p1x > 10) p1x = 10;
-    if(p1y < 0) p1y = 0;
-    if(p1y > 3) p1y = 3;
-
     /*
-        Handles a single “enter” input press (edge-triggered) to interact with the name entry UI. 
+            Handles a single “enter” input press (edge-triggered) to interact with the name entry UI. 
         If the cursor is on the character grid, it appends the selected character to the player name 
         (up to NAME_MAX_LENGTH). If the cursor is on the READY/UNDO button, it toggles the ready state 
         and assigns a default name (“GUE$T”) if the name is empty. Otherwise (on the back/delete area), 
@@ -149,50 +176,36 @@ void NameEntryState::tick() {
     upNow    = ctx -> input -> P2_Up;
     downNow  = ctx -> input -> P2_Down;
 
-    /*
-        This is more messy than it needs to be, but all of the extra logic is here to ensure
-        that we stay in bounds with 2 odd sized buttons, namely the enter and back
-    */
+    if(upNow) p2_ticksPressingUp++;
+    if(leftNow) p2_ticksPressingLeft++;
+    if(downNow) p2_ticksPressingDown++;
+    if(rightNow) p2_ticksPressingRight++;
+
+    if(!upNow) p2_ticksPressingUp = 0;
+    if(!leftNow) p2_ticksPressingLeft = 0;
+    if(!downNow) p2_ticksPressingDown = 0;
+    if(!rightNow) p2_ticksPressingRight = 0;
+
     if(!p2ready){
-        if (upNow && !p2prevUp){
-            if(p2x == 10 && (p2y == 2 || p2y == 3)){
-                p2y = 0;
-            }else{
-                p2y--;
-            }
-        }else if (leftNow && !p2prevLeft){
-            if(p2x == 10 && (p2y == 0 || p2y == 1)){
-                p2x = 9;
-                p2y = 0;
-            }else if(p2x == 10 && (p2y == 2 || p2y == 3)){
-                p2x = 9;
-                p2y = 2;
-            }else{
-                p2x--;
-            }
-        }else if (downNow && !p2prevDown){
-            if(p2x == 10 && (p2y == 0 || p2y == 1)){
-                p2y = 2;
-            }else{
-                p2y++;
-            }
-        }else if (rightNow && !p2prevRight){
-            p2x++;
+        if (upNow && !p2prevUp) moveUp(p2x, p2y);
+        else if (leftNow && !p2prevLeft) moveLeft(p2x, p2y);
+        else if (downNow && !p2prevDown) moveDown(p2x, p2y);
+        else if (rightNow && !p2prevRight) moveRight(p2x, p2y);
+
+        if(p2_ticksPressingUp > scrollTickThreshold){
+            if(p2_ticksPressingUp % TicksPerScroll == 0) moveUp(p2x, p2y);
+        }
+        if(p2_ticksPressingLeft > scrollTickThreshold){
+            if(p2_ticksPressingLeft % TicksPerScroll == 0) moveLeft(p2x, p2y);
+        }
+        if(p2_ticksPressingDown > scrollTickThreshold){
+            if(p2_ticksPressingDown % TicksPerScroll == 0) moveDown(p2x, p2y);
+        }
+        if(p2_ticksPressingRight > scrollTickThreshold){
+            if(p2_ticksPressingRight % TicksPerScroll == 0) moveRight(p2x, p2y);
         }
     }
 
-    if(p2x < 0) p2x = 0;
-    if(p2x > 10) p2x = 10;
-    if(p2y < 0) p2y = 0;
-    if(p2y > 3) p2y = 3;
-
-    /*
-        Handles a single “enter” input press (edge-triggered) to interact with the name entry UI. 
-        If the cursor is on the character grid, it appends the selected character to the player name 
-        (up to NAME_MAX_LENGTH). If the cursor is on the READY/UNDO button, it toggles the ready state 
-        and assigns a default name (“GUE$T”) if the name is empty. Otherwise (on the back/delete area), 
-        it removes the last character from the name if one exists.
-    */
     if(nowEnter && !p2prevEnter){
         if(p2x < 10){
             char c = chars[p2y][p2x];
@@ -215,6 +228,10 @@ void NameEntryState::tick() {
     p2prevRight = rightNow;
     p2prevEnter = nowEnter;
 
+
+
+
+
     //either both players readied up, or only 1 and they readied up.
     //also check for flag
     if((p1ready && p2ready && !gameStartingFlag) || (p1ready && !ctx -> renderp2 && !gameStartingFlag)){
@@ -230,13 +247,13 @@ void NameEntryState::tick() {
 void NameEntryState::p1render(sf::RenderWindow& p1window) {
     /*  
         Renders the player name entry screen, including a centered grid-based character selector, current name display, 
-        and interactive UI elements. It calculates layout positions dynamically based on window size, draws selectable 
-        character tiles with highlighting for the current cursor position (p1x, p1y), and renders special buttons for READY/UNDO 
-        and Back with visual feedback. The function also displays the player’s typed name above the grid, includes a blinking caret 
-        when the player is not readied, and shows flashing instructional text that changes based on readiness state. Additionally, 
-        it handles visual styling (colors, borders, centering) and includes a debug display of the current selection coordinates.
+    and interactive UI elements. It calculates layout positions dynamically based on window size, draws selectable 
+    character tiles with highlighting for the current cursor position (p1x, p1y), and renders special buttons for READY/UNDO 
+    and Back with visual feedback. The function also displays the player’s typed name above the grid, includes a blinking caret 
+    when the player is not readied, and shows flashing instructional text that changes based on readiness state. Additionally, 
+    it handles visual styling (colors, borders, centering) and includes a debug display of the current selection coordinates.
 
-        This was generated by ChatGPT                                                                                                   */
+    This was generated by ChatGPT                                                                                                   */
 
     //declare some helper vars
     float squareWidth = 80.0f;
@@ -402,10 +419,11 @@ void NameEntryState::p1render(sf::RenderWindow& p1window) {
     }
 
     //Rendering Debug Keyboard coords
+    // charLabel -> setCharacterSize(14);
     // charLabel -> setOrigin({0.0f, 0.0f});
-    // charLabel -> setString(std::to_string(p1x) + ", " + std::to_string(p1y));
-    // charLabel -> setFillColor(sf::Color::Yellow);
-    // charLabel -> setPosition({150.0f, 150.0f});
+    // charLabel -> setString(std::to_string(p1x) + ", " + std::to_string(p1y) + "\nup: " + std::to_string(p1_ticksPressingUp) + "\nleft: " + std::to_string(p1_ticksPressingLeft) + "\ndown: " + std::to_string(p1_ticksPressingDown) + "\nright: " + std::to_string(p1_ticksPressingRight));
+    // charLabel -> setFillColor(sf::Color::Cyan);
+    // charLabel -> setPosition({750.0f, 150.0f});
     // p1window.draw(*charLabel);
 }
 

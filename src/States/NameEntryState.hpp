@@ -22,6 +22,18 @@ class NameEntryState : public State {
         bool p1prevUp = false, p1prevLeft = false, p1prevDown = false, p1prevRight = false, p1prevEnter = false;
         bool p2prevUp = false, p2prevLeft = false, p2prevDown = false, p2prevRight = false, p2prevEnter = false;
 
+        int p1_ticksPressingUp = 0;
+        int p1_ticksPressingLeft = 0;
+        int p1_ticksPressingDown = 0;
+        int p1_ticksPressingRight = 0;
+        
+        int p2_ticksPressingUp = 0;
+        int p2_ticksPressingLeft = 0;
+        int p2_ticksPressingDown = 0;
+        int p2_ticksPressingRight = 0;
+        
+
+
         bool gameStartingFlag = false;
         std::string p1name = "";
         std::string p2name = "";
