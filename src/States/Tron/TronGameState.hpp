@@ -30,6 +30,8 @@ class TronGameState : public State {
         Tron p2;
 
     private:
+        float viewWidth = 0;
+        float viewHeight = 0;
         void renderArena(sf::RenderWindow& window);
         void renderGameEndWindow(sf::RenderWindow& window);
         long long sec;

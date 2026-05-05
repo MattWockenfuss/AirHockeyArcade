@@ -14,7 +14,6 @@
 void TronGameState::init(Context* ctx){
     State::init(ctx);
 
-    title_text.emplace(ctx -> assets -> getFont("Consolas"), "Tron", 75);
     play_text.emplace(ctx -> assets -> getFont("SquareSansSerif"), "Insert Coin to Play!", 35);
     seconds_counter.emplace(ctx -> assets -> getFont("ST-SimpleSquare"), "", 40);
 
@@ -24,31 +23,39 @@ void TronGameState::init(Context* ctx){
     std::cout << "TronGameState Created!" << std::endl;
 
 
-	const sf::FloatRect titleRect = title_text -> getLocalBounds();
-	title_text -> setOrigin(titleRect.getCenter());
-	title_text -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2.0f, ctx -> p1window -> getSize().y / 5.0f));
+
+	
 
 	const sf::FloatRect textRect = play_text -> getLocalBounds();
 	play_text -> setOrigin(textRect.getCenter());
-	play_text -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2.0f, ctx -> p1window -> getSize().y / 1.2f));
+	
     
     const sf::FloatRect secondsRect = seconds_counter -> getLocalBounds();
     seconds_counter -> setOrigin(secondsRect.getCenter());
-    seconds_counter -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2, 50.0f));
+    
 
     p1score -> setOrigin(secondsRect.getCenter());
-    p1score -> setPosition(sf::Vector2f(300.0f, 50.0f));
+    
 
     p2score -> setOrigin(secondsRect.getCenter());
-    p2score -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x - 300.0f, 50.0f));
+    
 
 
     p1 = Tron(ctx, Direction::East, 1, 5, 57, 5, 57, p1body, p1head);
     p2 = Tron(ctx, Direction::West, 1, 154, 57, 154, 57, p2body, p2head, 400.0f);
-
 }
 
 void TronGameState::tick() {
+    if(ctx -> window -> getView().getSize().x != viewWidth){
+        //if the new x is not viewWidth, update the width and height and everything downstream
+        viewWidth = ctx -> window -> getView().getSize().x;
+        viewHeight = ctx -> window -> getView().getSize().y;
+
+        play_text -> setPosition({viewWidth / 2.0f, viewHeight / 1.2f});
+        seconds_counter -> setPosition({viewWidth / 2, 50.0f});
+        p1score -> setPosition({300.0f, 50.0f});
+        p2score -> setPosition({viewWidth - 300.0f, 50.0f});
+    }
 	//assume about 60 ticks per second, it can be slightly less, but good enough
 	
 	// emergency game exit
@@ -89,7 +96,7 @@ void TronGameState::tick() {
         // to a vertical screen position from [-windowHeight, screenHeight/2]
 
         if(ms <= windowMSThreshold){
-            windowYCoord = (ms / (float) windowMSThreshold) * (ctx -> p1window -> getSize().y / 2 - (-windowHeight)) - windowHeight;
+            windowYCoord = (ms / (float) windowMSThreshold) * (ctx -> window -> getView().getSize().y / 2 - (-windowHeight)) - windowHeight;
         }
         //std::cout << "MS: " << ms << ", windowYCoord: " << windowYCoord << std::endl;
 
@@ -295,7 +302,7 @@ void TronGameState::renderGameEndWindow(sf::RenderWindow& window){
         y coordinate.
     */
 
-    float centerX = window.getSize().x / 2;
+    float centerX = viewWidth / 2;
     float centerY = windowYCoord;
     int bw = 6;
     square.setSize({windowWidth, windowHeight});

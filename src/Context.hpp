@@ -19,8 +19,7 @@ struct Context {
     std::string p1name = "";
     std::string p2name = "";
     bool renderp2 = false;
-    sf::RenderWindow*   p1window = nullptr;
-    sf::RenderWindow*   p2window = nullptr;
+    sf::RenderWindow*   window = nullptr;
     AssetManager*       assets = nullptr;
     KeyManager*         keys = nullptr;
     GameStateManager*   gsm = nullptr;

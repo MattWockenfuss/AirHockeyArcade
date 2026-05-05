@@ -132,8 +132,8 @@ void FruitNinjaGameState::init(Context* ctx){
     std::cout << "Consolas" << &ctx -> assets -> getFont("Consolas") << std::endl;
     std::cout << "ST-SimpleSquare" << &ctx -> assets -> getFont("ST-SimpleSquare") << std::endl;
 	
-	width = ctx -> p1window -> getSize().x;
-    height = ctx -> p1window -> getSize().y;
+	width = ctx -> window -> getView().getSize().x;
+    height = ctx -> window -> getView().getSize().y;
 	screenRatio = width / 320.0;
     //screenRatio = 6;
     std::cout << "Screen Ratio: " << screenRatio << std::endl;

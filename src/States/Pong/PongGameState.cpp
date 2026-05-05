@@ -85,49 +85,47 @@ void PongGameState::init(Context *ctx) {
 
 	const sf::FloatRect titleRect = title_text -> getLocalBounds();
 	title_text -> setOrigin(titleRect.getCenter());
-	title_text -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2.0f, padding));
+	title_text -> setPosition(sf::Vector2f(ctx -> window -> getView().getSize().x / 2.0f, padding));
     
     const sf::FloatRect secondsRect = seconds_counter -> getLocalBounds();
     seconds_counter -> setOrigin(secondsRect.getCenter());
-    seconds_counter -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x - 150.0f, 50.0f));
+    seconds_counter -> setPosition(sf::Vector2f(ctx -> window -> getView().getSize().x - 150.0f, 50.0f));
 
     const sf::FloatRect countdownRect = countdown_timer -> getLocalBounds();
     countdown_timer -> setOrigin(countdownRect.getCenter());
-    countdown_timer -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2.0f, ctx -> p1window -> getSize().y / 2.0f));
+    countdown_timer -> setPosition(sf::Vector2f(ctx -> window -> getView().getSize().x / 2.0f, ctx -> window -> getView().getSize().y / 2.0f));
     countdown_timer -> setFillColor(sf::Color::Cyan);
 
     const sf::FloatRect p1Rect = player1 -> getLocalBounds();
 	player1 -> setOrigin(p1Rect.getCenter());
-	player1 -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 4.5f, padding));
+	player1 -> setPosition(sf::Vector2f(ctx -> window -> getView().getSize().x / 4.5f, padding));
     player1 -> setFillColor(sf::Color::Magenta);
     
     const sf::FloatRect p2Rect = player2 -> getLocalBounds();
 	player2 -> setOrigin(p2Rect.getCenter());
-	player2 -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 1.25f, padding));
+	player2 -> setPosition(sf::Vector2f(ctx -> window -> getView().getSize().x / 1.25f, padding));
     player2 -> setFillColor(sf::Color::Magenta);
 
     const sf::FloatRect wint1 = win1 -> getLocalBounds();
     win1 -> setOrigin(wint1.getCenter());
-    win1 -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2.0f, ctx -> p1window -> getSize().y / 2.0f));
+    win1 -> setPosition(sf::Vector2f(ctx -> window -> getView().getSize().x / 2.0f, ctx -> window -> getView().getSize().y / 2.0f));
     win1 -> setFillColor(sf::Color::Green);
 
     const sf::FloatRect wint2 = win2 -> getLocalBounds();
     win2 -> setOrigin(wint2.getCenter());
-    win2 -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2.0f, ctx -> p1window -> getSize().y / 2.0f));
+    win2 -> setPosition(sf::Vector2f(ctx -> window -> getView().getSize().x / 2.0f, ctx -> window -> getView().getSize().y / 2.0f));
     win2 -> setFillColor(sf::Color::Green);
 
     const sf::FloatRect goalRect = goal_text -> getLocalBounds();
 	goal_text -> setOrigin(goalRect.getCenter());
-	goal_text -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2.0f, ctx -> p1window -> getSize().y / 4.0f));
+	goal_text -> setPosition(sf::Vector2f(ctx -> window -> getView().getSize().x / 2.0f, ctx -> window -> getView().getSize().y / 4.0f));
     goal_text -> setFillColor(sf::Color::Blue);
     rendergoal = false;
 
-    //Explicit type conversion
-    sf::Vector2u win = ctx -> p1window->getSize();
-    winSize = { static_cast<float>(win.x), static_cast<float>(win.y) };
+    winSize = ctx -> window -> getView().getSize();
 
     //To help reduce screen tearing caused by game/monitor refresh rate mismatch, set vsync to true
-    ctx -> p1window->setVerticalSyncEnabled(true);
+    ctx -> window -> setVerticalSyncEnabled(true);
 
     //Pass game object pointers to their init helper functions
     paddle_init(p1);
@@ -279,7 +277,7 @@ void PongGameState::tick() {
 
             const sf::FloatRect countdownRect = countdown_timer -> getLocalBounds();
             countdown_timer -> setOrigin(countdownRect.getCenter());
-            countdown_timer -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2.0f, ctx -> p1window -> getSize().y / 2.0f));
+            countdown_timer -> setPosition(sf::Vector2f(ctx -> window -> getView().getSize().x / 2.0f, ctx -> window -> getView().getSize().y / 2.0f));
         }
     }
 }

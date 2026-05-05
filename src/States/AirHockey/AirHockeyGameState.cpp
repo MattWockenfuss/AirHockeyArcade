@@ -490,13 +490,13 @@ void Player::draw1(sf::RenderWindow* window1){
 	name_text -> setCharacterSize(76);
 	name_text -> setString(name);
 	name_text -> setOrigin({name_text -> getLocalBounds().getCenter().x, 0});
-	name_text -> setPosition({48.0f * screenRatio, 16.0f * screenRatio});
+	name_text -> setPosition({(float)(48.0f * screenRatio), (float)(16.0f * screenRatio)});
 	window1 -> draw(*name_text);
 	
 	name_text -> setString(std::to_string(score));
 	name_text -> setCharacterSize(56);
 	name_text -> setOrigin({0.0f, 0.0f});
-	name_text -> setPosition(sf::Vector2f(48*screenRatio - name_text -> getLocalBounds().getCenter().x, 40 * screenRatio));
+	name_text -> setPosition({(float)(48 * screenRatio - name_text -> getLocalBounds().getCenter().x), (float)(40.0f * screenRatio)});
 	window1 -> draw(*name_text);
 }
 
@@ -510,13 +510,13 @@ void Player::draw2(sf::RenderWindow* window2){
 	name_text -> setCharacterSize(76);
 	name_text -> setString(name);
 	name_text -> setOrigin({name_text -> getLocalBounds().getCenter().x, 0});
-	name_text -> setPosition({272.0f * screenRatio , 16.0f * screenRatio});
+	name_text -> setPosition({(float)(272.0f * screenRatio), (float)(16.0f * screenRatio)});
 	window2 -> draw(*name_text);
 	
 	name_text -> setString(std::to_string(score));
 	name_text -> setCharacterSize(56);
 	name_text -> setOrigin({0.0f, 0.0f});
-	name_text -> setPosition(sf::Vector2f(272.0f * screenRatio - name_text -> getLocalBounds().getCenter().x, 40 * screenRatio));
+	name_text -> setPosition({(float)(272.0f * screenRatio - name_text -> getLocalBounds().getCenter().x), (float)(40.0f * screenRatio)});
 	window2 -> draw(*name_text);
 }
 
@@ -1114,8 +1114,8 @@ void AirHockeyGameState::init(Context* ctx){
     //std::cout << "Consolas" << &ctx -> assets -> getFont("Consolas") << std::endl;
     //std::cout << "ST-SimpleSquare" << &ctx -> assets -> getFont("ST-SimpleSquare") << std::endl;
     
-    float width = ctx -> p1window -> getSize().x;
-    float height = ctx -> p1window -> getSize().y;
+    float width = ctx -> window -> getView().getSize().x;
+    float height = ctx -> window -> getView().getSize().y;
 	double screenRatio = width / 320.0;
     std::cout << "Screen Ratio: " << screenRatio << std::endl;
 	

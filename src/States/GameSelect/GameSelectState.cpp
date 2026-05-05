@@ -56,8 +56,8 @@ void GameSelectState::init(Context* ctx){
     std::cout << "\nGame Select State Created!" << std::endl;
 	
 	// screen size
-	width = ctx -> p1window -> getSize().x;
-    height = ctx -> p1window -> getSize().y;
+	width = ctx -> window -> getView().getSize().x;
+    height = ctx -> window -> getView().getSize().y;
 	screenRatio = width / 320.0;
     //screenRatio = 6;
     std::cout << "Screen Ratio: " << screenRatio << std::endl;

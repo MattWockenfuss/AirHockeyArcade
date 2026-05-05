@@ -14,6 +14,8 @@ class IdleState : public State {
         void p1render(sf::RenderWindow& p1window) override;
         void p2render(sf::RenderWindow& p2window) override;
     private:
+        float viewWidth = 0;
+        float viewHeight = 0;
         long long sec;
         std::optional<sf::Text> title_text, play_text;
 

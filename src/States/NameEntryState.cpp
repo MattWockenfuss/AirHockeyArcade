@@ -81,6 +81,11 @@ void moveRight(int& x, int& y){
 }
 
 void NameEntryState::tick() {
+    if(ctx -> window -> getView().getSize().x != viewWidth){
+        //if the new x is not viewWidth, update the width and height and everything downstream
+        viewWidth = ctx -> window -> getView().getSize().x;
+        viewHeight = ctx -> window -> getView().getSize().y;
+    }
     //so each player has their own screen being rendered?
     //we render essentially the same thing, except each screen one of the keys is highlighted because its selected,
     //and we render their name as its being typed in.
@@ -264,10 +269,8 @@ void NameEntryState::p1render(sf::RenderWindow& p1window) {
     float gap = 19.0f;
     float bw = 4.0f;
 
-    unsigned int width = p1window.getSize().x;
-    unsigned int height = p1window.getSize().y;
-    float startX = width / 2 - (1.0f / 2) * (13 * (squareWidth + gap) - gap);
-    float startY = height / 2 - (1.0f / 2) * (4 * (squareWidth + gap) - gap);
+    float startX = viewWidth / 2 - (1.0f / 2) * (13 * (squareWidth + gap) - gap);
+    float startY = viewHeight / 2 - (1.0f / 2) * (4 * (squareWidth + gap) - gap);
 
 
     //the underline for the name entering
@@ -417,7 +420,7 @@ void NameEntryState::p1render(sf::RenderWindow& p1window) {
 
         charLabel -> setOrigin(charLabel -> getLocalBounds().getCenter()); //where we set its position is the center of the string/char
         charLabel -> setFillColor(sf::Color::Yellow);
-        charLabel -> setPosition({width / 2.0f, height / 2 + ((1.0f / 2) * (6 * (squareWidth + gap)))});
+        charLabel -> setPosition({viewWidth / 2.0f, viewHeight / 2 + ((1.0f / 2) * (6 * (squareWidth + gap)))});
         
         p1window.draw(*charLabel);
     }
@@ -437,10 +440,8 @@ void NameEntryState::p2render(sf::RenderWindow& p2window) {
     float gap = 19.0f;
     float bw = 4.0f;
 
-    unsigned int width = p2window.getSize().x;
-    unsigned int height = p2window.getSize().y;
-    float startX = width / 2 - (1.0f / 2) * (13 * (squareWidth + gap) - gap);
-    float startY = height / 2 - (1.0f / 2) * (4 * (squareWidth + gap) - gap);
+    float startX = viewWidth / 2 - (1.0f / 2) * (13 * (squareWidth + gap) - gap);
+    float startY = viewHeight / 2 - (1.0f / 2) * (4 * (squareWidth + gap) - gap);
 
 
     //the underline for the name entering
@@ -578,7 +579,7 @@ void NameEntryState::p2render(sf::RenderWindow& p2window) {
         }
         charLabel -> setOrigin(charLabel -> getLocalBounds().getCenter()); //where we set its position is the center of the string/char
         charLabel -> setFillColor(sf::Color::Yellow);
-        charLabel -> setPosition({width / 2.0f, height / 2 + ((1.0f / 2) * (6 * (squareWidth + gap)))});
+        charLabel -> setPosition({viewWidth / 2.0f, viewHeight / 2 + ((1.0f / 2) * (6 * (squareWidth + gap)))});
         
         p2window.draw(*charLabel);
     }

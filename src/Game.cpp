@@ -6,8 +6,7 @@
 
 
 Game::Game(){
-    ctx.p1window = &p1window;
-    ctx.p2window = &p2window;
+    ctx.window = &window;
     ctx.assets = &assetManager;
     ctx.keys = &keyManager;
     ctx.input = &input;
@@ -31,28 +30,26 @@ void Game::initialization(){
         This works on my pc, but idk about u guys
 
     */
-    renderPlayer2 = false;
+    renderPlayer2 = true;
     ctx.renderp2 = renderPlayer2;
 
-
+    
     if(!renderPlayer2){
-        std::vector<sf::VideoMode> modes = sf::VideoMode::getFullscreenModes();
-        p1window.create(sf::VideoMode({1920, 1080}), "Arcade", sf::Style::None);
-        p1window.setPosition({0, 0});
-        p1window.setFramerateLimit(60);
-        p1window.setVerticalSyncEnabled(false);
+
     }else{
-        p1window.create(sf::VideoMode({1920, 1080}), "Player1", sf::Style::None);
-        p2window.create(sf::VideoMode({1920, 1080}), "Player2", sf::Style::None);
-        
-        p1window.setPosition({0, 0});
-        p2window.setPosition({1920, 0});
+        //then make both windows
+        window.create(sf::VideoMode({3840, 1080}), "Arcade", sf::Style::None);
+        window.setPosition({-1920, 0});
 
-        p1window.setFramerateLimit(60);
-        p2window.setFramerateLimit(60);
+        window.setFramerateLimit(60);
+        window.setVerticalSyncEnabled(false);
 
-        p1window.setVerticalSyncEnabled(false);
-        p2window.setVerticalSyncEnabled(false);
+        //the views will be automatically be scaled
+        p1View.emplace(sf::FloatRect({0.0f, 0.0f}, {1920.0f, 1080.0f}));
+        p2View.emplace(sf::FloatRect({0.0f, 0.0f}, {1920.0f, 1080.0f}));
+
+        p1View -> setViewport(sf::FloatRect({0.0f, 0.0f}, {0.5f, 1.0f}));
+        p2View -> setViewport(sf::FloatRect({0.5f, 0.0f}, {0.5f, 1.0f}));
     }
 
     tpsCounter.emplace(ctx.assets -> getFont("ArcadeNormal"), "", 18);
@@ -79,8 +76,7 @@ void Game::stop(){
     running = false;
 
     //SFML will close down window and its resources needed
-    p1window.close();
-    if(renderPlayer2) p2window.close();
+    window.close();
 
     //close the database interface
     leaderboardInterface.closeDB();
@@ -104,19 +100,11 @@ void Game::tick(){
     ctx.gsm -> tick();
 
     //process all of the events for both windows
-    while (const auto p1 = p1window.pollEvent()) {
+    while (const auto p1 = window.pollEvent()) {
         if (p1 -> is<sf::Event::Closed>()) {
             running = false;
         }
         keyManager.handleEvent(*p1);
-    }
-    if(renderPlayer2){
-        while (const auto p2 = p2window.pollEvent()) {
-            if (p2 -> is<sf::Event::Closed>()) {
-                running = false;
-            }
-            keyManager.handleEvent(*p2);
-        }
     }
 
 
@@ -152,30 +140,28 @@ void Game::tick(){
 
 }
 void Game::render(){
-    p1window.clear();
-    if(renderPlayer2) p2window.clear();
+    window.clear();
 
-    //render the current game state
+    //player 1
+    window.setView(*p1View);
     if(gsm.getCurrentState() != nullptr){
-        gsm.getCurrentState() -> p1render(p1window);
-        if(renderPlayer2) gsm.getCurrentState() -> p2render(p2window);
+        gsm.getCurrentState() -> p1render(window);
+        if(renderPlayer2) gsm.getCurrentState() -> p1render(window);
     }
+    gsm.p1render(window);
+    input.render(window);
+    if(renderFPSCounter) window.draw(*tpsCounter);
 
+    //player 2
+    window.setView(*p2View);
+    if(gsm.getCurrentState() != nullptr){
+        gsm.getCurrentState() -> p2render(window);
+        if(renderPlayer2) gsm.getCurrentState() -> p2render(window);
+    }
+    gsm.p2render(window);
+    if(renderFPSCounter) window.draw(*tpsCounter);
 
-    //render any transisitions if there are any
-    gsm.p1render(p1window);
-    if(renderPlayer2) gsm.p2render(p2window);
-
-    //render the input manager
-    input.render(p1window);
-    if(renderPlayer2) input.render(p2window);
-
-    if(renderFPSCounter) p1window.draw(*tpsCounter);
-
-
-    //display the windows
-    p1window.display();
-    if(renderPlayer2) p2window.display();
+    window.display();
 }
 
 void Game::run(){

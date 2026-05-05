@@ -20,21 +20,34 @@ void IdleState::init(Context* ctx){
 
     std::cout << "IdleState Created!" << std::endl;
 
-
 	const sf::FloatRect titleRect = title_text -> getLocalBounds();
 	title_text -> setOrigin(titleRect.getCenter());
-	title_text -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2.0f, ctx -> p1window -> getSize().y / 3.0f));
+	
 
 	const sf::FloatRect textRect = play_text -> getLocalBounds();
 	play_text -> setOrigin(textRect.getCenter());
-	play_text -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2.0f, ctx -> p1window -> getSize().y / 1.3f));
+	
 }
 
 void IdleState::tick() {
-	if(ctx -> input -> P1A || ctx -> input -> P2A){
-        ctx->audio->playSound(ctx->assets->getSound("Boot"));
+    if(ctx -> window -> getView().getSize().x != viewWidth){
+        //if the new x is not viewWidth, update the width and height and everything downstream
+        viewWidth = ctx -> window -> getView().getSize().x;
+        viewHeight = ctx -> window -> getView().getSize().y;
+
+        title_text -> setPosition({viewWidth / 2.0f, viewHeight / 3.0f});
+        play_text -> setPosition({viewWidth / 2.0f, viewHeight / 1.3f});
+    }
+
+    
+    
+
+    if(ctx -> input -> P1A || ctx -> input -> P2A){
+        ctx -> audio -> playSound(ctx -> assets -> getSound("Boot"));
 		ctx -> gsm -> requestStateChange(States::NameEntry, 1.5f, 1.5f);
 	}
+
+
 	
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     std::chrono::duration elapsed = end - start;

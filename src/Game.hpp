@@ -22,6 +22,8 @@ class Game {
     private:
         bool renderFPSCounter = true;
         std::optional<sf::Text> tpsCounter;
+        std::optional<sf::View> p1View, p2View;
+        
         int ticks = 0;
         int frames = 0;
 
@@ -35,8 +37,7 @@ class Game {
         Context ctx;
 
         
-        sf::RenderWindow p1window;
-        sf::RenderWindow p2window;
+        sf::RenderWindow window;
 
         AssetManager assetManager;
         KeyManager keyManager;

@@ -37,7 +37,7 @@ void LeaderboardState::init(Context* ctx){
 
 	const sf::FloatRect recordRect = record_text -> getLocalBounds();
 	record_text -> setOrigin(recordRect.getCenter());
-	record_text -> setPosition(sf::Vector2f(ctx -> p1window -> getSize().x / 2.0f, ctx -> p1window -> getSize().y / 3.0f));
+	record_text -> setPosition(sf::Vector2f(ctx -> window -> getView().getSize().x / 2.0f, ctx -> window -> getView().getSize().y / 3.0f));
 }
 
 void LeaderboardState::tick() {
