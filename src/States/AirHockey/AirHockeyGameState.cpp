@@ -49,65 +49,48 @@ Puck::Puck(double x, double y, double vx, double vy, double diam) {
     this -> vx = vx;
     this -> vy = vy;
     this -> diam = diam;
-    
-    bool loadImage;
-    loadImage = pucks[0].loadFromFile("assets/images/puck_0.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = pucks[1].loadFromFile("assets/images/puck_1a.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = pucks[2].loadFromFile("assets/images/puck_1b.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = pucks[3].loadFromFile("assets/images/puck_1c.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = pucks[4].loadFromFile("assets/images/puck_2a.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = pucks[5].loadFromFile("assets/images/puck_2b.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = pucks[6].loadFromFile("assets/images/puck_2c.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = pucks[7].loadFromFile("assets/images/puck_3a.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = pucks[8].loadFromFile("assets/images/puck_3b.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = pucks[9].loadFromFile("assets/images/puck_3c.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = pucks[10].loadFromFile("assets/images/puck_4a.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = pucks[11].loadFromFile("assets/images/puck_4b.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = pucks[12].loadFromFile("assets/images/puck_4c.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = pucks[13].loadFromFile("assets/images/puck_5a.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = pucks[14].loadFromFile("assets/images/puck_5b.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = pucks[15].loadFromFile("assets/images/puck_5c.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = pucks[16].loadFromFile("assets/images/puck_6a.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = pucks[17].loadFromFile("assets/images/puck_6b.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = pucks[18].loadFromFile("assets/images/puck_6c.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = pucks[19].loadFromFile("assets/images/puck_7a.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = pucks[20].loadFromFile("assets/images/puck_7b.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = pucks[21].loadFromFile("assets/images/puck_7c.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = pucks[22].loadFromFile("assets/images/puck_8a.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = pucks[23].loadFromFile("assets/images/puck_8b.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = pucks[24].loadFromFile("assets/images/puck_8c.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = pucks[25].loadFromFile("assets/images/puck_9a.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = pucks[26].loadFromFile("assets/images/puck_9b.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = pucks[27].loadFromFile("assets/images/puck_9c.png");
-    if(!loadImage) {std::perror("File not found!"); }
 }
+void Puck::init(Context* ctx){
+	pucks[0].emplace(ctx -> assets -> getAsset("Puck0"));
+
+	pucks[1].emplace(ctx -> assets -> getAsset("Puck1a"));
+	pucks[2].emplace(ctx -> assets -> getAsset("Puck1b"));
+	pucks[3].emplace(ctx -> assets -> getAsset("Puck1c"));
+
+	pucks[4].emplace(ctx -> assets -> getAsset("Puck2a"));
+	pucks[5].emplace(ctx -> assets -> getAsset("Puck2b"));
+	pucks[6].emplace(ctx -> assets -> getAsset("Puck2c"));
+
+	pucks[7].emplace(ctx -> assets -> getAsset("Puck3a"));
+	pucks[8].emplace(ctx -> assets -> getAsset("Puck3b"));
+	pucks[9].emplace(ctx -> assets -> getAsset("Puck3c"));
+
+	pucks[10].emplace(ctx -> assets -> getAsset("Puck4a"));
+	pucks[11].emplace(ctx -> assets -> getAsset("Puck4b"));
+	pucks[12].emplace(ctx -> assets -> getAsset("Puck4c"));
+
+	pucks[13].emplace(ctx -> assets -> getAsset("Puck5a"));
+	pucks[14].emplace(ctx -> assets -> getAsset("Puck5b"));
+	pucks[15].emplace(ctx -> assets -> getAsset("Puck5c"));
+
+	pucks[16].emplace(ctx -> assets -> getAsset("Puck6a"));
+	pucks[17].emplace(ctx -> assets -> getAsset("Puck6b"));
+	pucks[18].emplace(ctx -> assets -> getAsset("Puck6c"));
+
+	pucks[19].emplace(ctx -> assets -> getAsset("Puck7a"));
+	pucks[20].emplace(ctx -> assets -> getAsset("Puck7b"));
+	pucks[21].emplace(ctx -> assets -> getAsset("Puck7c"));
+
+	pucks[22].emplace(ctx -> assets -> getAsset("Puck8a"));
+	pucks[23].emplace(ctx -> assets -> getAsset("Puck8b"));
+	pucks[24].emplace(ctx -> assets -> getAsset("Puck8c"));
+
+	pucks[25].emplace(ctx -> assets -> getAsset("Puck9a"));
+	pucks[26].emplace(ctx -> assets -> getAsset("Puck9b"));
+	pucks[27].emplace(ctx -> assets -> getAsset("Puck9c"));
+}
+
+
 int Puck::getIndex(double x, double y, double diam) {
     if(y < (diam / 2)) return 0; // goal, puck 0 
     if(y < diam){
@@ -173,58 +156,43 @@ int Puck::getIndex(double x, double y, double diam) {
     return 26; // puck 9b
 }
 void Puck::draw1(sf::RenderWindow* window1) {
-    int index;
-    double xOffset;
-    double yOffset;
-    double screenX;
-    double screenY;
-    double screenRatio = (double)(window1 -> getSize().x) / 320.0;
-    
-    index = getIndex(x, y, diam);
-    xOffset = (pucks[index].getSize().x / 2) * screenRatio;
-    yOffset = (pucks[index].getSize().y / 2) * screenRatio;
-    // as pucks get closer, you see their thickness, their offset needs to be adjusted so they are still drawn at the correct location
-    if(index > 12)
-        yOffset += screenRatio;
-    if(index > 21)
-        yOffset += screenRatio;
-    if(index > 24)
-        yOffset += screenRatio;
-    
-    screenX = getScreenX(x, y, window1 -> getSize().x);
-    screenY = getScreenY(y, window1 -> getSize().y);
-	
-    sf::Sprite sprite(pucks[index]);
+    int index = getIndex(x, y, diam);
+
+	double screenRatio = (double)(window1 -> getSize().x) / 320.0;
+
+    double xOffset = (pucks[index] -> getTexture().getSize().x / 2) * screenRatio;
+    double yOffset = (pucks[index] -> getTexture().getSize().y / 2) * screenRatio;
+
+    if(index > 12) yOffset += screenRatio;
+    if(index > 21) yOffset += screenRatio;
+    if(index > 24) yOffset += screenRatio;
+
+	double screenX = getScreenX(x, y, window1 -> getSize().x);
+    double screenY = getScreenY(y, window1 -> getSize().y);
+
+    sf::Sprite& sprite = *pucks[index];
     sprite.setPosition({(float)(screenX - xOffset), (float)(screenY - yOffset)});
     sprite.setScale({(float) screenRatio, (float) screenRatio});
     window1 -> draw(sprite);
 }
 void Puck::draw2(sf::RenderWindow* window2) {
-    int index;
-	double x_, y_;
-    double xOffset;
-    double yOffset;
-    double screenX;
-    double screenY;
-    double screenRatio = (double)(window2 -> getSize().x) / 320.0;
+	double x_ = 600 - x;
+	double y_ = 800 - y;
+
+	int index = getIndex(x_, y_, diam);
+	double screenRatio = (double)(window2 -> getSize().x) / 320.0;
+
+    double xOffset = (pucks[index] -> getTexture().getSize().x / 2) * screenRatio;
+    double yOffset = (pucks[index] -> getTexture().getSize().y / 2) * screenRatio;
+
+    if(index > 12) yOffset += screenRatio;
+    if(index > 21) yOffset += screenRatio;
+    if(index > 24) yOffset += screenRatio;
     
-	x_ = 600-x;
-	y_ = 800-y;
-    index = getIndex(x_, y_, diam);
-    xOffset = (pucks[index].getSize().x / 2) * screenRatio;
-    yOffset = (pucks[index].getSize().y / 2) * screenRatio;
-    // as pucks get closer, you see their thickness, their offset needs to be adjusted so they are still drawn at the correct location
-    if(index > 12)
-        yOffset += screenRatio;
-    if(index > 21)
-        yOffset += screenRatio;
-    if(index > 24)
-        yOffset += screenRatio;
-    
-    screenX = getScreenX(x_, y_, window2 -> getSize().x);
-    screenY = getScreenY(y_, window2 -> getSize().y);
+	double screenX = getScreenX(x_, y_, window2 -> getSize().x);
+    double screenY = getScreenY(y_, window2 -> getSize().y);
 	
-    sf::Sprite sprite(pucks[index]);
+    sf::Sprite& sprite = *pucks[index];
     sprite.setPosition({(float)(screenX - xOffset), (float)(screenY - yOffset)});
     sprite.setScale({(float) screenRatio, (float) screenRatio});
     window2 -> draw(sprite);
@@ -251,46 +219,34 @@ Paddle::Paddle(int xPos, int yPos, double vx, double vy, double diam){
     this -> vx = vx;
     this -> vy = vy;
     this -> diam = diam;
-
-
-    bool loadImage;
-    loadImage = paddles[0].loadFromFile("assets/images/paddle_1a.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = paddles[1].loadFromFile("assets/images/paddle_1b.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = paddles[2].loadFromFile("assets/images/paddle_1c.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = paddles[3].loadFromFile("assets/images/paddle_2a.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = paddles[4].loadFromFile("assets/images/paddle_2b.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = paddles[5].loadFromFile("assets/images/paddle_2c.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = paddles[6].loadFromFile("assets/images/paddle_3a.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = paddles[7].loadFromFile("assets/images/paddle_3b.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = paddles[8].loadFromFile("assets/images/paddle_3c.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = paddles[9].loadFromFile("assets/images/paddle_4a.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = paddles[10].loadFromFile("assets/images/paddle_4b.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = paddles[11].loadFromFile("assets/images/paddle_4c.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = paddles[12].loadFromFile("assets/images/paddle_5a.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = paddles[13].loadFromFile("assets/images/paddle_5b.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = paddles[14].loadFromFile("assets/images/paddle_5c.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = paddles[15].loadFromFile("assets/images/paddle_6a.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = paddles[16].loadFromFile("assets/images/paddle_6b.png");
-    if(!loadImage) {std::perror("File not found!"); }
-    loadImage = paddles[17].loadFromFile("assets/images/paddle_6c.png");
-    if(!loadImage) {std::perror("File not found!"); }
 }
+void Paddle::init(Context* ctx){
+	paddles[0].emplace(ctx -> assets -> getAsset("Paddle1a"));
+	paddles[1].emplace(ctx -> assets -> getAsset("Paddle1b"));
+	paddles[2].emplace(ctx -> assets -> getAsset("Paddle1c"));
+	
+	paddles[3].emplace(ctx -> assets -> getAsset("Paddle2a"));
+	paddles[4].emplace(ctx -> assets -> getAsset("Paddle2b"));
+	paddles[5].emplace(ctx -> assets -> getAsset("Paddle2c"));
+
+	paddles[6].emplace(ctx -> assets -> getAsset("Paddle3a"));
+	paddles[7].emplace(ctx -> assets -> getAsset("Paddle3b"));
+	paddles[8].emplace(ctx -> assets -> getAsset("Paddle3c"));
+
+	paddles[9].emplace(ctx -> assets -> getAsset("Paddle4a"));
+	paddles[10].emplace(ctx -> assets -> getAsset("Paddle4b"));
+	paddles[11].emplace(ctx -> assets -> getAsset("Paddle4c"));
+
+	paddles[12].emplace(ctx -> assets -> getAsset("Paddle5a"));
+	paddles[13].emplace(ctx -> assets -> getAsset("Paddle5b"));
+	paddles[14].emplace(ctx -> assets -> getAsset("Paddle5c"));
+
+	paddles[15].emplace(ctx -> assets -> getAsset("Paddle6a"));
+	paddles[16].emplace(ctx -> assets -> getAsset("Paddle6b"));
+	paddles[17].emplace(ctx -> assets -> getAsset("Paddle6c"));
+}
+
+
 int Paddle::getIndex(double x, double y, double diam){
     // used 198 and 402 instead of 200 and 400 to minimize image jittering on edges
     if(y < diam){
@@ -335,58 +291,43 @@ int Paddle::getIndex(double x, double y, double diam){
     return 16; // paddle 6b
 }
 void Paddle::draw1(sf::RenderWindow* window1){
-    int index;
-    double xOffset;
-    double yOffset;
-    double screenX;
-    double screenY;
-    double screenRatio = (double)(window1 -> getSize().x) / 320.0;
+    int index = getIndex(x, y, diam);
+	double screenRatio = (double)(window1 -> getSize().x) / 320.0;
+
+    double xOffset = (paddles[index] -> getTexture().getSize().x / 2) * screenRatio;
+    double yOffset = (paddles[index] -> getTexture().getSize().y / 2) * screenRatio;
+
+    if(index > 12) yOffset += screenRatio;
+    if(index > 21) yOffset += screenRatio;
+    if(index > 24) yOffset += screenRatio;
     
-	index = getIndex(x, y, diam);
-    xOffset = (paddles[index].getSize().x/2)*screenRatio;
-    yOffset = (paddles[index].getSize().y/2)*screenRatio;
-    // as paddles get closer, you see their thickness, their offset needs to be adjusted so they are still drawn at the correct location
-    if(index>12)
-        yOffset += screenRatio;
-    if(index>21)
-        yOffset += screenRatio;
-    if(index>24)
-        yOffset += screenRatio;
+    double screenX = getScreenX(x, y, window1 -> getSize().x);
+    double screenY = getScreenY(y, window1 -> getSize().y);
     
-    screenX = getScreenX(x, y, window1 -> getSize().x);
-    screenY = getScreenY(y, window1 -> getSize().y);
-    
-    sf::Sprite sprite(paddles[index]);
+    sf::Sprite& sprite = *paddles[index];
     sprite.setPosition({(float)(screenX - xOffset), (float)(screenY - yOffset)});
     sprite.setScale({(float) screenRatio, (float) screenRatio});
     window1 -> draw(sprite);
 }
 void Paddle::draw2(sf::RenderWindow* window2){
-	int index;
-	double x_, y_;
-    double xOffset;
-    double yOffset;
-    double screenX;
-    double screenY;
-    double screenRatio = (double)(window2 -> getSize().x) / 320.0;
-    
-	x_ = 600-x;
-	y_ = 800-y;
-	index = getIndex(x_, y_, diam);
-    xOffset = (paddles[index].getSize().x/2)*screenRatio;
-    yOffset = (paddles[index].getSize().y/2)*screenRatio;
+	double x_ = 600 - x;
+	double y_ = 800 - y;
+	
+	int index = getIndex(x_, y_, diam);
+	double screenRatio = (double)(window2 -> getSize().x) / 320.0;
+
+    double xOffset = (paddles[index] -> getTexture().getSize().x / 2) * screenRatio;
+    double yOffset = (paddles[index] -> getTexture().getSize().y / 2) * screenRatio;
+
     // as paddles get closer, you see their thickness, their offset needs to be adjusted so they are still drawn at the correct location
-    if(index>12)
-        yOffset += screenRatio;
-    if(index>21)
-        yOffset += screenRatio;
-    if(index>24)
-        yOffset += screenRatio;
+    if(index>12) yOffset += screenRatio;
+    if(index>21) yOffset += screenRatio;
+    if(index>24) yOffset += screenRatio;
+
+    double screenX = getScreenX(x_, y_, window2 -> getSize().x);
+    double screenY = getScreenY(y_, window2 -> getSize().y);
     
-    screenX = getScreenX(x_, y_, window2 -> getSize().x);
-    screenY = getScreenY(y_, window2 -> getSize().y);
-    
-    sf::Sprite sprite(paddles[index]);
+    sf::Sprite& sprite = *paddles[index];
     sprite.setPosition({(float)(screenX - xOffset), (float)(screenY - yOffset)});
     sprite.setScale({(float) screenRatio, (float) screenRatio});
     window2 -> draw(sprite);
@@ -528,41 +469,55 @@ void paddleFriction(Paddle* paddle, float dt){
 	return;
 }
 
-Player::Player(std::string name){
-	this->name = name;
-	this->score = 0;
+Player::Player(std::string name, sf::Color color){
+	this -> name = name;
+	this -> score = 0;
+	this -> color = color;
 }
-void Player::draw1(sf::RenderWindow* window1, sf::Font font){
+
+void Player::init(Context* ctx){
+	name_text.emplace(ctx -> assets -> getFont("ST-SimpleSquare"), name, 24);
+}
+
+
+
+
+void Player::draw1(sf::RenderWindow* window1){
 	double screenRatio = (double)(window1 -> getSize().x) / 320.0;
-	sf::Color blue(111,99,255);
 	
-	sf::Text text(font, name, 16*screenRatio);
-	text.setFillColor(blue);
-	sf::FloatRect rect = text.getLocalBounds();
-	text.setOrigin(sf::Vector2f( rect.getCenter().x, 0)); // centered horizontally, top-bounded
-	text.setPosition(sf::Vector2f(48.0*screenRatio , 16.0*screenRatio));
-	window1 -> draw(text);
+	name_text -> setFillColor(color);
+
+	name_text -> setCharacterSize(76);
+	name_text -> setString(name);
+	name_text -> setOrigin({name_text -> getLocalBounds().getCenter().x, 0});
+	name_text -> setPosition({48.0f * screenRatio, 16.0f * screenRatio});
+	window1 -> draw(*name_text);
 	
-	text.setString(std::to_string(score));
-	text.setOrigin(sf::Vector2f(0,0));
-	text.setPosition(sf::Vector2f(48*screenRatio - rect.getCenter().x, 40*screenRatio));
-	window1 -> draw(text);
+	name_text -> setString(std::to_string(score));
+	name_text -> setCharacterSize(56);
+	name_text -> setOrigin({0.0f, 0.0f});
+	name_text -> setPosition(sf::Vector2f(48*screenRatio - name_text -> getLocalBounds().getCenter().x, 40 * screenRatio));
+	window1 -> draw(*name_text);
 }
-void Player::draw2(sf::RenderWindow* window2, sf::Font font){
+
+
+
+
+void Player::draw2(sf::RenderWindow* window2){
 	double screenRatio = (double)(window2 -> getSize().x) / 320.0;
-	sf::Color red(223,0,0);
 	
-	sf::Text text(font, name, 16*screenRatio);
-	text.setFillColor(red);
-	sf::FloatRect rect = text.getLocalBounds();
-	text.setOrigin(sf::Vector2f( rect.getCenter().x, 0)); // centered horizontally, top-bounded
-	text.setPosition(sf::Vector2f(272.0*screenRatio , 16.0*screenRatio));
-	window2 -> draw(text);
+	name_text -> setFillColor(color);
+	name_text -> setCharacterSize(76);
+	name_text -> setString(name);
+	name_text -> setOrigin({name_text -> getLocalBounds().getCenter().x, 0});
+	name_text -> setPosition({272.0f * screenRatio , 16.0f * screenRatio});
+	window2 -> draw(*name_text);
 	
-	text.setString(std::to_string(score));
-	text.setOrigin(sf::Vector2f(0,0));
-	text.setPosition(sf::Vector2f(272*screenRatio - rect.getCenter().x, 40*screenRatio));
-	window2 -> draw(text);
+	name_text -> setString(std::to_string(score));
+	name_text -> setCharacterSize(56);
+	name_text -> setOrigin({0.0f, 0.0f});
+	name_text -> setPosition(sf::Vector2f(272.0f * screenRatio - name_text -> getLocalBounds().getCenter().x, 40 * screenRatio));
+	window2 -> draw(*name_text);
 }
 
 void AirHockeyGameState::moveObjects(Puck* puck, Paddle* paddle1, Paddle* paddle2, float dt, int iter){
@@ -1155,9 +1110,9 @@ void AirHockeyGameState::init(Context* ctx){
     State::init(ctx);
 	
 	// debugging
-    std::cout << "\nAirHockeyGameState Created!" << std::endl;
-    std::cout << "Consolas" << &ctx -> assets -> getFont("Consolas") << std::endl;
-    std::cout << "ST-SimpleSquare" << &ctx -> assets -> getFont("ST-SimpleSquare") << std::endl;
+    std::cout << "AirHockeyGameState Created!" << std::endl;
+    //std::cout << "Consolas" << &ctx -> assets -> getFont("Consolas") << std::endl;
+    //std::cout << "ST-SimpleSquare" << &ctx -> assets -> getFont("ST-SimpleSquare") << std::endl;
     
     float width = ctx -> p1window -> getSize().x;
     float height = ctx -> p1window -> getSize().y;
@@ -1171,10 +1126,9 @@ void AirHockeyGameState::init(Context* ctx){
 	fieldBack -> setPosition({0.f, (float)(height - (8 * screenRatio))});
 	
 	// text
-	if(ctx -> p1name != "") // set player name while making sure the placeholder is not removed if necessary
-		player1.name = ctx->p1name;
-	if(ctx -> p2name != "")
-		player2.name = ctx->p2name;
+	// set player name while making sure the placeholder is not removed if necessary
+	if(ctx -> p1name != "") player1.name = ctx -> p1name;
+	if(ctx -> p2name != "") player2.name = ctx -> p2name;
 	
 	errMsg_1.emplace(ctx->assets->getFont("ST-SimpleSquare"), "Oops, Something Went Wrong!", 10*screenRatio);
 	sf::FloatRect rect = errMsg_1->getLocalBounds();
@@ -1185,6 +1139,13 @@ void AirHockeyGameState::init(Context* ctx){
 	rect = errMsg_2->getLocalBounds();
 	errMsg_2->setOrigin(sf::Vector2f( rect.getCenter().x, rect.getCenter().y)); // centered horizontally
 	errMsg_2->setPosition(sf::Vector2f(160.0*screenRatio , 85.0*screenRatio));
+	std::cout << "END OF AIR HOCKEY INIT" << std::endl;
+
+	puck.init(ctx);
+	p1paddle.init(ctx);
+	p2paddle.init(ctx);
+	player1.init(ctx);
+	player2.init(ctx);
 }
 
 void AirHockeyGameState::tick() {
@@ -1344,8 +1305,8 @@ void AirHockeyGameState::tick() {
 void AirHockeyGameState::p1render(sf::RenderWindow& p1window) {
     p1window.clear();
 	
-	player1.draw1(&p1window, ctx->assets->getFont("ST-SimpleSquare"));
-	player2.draw2(&p1window, ctx->assets->getFont("ST-SimpleSquare"));
+	player1.draw1(&p1window);
+	player2.draw2(&p1window);
 	
     p1window.draw(*field);
 	
@@ -1402,8 +1363,8 @@ void AirHockeyGameState::p1render(sf::RenderWindow& p1window) {
 void AirHockeyGameState::p2render(sf::RenderWindow& p2window) {
     p2window.clear();
 	
-	player1.draw2(&p2window, ctx->assets->getFont("ST-SimpleSquare"));
-	player2.draw1(&p2window, ctx->assets->getFont("ST-SimpleSquare"));
+	player1.draw2(&p2window);
+	player2.draw1(&p2window);
 	
     p2window.draw(*field);
 	
