@@ -45,14 +45,14 @@ void Game::initialization(){
         window.setVerticalSyncEnabled(false);
 
         //the views will be automatically be scaled
-        p1View.emplace(sf::FloatRect({0.0f, 0.0f}, {1920.0f, 1080.0f}));
-        p2View.emplace(sf::FloatRect({0.0f, 0.0f}, {1920.0f, 1080.0f}));
+        p1View.emplace(sf::FloatRect({0.0f, 0.0f}, {960.0f, 540.0f}));
+        p2View.emplace(sf::FloatRect({0.0f, 0.0f}, {960.0f, 540.0f}));
 
         p1View -> setViewport(sf::FloatRect({0.0f, 0.0f}, {0.5f, 1.0f}));
         p2View -> setViewport(sf::FloatRect({0.5f, 0.0f}, {0.5f, 1.0f}));
     }
 
-    tpsCounter.emplace(ctx.assets -> getFont("ArcadeNormal"), "", 18);
+    tpsCounter.emplace(ctx.assets -> getFont("ArcadeNormal"), "", 10);
     tpsCounter -> setPosition({10.0f, 10.0f});
     tpsCounter -> setFillColor(sf::Color::Magenta);
 

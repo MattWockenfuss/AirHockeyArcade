@@ -21,7 +21,7 @@ struct Tron {
         
         int score = 0;
         sf::RectangleShape square;
-        float squareWidth = 12.0f;
+        float squareWidth = 6.0f;
 
         Direction facing, lastFacing;
         int headX, headY;
