@@ -37,10 +37,17 @@ void LeaderboardState::init(Context* ctx){
 
 	const sf::FloatRect recordRect = record_text -> getLocalBounds();
 	record_text -> setOrigin(recordRect.getCenter());
-	record_text -> setPosition(sf::Vector2f(ctx -> window -> getView().getSize().x / 2.0f, ctx -> window -> getView().getSize().y / 3.0f));
+	
 }
 
 void LeaderboardState::tick() {
+    if(ctx -> window -> getView().getSize().x != viewWidth){
+        //if the new x is not viewWidth, update the width and height and everything downstream
+        viewWidth = ctx -> window -> getView().getSize().x;
+        viewHeight = ctx -> window -> getView().getSize().y;
+
+        record_text -> setPosition(sf::Vector2f(viewWidth / 2.0f, viewHeight / 3.0f));
+    }
     //okay so we have a GUI with an index value to move around
     
 
@@ -197,7 +204,7 @@ void LeaderboardState::p1render(sf::RenderWindow& p1window) {
     //maybe for rendering, each square is the same length?
     //split into 7ths
 
-    float w = p1window.getSize().x / 8.0f;
+    float w = viewWidth / 8.0f;
     float h = 100.0f;
     float p = 4.0f;
     float bw = 6.0f;
@@ -224,13 +231,13 @@ void LeaderboardState::p1render(sf::RenderWindow& p1window) {
 
     //render the side bars
     //left
-    borderSquare.setSize({bw, p1window.getSize().y + 0.0f});
+    borderSquare.setSize({bw, viewHeight});
     borderSquare.setPosition({(w + p) * 1, 0.0f});
     borderSquare.setFillColor(sf::Color::Yellow);
     p1window.draw(borderSquare);
 
     //right
-    borderSquare.setSize({bw, p1window.getSize().y + 0.0f});
+    borderSquare.setSize({bw, viewHeight});
     borderSquare.setPosition({(w + p) * 7 - p - bw, 0.0f});
     borderSquare.setFillColor(sf::Color::Yellow);
     p1window.draw(borderSquare);
@@ -375,7 +382,7 @@ void LeaderboardState::p2render(sf::RenderWindow& p2window) {
     //maybe for rendering, each square is the same length?
     //split into 7ths
 
-    float w = p2window.getSize().x / 8.0f;
+    float w = viewWidth / 8.0f;
     float h = 100.0f;
     float p = 4.0f;
     float bw = 6.0f;
@@ -400,13 +407,13 @@ void LeaderboardState::p2render(sf::RenderWindow& p2window) {
 
     //render the side bars
     //left
-    borderSquare.setSize({bw, p2window.getSize().y + 0.0f});
+    borderSquare.setSize({bw, viewHeight});
     borderSquare.setPosition({(w + p) * 1, 0.0f});
     borderSquare.setFillColor(sf::Color::Yellow);
     p2window.draw(borderSquare);
 
     //right
-    borderSquare.setSize({bw, p2window.getSize().y + 0.0f});
+    borderSquare.setSize({bw, viewHeight});
     borderSquare.setPosition({(w + p) * 7 - p - bw, 0.0f});
     borderSquare.setFillColor(sf::Color::Yellow);
     p2window.draw(borderSquare);

@@ -25,6 +25,8 @@ class LeaderboardState : public State {
         void p1render(sf::RenderWindow& p1window) override;
         void p2render(sf::RenderWindow& p2window) override;
     private:
+        float viewWidth = 0;
+        float viewHeight = 0;
         std::optional<sf::Text> record_text;
         sf::RectangleShape borderSquare, insideSquare;
 };

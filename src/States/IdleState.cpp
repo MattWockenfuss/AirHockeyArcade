@@ -14,8 +14,8 @@
 void IdleState::init(Context* ctx){
     State::init(ctx);
 
-    title_text.emplace(ctx -> assets -> getFont("SquareSansSerif"), "B J A M M  DUOCADE", 90);
-    play_text.emplace(ctx -> assets -> getFont("SquareSansSerif"), "Press A To Start!", 40);
+    title_text.emplace(ctx -> assets -> getFont("SquareSansSerif"), "B J A M M  DUOCADE", 50);
+    play_text.emplace(ctx -> assets -> getFont("SquareSansSerif"), "Press A To Start!", 28);
 
 
     std::cout << "IdleState Created!" << std::endl;

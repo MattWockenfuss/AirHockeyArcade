@@ -17,29 +17,19 @@ void TronGameState::init(Context* ctx){
     play_text.emplace(ctx -> assets -> getFont("SquareSansSerif"), "Insert Coin to Play!", 35);
     seconds_counter.emplace(ctx -> assets -> getFont("ST-SimpleSquare"), "", 40);
 
-    p1score.emplace(ctx -> assets -> getFont("ST-SimpleSquare"), "Player 1: 0", 38);
-    p2score.emplace(ctx -> assets -> getFont("ST-SimpleSquare"), "Player 2: 0", 38);
+    p1score.emplace(ctx -> assets -> getFont("ST-SimpleSquare"), "Player 1: 0", 26);
+    p2score.emplace(ctx -> assets -> getFont("ST-SimpleSquare"), "Player 2: 0", 26);
 
     std::cout << "TronGameState Created!" << std::endl;
 
-
-
-	
-
 	const sf::FloatRect textRect = play_text -> getLocalBounds();
 	play_text -> setOrigin(textRect.getCenter());
-	
-    
-    const sf::FloatRect secondsRect = seconds_counter -> getLocalBounds();
-    seconds_counter -> setOrigin(secondsRect.getCenter());
-    
 
-    p1score -> setOrigin(secondsRect.getCenter());
     
+    seconds_counter -> setOrigin(seconds_counter -> getLocalBounds().getCenter());
 
-    p2score -> setOrigin(secondsRect.getCenter());
-    
-
+    p1score -> setOrigin(p1score -> getLocalBounds().getCenter());
+    p2score -> setOrigin(p2score -> getLocalBounds().getCenter());
 
     p1 = Tron(ctx, Direction::East, 1, 5, 57, 5, 57, p1body, p1head);
     p2 = Tron(ctx, Direction::West, 1, 154, 57, 154, 57, p2body, p2head, 400.0f);
@@ -53,8 +43,8 @@ void TronGameState::tick() {
 
         play_text -> setPosition({viewWidth / 2.0f, viewHeight / 1.2f});
         seconds_counter -> setPosition({viewWidth / 2, 50.0f});
-        p1score -> setPosition({300.0f, 50.0f});
-        p2score -> setPosition({viewWidth - 300.0f, 50.0f});
+        p1score -> setPosition({110.0f, 30.0f});
+        p2score -> setPosition({viewWidth - 110.0f, 30.0f});
     }
 	//assume about 60 ticks per second, it can be slightly less, but good enough
 	
@@ -96,7 +86,7 @@ void TronGameState::tick() {
         // to a vertical screen position from [-windowHeight, screenHeight/2]
 
         if(ms <= windowMSThreshold){
-            windowYCoord = (ms / (float) windowMSThreshold) * (ctx -> window -> getView().getSize().y / 2 - (-windowHeight)) - windowHeight;
+            windowYCoord = (ms / (float) windowMSThreshold) * (viewHeight / 2 - (-windowHeight)) - windowHeight;
         }
         //std::cout << "MS: " << ms << ", windowYCoord: " << windowYCoord << std::endl;
 
@@ -304,7 +294,7 @@ void TronGameState::renderGameEndWindow(sf::RenderWindow& window){
 
     float centerX = viewWidth / 2;
     float centerY = windowYCoord;
-    int bw = 6;
+    int bw = 3;
     square.setSize({windowWidth, windowHeight});
     square.setOrigin(square.getLocalBounds().getCenter());
     square.setPosition({centerX, centerY});
@@ -331,69 +321,77 @@ void TronGameState::renderGameEndWindow(sf::RenderWindow& window){
             window’s midpoint for consistent layout.
         */
         play_text -> setString(ctx -> p2name + " Won!");
-        play_text -> setCharacterSize(64);
+        play_text -> setCharacterSize(32);
         play_text -> setOrigin(play_text -> getLocalBounds().getCenter());
-	    play_text -> setPosition({centerX, centerY - (windowHeight / 2) + 60.0f});
+	    play_text -> setPosition({centerX, centerY - (windowHeight / 2) + 40.0f});
         play_text -> setFillColor(p2body);
         window.draw(*play_text);
         
-        float sw = 60.0f;
+        float sw = 25.0f;
         //then draw red snake
         square.setSize({sw, sw});
         square.setOrigin(square.getLocalBounds().getCenter());
-        float yOffset = 170.0f;
-        if(0 == raisedSquare) yOffset -= 10.0f;
+        float yOffset = 90.0f;
+        if(0 == raisedSquare) yOffset -= 5.0f;
         square.setPosition({centerX - (2.0f * sw), centerY - (windowHeight / 2) + yOffset});
         square.setFillColor(p2head);
         window.draw(square);
 
         square.setFillColor(p2body);
         for(int i = 1; i < 5; i++){
-            float yOffset = 170.0f;
-            if(i == raisedSquare) yOffset -= 10.0f;
+            float yOffset = 90.0f;
+            if(i == raisedSquare) yOffset -= 5.0f;
             square.setPosition({centerX + ((i + 1) * sw) - (3.0f * sw), centerY - (windowHeight / 2) + yOffset});
             window.draw(square);
         }
 
         play_text -> setString(std::to_string(p2.score));
-        play_text -> setCharacterSize(144);
+        play_text -> setCharacterSize(48);
         play_text -> setOrigin(play_text -> getLocalBounds().getCenter());
-	    play_text -> setPosition({centerX, centerY - (windowHeight / 2) + 260.0f});
+	    play_text -> setPosition({centerX, centerY - (windowHeight / 2) + 150.0f});
         play_text -> setFillColor(p2body);
         window.draw(*play_text);
         
+
+
+
+
+
+
+
+
     }else{
         //then draw green snake, p1won
 
         play_text -> setString(ctx -> p1name + " Won!");
-        play_text -> setCharacterSize(64);
+        play_text -> setCharacterSize(32);
         play_text -> setOrigin(play_text -> getLocalBounds().getCenter());
-	    play_text -> setPosition({centerX, centerY - (windowHeight / 2) + 60.0f});
+	    play_text -> setPosition({centerX, centerY - (windowHeight / 2) + 40.0f});
         play_text -> setFillColor(p1body);
         window.draw(*play_text);
         
-        float sw = 60.0f;
+        float sw = 25.0f;
         //then draw red snake
         square.setSize({sw, sw});
         square.setOrigin(square.getLocalBounds().getCenter());
-        float yOffset = 170.0f;
-        if(0 == raisedSquare) yOffset -= 10.0f;
+        float yOffset = 90.0f;
+        if(0 == raisedSquare) yOffset -= 5.0f;
         square.setPosition({centerX - (2.0f * sw), centerY - (windowHeight / 2) + yOffset});
         square.setFillColor(p1head);
         window.draw(square);
 
         square.setFillColor(p1body);
         for(int i = 1; i < 5; i++){
-            float yOffset = 170.0f;
-            if(i == raisedSquare) yOffset -= 10.0f;
+            float yOffset = 90.0f;
+            if(i == raisedSquare) yOffset -= 5.0f;
             square.setPosition({centerX + ((i + 1) * sw) - (3.0f * sw), centerY - (windowHeight / 2) + yOffset});
             window.draw(square);
         }
 
         play_text -> setString(std::to_string(p1.score));
-        play_text -> setCharacterSize(144);
+        play_text -> setCharacterSize(48);
         play_text -> setOrigin(play_text -> getLocalBounds().getCenter());
-	    play_text -> setPosition({centerX, centerY - (windowHeight / 2) + 260.0f});
+	    play_text -> setPosition({centerX, centerY - (windowHeight / 2) + 150.0f});
         play_text -> setFillColor(p1body);
         window.draw(*play_text);
     }

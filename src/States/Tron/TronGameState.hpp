@@ -11,7 +11,7 @@
 class TronGameState : public State {
     public:
         bool gameEnd = false;
-        float squareWidth = 12.0f;
+        float squareWidth = 6.0f;
         sf::Color darkgray = sf::Color(85, 85, 85);
         sf::Color gray = sf::Color(119, 119, 119);
 
@@ -43,8 +43,8 @@ class TronGameState : public State {
         const std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
         unsigned int totalMSThreshold = 10000;
         unsigned int windowMSThreshold = 3000;
-        float windowWidth = 600.0f; 
-        float windowHeight = 400.0f;
+        float windowWidth = 300.0f; 
+        float windowHeight = 200.0f;
         float windowYCoord = -windowHeight;
         std::chrono::steady_clock::time_point gameEndStart, curr;
         int tickCount = 0;

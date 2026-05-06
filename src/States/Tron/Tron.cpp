@@ -320,7 +320,7 @@ bool Tron::checkForCollision(Tron& otherSnake){
     int y2 = 0;
 
     if(otherSnake.front == nullptr){
-        std::cout << "THIS SNAKE HAS NO JOINTS!" << std::endl;
+        //std::cout << "THIS SNAKE HAS NO JOINTS!" << std::endl;
         //then the queue is empty, this snake has no joints!
         x2 = otherSnake.headX;
         y2 = otherSnake.headY;
