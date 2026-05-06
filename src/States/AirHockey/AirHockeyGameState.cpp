@@ -89,8 +89,6 @@ void Puck::init(Context* ctx){
 	pucks[26].emplace(ctx -> assets -> getAsset("Puck9b"));
 	pucks[27].emplace(ctx -> assets -> getAsset("Puck9c"));
 }
-
-
 int Puck::getIndex(double x, double y, double diam) {
     if(y < (diam / 2)) return 0; // goal, puck 0 
     if(y < diam){
@@ -245,8 +243,6 @@ void Paddle::init(Context* ctx){
 	paddles[16].emplace(ctx -> assets -> getAsset("Paddle6b"));
 	paddles[17].emplace(ctx -> assets -> getAsset("Paddle6c"));
 }
-
-
 int Paddle::getIndex(double x, double y, double diam){
     // used 198 and 402 instead of 200 and 400 to minimize image jittering on edges
     if(y < diam){
@@ -474,47 +470,46 @@ Player::Player(std::string name, sf::Color color){
 	this -> score = 0;
 	this -> color = color;
 }
-
 void Player::init(Context* ctx){
 	name_text.emplace(ctx -> assets -> getFont("ST-SimpleSquare"), name, 24);
 }
-
-
-
-
 void Player::draw1(sf::RenderTexture* window1){
 	double screenRatio = (double)(window1 -> getSize().x) / 320.0;
 	
+	// make color blue for this player's view
+	color.r = 111;
+	color.g = 99;
+	color.b = 255;
 	name_text -> setFillColor(color);
 
-	name_text -> setCharacterSize(76);
+	name_text -> setCharacterSize(70);
 	name_text -> setString(name);
 	name_text -> setOrigin({name_text -> getLocalBounds().getCenter().x, 0});
 	name_text -> setPosition({(float)(48.0f * screenRatio), (float)(16.0f * screenRatio)});
 	window1 -> draw(*name_text);
 	
 	name_text -> setString(std::to_string(score));
-	name_text -> setCharacterSize(56);
+	name_text -> setCharacterSize(50);
 	name_text -> setOrigin({0.0f, 0.0f});
 	name_text -> setPosition({(float)(48 * screenRatio - name_text -> getLocalBounds().getCenter().x), (float)(40.0f * screenRatio)});
 	window1 -> draw(*name_text);
 }
-
-
-
-
 void Player::draw2(sf::RenderTexture* window2){
 	double screenRatio = (double)(window2 -> getSize().x) / 320.0;
 	
+	// make color red for this player's view
+	color.r = 223;
+	color.g = 0;
+	color.b = 0;
 	name_text -> setFillColor(color);
-	name_text -> setCharacterSize(76);
+	name_text -> setCharacterSize(70);
 	name_text -> setString(name);
 	name_text -> setOrigin({name_text -> getLocalBounds().getCenter().x, 0});
 	name_text -> setPosition({(float)(272.0f * screenRatio), (float)(16.0f * screenRatio)});
 	window2 -> draw(*name_text);
 	
 	name_text -> setString(std::to_string(score));
-	name_text -> setCharacterSize(56);
+	name_text -> setCharacterSize(50);
 	name_text -> setOrigin({0.0f, 0.0f});
 	name_text -> setPosition({(float)(272.0f * screenRatio - name_text -> getLocalBounds().getCenter().x), (float)(40.0f * screenRatio)});
 	window2 -> draw(*name_text);

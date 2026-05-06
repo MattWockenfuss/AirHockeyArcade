@@ -26,9 +26,8 @@ struct Paddle {
     public:
         int xPos, yPos;
         double x, y, vx, vy, diam;
-
-        Paddle(int xPos, int yPos, double vx, double vy, double diam);
         void init(Context* ctx);
+        Paddle(int xPos, int yPos, double vx, double vy, double diam);
         int getIndex(double x, double y, double diam);
         void draw1(sf::RenderTexture* window1);
         void draw2(sf::RenderTexture* window2);
