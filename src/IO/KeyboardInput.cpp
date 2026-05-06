@@ -40,7 +40,7 @@ void KeyboardInput::tick(){
     input -> P2Y = ctx -> keys -> M;
 }
 
-void KeyboardInput::render(sf::RenderWindow& window){
+void KeyboardInput::render(sf::RenderTexture& window){
     //render something to display key presses at some point?
 }
 

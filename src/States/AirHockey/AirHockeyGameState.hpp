@@ -14,8 +14,8 @@ struct Puck {
         void init(Context* ctx);
         Puck(double x, double y, double vx, double vy, double diam);
         int getIndex(double x, double y, double diam);
-        void draw1(sf::RenderWindow* window1);
-        void draw2(sf::RenderWindow* window2);
+        void draw1(sf::RenderTexture* window1);
+        void draw2(sf::RenderTexture* window2);
 		void setKickoff(int type);
 
     private:
@@ -30,8 +30,8 @@ struct Paddle {
         Paddle(int xPos, int yPos, double vx, double vy, double diam);
         void init(Context* ctx);
         int getIndex(double x, double y, double diam);
-        void draw1(sf::RenderWindow* window1);
-        void draw2(sf::RenderWindow* window2);
+        void draw1(sf::RenderTexture* window1);
+        void draw2(sf::RenderTexture* window2);
 
     private:
         std::array<std::optional<sf::Sprite>, 18> paddles;
@@ -46,8 +46,8 @@ struct Player {
 		
 		Player(std::string name, sf::Color color);
         void init(Context* ctx);
-		void draw1(sf::RenderWindow* window1);
-		void draw2(sf::RenderWindow* window2);
+		void draw1(sf::RenderTexture* window1);
+		void draw2(sf::RenderTexture* window2);
 };
 
 class AirHockeyGameState : public State {
@@ -55,8 +55,8 @@ class AirHockeyGameState : public State {
         void init(Context* ctx) override;
 		
         void tick() override;
-        void p1render(sf::RenderWindow& p1window) override;
-        void p2render(sf::RenderWindow& p2window) override;
+        void p1render(sf::RenderTexture& p1window) override;
+        void p2render(sf::RenderTexture& p2window) override;
     private:
 		Puck puck = Puck(300, 400, 0, 0, 50);
         Paddle p1paddle = Paddle(3, 11, 0, 0, 67);

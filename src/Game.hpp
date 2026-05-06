@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Audio.hpp>
 #include "Context.hpp"
 #include "States/GameStateManager.hpp"
@@ -23,6 +24,8 @@ class Game {
         bool renderFPSCounter = true;
         std::optional<sf::Text> tpsCounter;
         std::optional<sf::View> p1View, p2View;
+        std::optional<sf::RenderTexture> p1Tex, p2Tex;
+        std::optional<sf::Sprite> p1Sprite, p2Sprite;
         
         int ticks = 0;
         int frames = 0;

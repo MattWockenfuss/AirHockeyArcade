@@ -22,8 +22,8 @@ class LeaderboardState : public State {
         bool isDescending = false; //whether we are currently sorted in descending order or not 
 
         void tick() override;
-        void p1render(sf::RenderWindow& p1window) override;
-        void p2render(sf::RenderWindow& p2window) override;
+        void p1render(sf::RenderTexture& p1window) override;
+        void p2render(sf::RenderTexture& p2window) override;
     private:
         float viewWidth = 0;
         float viewHeight = 0;

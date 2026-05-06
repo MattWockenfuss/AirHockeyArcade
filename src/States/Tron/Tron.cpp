@@ -85,7 +85,7 @@ Joint Tron::peek(){
 //okay so how can the Tron move?
 //every tick they move in the direction we are facing, we need to update the head and tail, and the joints list, possible dequeue
 
-void Tron::render(sf::RenderWindow& window){
+void Tron::render(sf::RenderTexture& window){
     //okay how do we render?
     //render all of the squares from the tail to the head, changing directions at joints
     
@@ -147,7 +147,7 @@ void Tron::render(sf::RenderWindow& window){
     //window.draw(*text);
 }
 
-void Tron::renderTronSegment(sf::RenderWindow& window, int tx, int ty, int ex, int ey){
+void Tron::renderTronSegment(sf::RenderTexture& window, int tx, int ty, int ex, int ey){
     /*
         This function renders a segment of the Tron from (tx, ty) to (ex, ey), it is used for rendering the joints and head of the Tron
         it does NOT render the square at ex, ey, as that is tx, ty of the next segment, this also means that we must

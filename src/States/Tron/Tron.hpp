@@ -33,7 +33,7 @@ struct Tron {
         Joint *front = nullptr, *back = nullptr;
         
         void move();
-        void render(sf::RenderWindow& window);
+        void render(sf::RenderTexture& window);
 
         bool checkForCollision(Tron& otherSnake);
 
@@ -45,7 +45,7 @@ struct Tron {
         void dequeue();
         Joint peek();
 
-        void renderTronSegment(sf::RenderWindow& window, int tx, int ty, int ex, int ey);
+        void renderTronSegment(sf::RenderTexture& window, int tx, int ty, int ex, int ey);
 
         
         void grow(int lengthToGrow);

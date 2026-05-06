@@ -189,7 +189,7 @@ void GPIOManager::tick(){
 
 }
 
-void GPIOManager::render(sf::RenderWindow& window){
+void GPIOManager::render(sf::RenderTexture& window){
     if(!input -> overlay) return;  //only render if the overlay is up
     
     float startX = 800.0f;

@@ -51,12 +51,12 @@ void InputManager::tick(){
     } 
     backendInput -> tick();
 }
-void InputManager::render(sf::RenderWindow& window){
+void InputManager::render(sf::RenderTexture& window){
     backendInput -> render(window);
     renderDebugControllers(window);
 }
 
-void InputManager::renderDebugControllers(sf::RenderWindow& window){
+void InputManager::renderDebugControllers(sf::RenderTexture& window){
     //okay on render, if overlay lets display something
     if(!overlay) return;
 
@@ -252,7 +252,7 @@ void InputManager::renderDebugControllers(sf::RenderWindow& window){
     textbox -> setString("Y");
     window.draw(*textbox);
 }
-void InputManager::drawSquare(float x, float y, bool isGreen, sf::RenderWindow& window){
+void InputManager::drawSquare(float x, float y, bool isGreen, sf::RenderTexture& window){
     //this function will draw a square with a border centered and x ,y of width 30 and a border width of 1 px
     int borderWidth = 2;
     float width = 30.0f;

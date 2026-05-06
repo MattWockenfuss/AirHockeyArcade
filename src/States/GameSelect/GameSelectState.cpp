@@ -56,8 +56,8 @@ void GameSelectState::init(Context* ctx){
     std::cout << "\nGame Select State Created!" << std::endl;
 	
 	// screen size
-	width = ctx -> window -> getView().getSize().x;
-    height = ctx -> window -> getView().getSize().y;
+	width = ctx -> p1window -> getView().getSize().x;
+    height = ctx -> p1window -> getView().getSize().y;
 	screenRatio = width / 320.0;
     //screenRatio = 6;
     std::cout << "Screen Ratio: " << screenRatio << std::endl;
@@ -230,7 +230,7 @@ void GameSelectState::tick(){
 		lap_Arrow = 0;
 }
 
-void GameSelectState::p1render(sf::RenderWindow& p1window) {
+void GameSelectState::p1render(sf::RenderTexture& p1window) {
 	// title
 	title->setPosition(sf::Vector2f( (width/2)+screenRatio , (14+1)*screenRatio ));
 	title->setFillColor(gameOptions[selection].backColor);
@@ -303,7 +303,7 @@ void GameSelectState::p1render(sf::RenderWindow& p1window) {
 		p1window.draw(*p1msg);
 	}
 }
-void GameSelectState::p2render(sf::RenderWindow& p2window){ // call the first render function using the p2 window because the screens should be the same
+void GameSelectState::p2render(sf::RenderTexture& p2window){ // call the first render function using the p2 window because the screens should be the same
 	// title
 	title->setPosition(sf::Vector2f( (width/2)+screenRatio , (14+1)*screenRatio ));
 	title->setFillColor(gameOptions[selection].backColor);

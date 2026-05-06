@@ -25,8 +25,8 @@ class PongGameState : public State {
         void init(Context* ctx) override;
 
         void tick() override;
-        void p1render(sf::RenderWindow& window) override;
-        void p2render(sf::RenderWindow& window) override;
+        void p1render(sf::RenderTexture& window) override;
+        void p2render(sf::RenderTexture& window) override;
         
         PongGameState();
         ~PongGameState() override = default;

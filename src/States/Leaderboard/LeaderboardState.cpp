@@ -41,10 +41,10 @@ void LeaderboardState::init(Context* ctx){
 }
 
 void LeaderboardState::tick() {
-    if(ctx -> window -> getView().getSize().x != viewWidth){
+    if(ctx -> p1window -> getView().getSize().x != viewWidth){
         //if the new x is not viewWidth, update the width and height and everything downstream
-        viewWidth = ctx -> window -> getView().getSize().x;
-        viewHeight = ctx -> window -> getView().getSize().y;
+        viewWidth = ctx -> p1window -> getView().getSize().x;
+        viewHeight = ctx -> p1window -> getView().getSize().y;
 
         record_text -> setPosition(sf::Vector2f(viewWidth / 2.0f, viewHeight / 3.0f));
     }
@@ -196,7 +196,7 @@ void LeaderboardState::tick() {
 
 
 
-void LeaderboardState::p1render(sf::RenderWindow& p1window) {
+void LeaderboardState::p1render(sf::RenderTexture& p1window) {
 
     //okay to do the rendering, we need to render boxes for the sorting criteria
     //then render each record
@@ -374,7 +374,7 @@ void LeaderboardState::p1render(sf::RenderWindow& p1window) {
     //p1window.draw(*record_text);
 }
 
-void LeaderboardState::p2render(sf::RenderWindow& p2window) {
+void LeaderboardState::p2render(sf::RenderTexture& p2window) {
 
     //okay to do the rendering, we need to render boxes for the sorting criteria
     //then render each record

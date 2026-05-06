@@ -54,8 +54,8 @@ class GameStateManager {
         bool pendingStateChange = false;
 
         void tick();
-        void p1render(sf::RenderWindow& p1window);
-        void p2render(sf::RenderWindow& p2window);
+        void p1render(sf::RenderTexture& p1window);
+        void p2render(sf::RenderTexture& p2window);
 
     private:
         State* currentState;

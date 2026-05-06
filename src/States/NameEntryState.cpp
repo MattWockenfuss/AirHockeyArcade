@@ -81,10 +81,10 @@ void moveRight(int& x, int& y){
 }
 
 void NameEntryState::tick() {
-    if(ctx -> window -> getView().getSize().x != viewWidth){
+    if(ctx -> p1window -> getView().getSize().x != viewWidth){
         //if the new x is not viewWidth, update the width and height and everything downstream
-        viewWidth = ctx -> window -> getView().getSize().x;
-        viewHeight = ctx -> window -> getView().getSize().y;
+        viewWidth = ctx -> p1window -> getView().getSize().x;
+        viewHeight = ctx -> p1window -> getView().getSize().y;
     }
     //so each player has their own screen being rendered?
     //we render essentially the same thing, except each screen one of the keys is highlighted because its selected,
@@ -253,7 +253,7 @@ void NameEntryState::tick() {
 
 }
 
-void NameEntryState::p1render(sf::RenderWindow& p1window) {
+void NameEntryState::p1render(sf::RenderTexture& p1window) {
     /*  
         Renders the player name entry screen, including a centered grid-based character selector, current name display, 
     and interactive UI elements. It calculates layout positions dynamically based on window size, draws selectable 
@@ -434,7 +434,7 @@ void NameEntryState::p1render(sf::RenderWindow& p1window) {
     // p1window.draw(*charLabel);
 }
 
-void NameEntryState::p2render(sf::RenderWindow& p2window) {
+void NameEntryState::p2render(sf::RenderTexture& p2window) {
     //declare some helper vars
     float squareWidth = 40.0f;
     float gap = 10.0f;

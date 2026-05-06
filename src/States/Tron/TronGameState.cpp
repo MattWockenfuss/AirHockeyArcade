@@ -36,10 +36,10 @@ void TronGameState::init(Context* ctx){
 }
 
 void TronGameState::tick() {
-    if(ctx -> window -> getView().getSize().x != viewWidth){
+    if(ctx -> p1window -> getView().getSize().x != viewWidth){
         //if the new x is not viewWidth, update the width and height and everything downstream
-        viewWidth = ctx -> window -> getView().getSize().x;
-        viewHeight = ctx -> window -> getView().getSize().y;
+        viewWidth = ctx -> p1window -> getView().getSize().x;
+        viewHeight = ctx -> p1window -> getView().getSize().y;
 
         play_text -> setPosition({viewWidth / 2.0f, viewHeight / 1.2f});
         seconds_counter -> setPosition({viewWidth / 2, 50.0f});
@@ -182,7 +182,7 @@ void TronGameState::tick() {
     seconds_counter -> setString(std::to_string(seconds));
 }
 
-void TronGameState::renderArena(sf::RenderWindow& window){
+void TronGameState::renderArena(sf::RenderTexture& window){
     /*
         This function is used to render the common arena between the two
         different players screens. This is all of the gray blocks scattered about
@@ -224,7 +224,7 @@ void TronGameState::renderArena(sf::RenderWindow& window){
     square.setPosition({0 * squareWidth, (89 * squareWidth)});
     window.draw(square);
 }
-void TronGameState::renderGameEndWindow(sf::RenderWindow& window){
+void TronGameState::renderGameEndWindow(sf::RenderTexture& window){
     /*
         This function draws the game end box on the screen at the specified
         y coordinate.
@@ -342,7 +342,7 @@ void TronGameState::renderGameEndWindow(sf::RenderWindow& window){
 
 
 
-void TronGameState::p1render(sf::RenderWindow& p1window) {
+void TronGameState::p1render(sf::RenderTexture& p1window) {
     //render for snake game state
     renderArena(p1window);
 
@@ -357,7 +357,7 @@ void TronGameState::p1render(sf::RenderWindow& p1window) {
     if(gameEnd) renderGameEndWindow(p1window);
 }
 
-void TronGameState::p2render(sf::RenderWindow& p2window) {
+void TronGameState::p2render(sf::RenderTexture& p2window) {
     //render for snake game state
     renderArena(p2window);
 

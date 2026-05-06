@@ -4,7 +4,7 @@ class Context;
 class InputManager;
 
 namespace sf {
-    class RenderWindow;
+    class RenderTexture;
 }
 
 class InputInterface {
@@ -13,7 +13,7 @@ class InputInterface {
 
         virtual void init(Context* ctx, InputManager* input) = 0;
         virtual void tick() = 0;
-        virtual void render(sf::RenderWindow& window) = 0;
+        virtual void render(sf::RenderTexture& window) = 0;
 
     protected:
         Context* ctx = nullptr;

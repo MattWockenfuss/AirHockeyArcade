@@ -22,7 +22,7 @@ struct Fruit{
 	
 	Fruit(sf::Texture tileSet, int type, int state, int x, int y, int w, int h, double vx, double vy);
 	void move(float dt);
-	void draw(sf::RenderWindow* window, double screenRatio, sf::Font font);
+	void draw(sf::RenderTexture* window, double screenRatio, sf::Font font);
 };
 struct ScorePoint{
 	public:
@@ -32,7 +32,7 @@ struct ScorePoint{
 	int opacity;
 	
 	ScorePoint(int score, int x, int y);
-	void draw(sf::RenderWindow* window, double screenRatio, sf::Font font);
+	void draw(sf::RenderTexture* window, double screenRatio, sf::Font font);
 };
 struct FruitNinjaInstance{
 	public:
@@ -59,8 +59,8 @@ struct FruitNinjaInstance{
 		int totalPoints = 0;
 		
 		// score drawing functions
-		void drawNames(sf::RenderWindow* window, double screenRatio, sf::Font font, std::string oppName, bool opaque = false);
-		void drawTotalScores(sf::RenderWindow* window, double screenRatio, sf::Font font, int oppScore, bool opaque = false);
+		void drawNames(sf::RenderTexture* window, double screenRatio, sf::Font font, std::string oppName, bool opaque = false);
+		void drawTotalScores(sf::RenderTexture* window, double screenRatio, sf::Font font, int oppScore, bool opaque = false);
 };
 
 class FruitNinjaGameState : public State {
@@ -68,8 +68,8 @@ class FruitNinjaGameState : public State {
         void init(Context* ctx) override;
 		
         void tick() override;
-        void p1render(sf::RenderWindow& p1render) override;
-		void p2render(sf::RenderWindow& p2render) override;
+        void p1render(sf::RenderTexture& p1render) override;
+		void p2render(sf::RenderTexture& p2render) override;
     private:
 		bool triggerGameEnd = true; // this is used to make sure the game end is only triggered once, since the tick function will continue to run until the state is changed
 	

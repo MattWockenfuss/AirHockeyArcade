@@ -155,7 +155,7 @@ int Puck::getIndex(double x, double y, double diam) {
         return 27;
     return 26; // puck 9b
 }
-void Puck::draw1(sf::RenderWindow* window1) {
+void Puck::draw1(sf::RenderTexture* window1) {
     int index = getIndex(x, y, diam);
 
 	double screenRatio = (double)(window1 -> getSize().x) / 320.0;
@@ -175,7 +175,7 @@ void Puck::draw1(sf::RenderWindow* window1) {
     sprite.setScale({(float) screenRatio, (float) screenRatio});
     window1 -> draw(sprite);
 }
-void Puck::draw2(sf::RenderWindow* window2) {
+void Puck::draw2(sf::RenderTexture* window2) {
 	double x_ = 600 - x;
 	double y_ = 800 - y;
 
@@ -290,7 +290,7 @@ int Paddle::getIndex(double x, double y, double diam){
         return 17;
     return 16; // paddle 6b
 }
-void Paddle::draw1(sf::RenderWindow* window1){
+void Paddle::draw1(sf::RenderTexture* window1){
     int index = getIndex(x, y, diam);
 	double screenRatio = (double)(window1 -> getSize().x) / 320.0;
 
@@ -309,7 +309,7 @@ void Paddle::draw1(sf::RenderWindow* window1){
     sprite.setScale({(float) screenRatio, (float) screenRatio});
     window1 -> draw(sprite);
 }
-void Paddle::draw2(sf::RenderWindow* window2){
+void Paddle::draw2(sf::RenderTexture* window2){
 	double x_ = 600 - x;
 	double y_ = 800 - y;
 	
@@ -482,7 +482,7 @@ void Player::init(Context* ctx){
 
 
 
-void Player::draw1(sf::RenderWindow* window1){
+void Player::draw1(sf::RenderTexture* window1){
 	double screenRatio = (double)(window1 -> getSize().x) / 320.0;
 	
 	name_text -> setFillColor(color);
@@ -503,7 +503,7 @@ void Player::draw1(sf::RenderWindow* window1){
 
 
 
-void Player::draw2(sf::RenderWindow* window2){
+void Player::draw2(sf::RenderTexture* window2){
 	double screenRatio = (double)(window2 -> getSize().x) / 320.0;
 	
 	name_text -> setFillColor(color);
@@ -1114,8 +1114,8 @@ void AirHockeyGameState::init(Context* ctx){
     //std::cout << "Consolas" << &ctx -> assets -> getFont("Consolas") << std::endl;
     //std::cout << "ST-SimpleSquare" << &ctx -> assets -> getFont("ST-SimpleSquare") << std::endl;
     
-    float width = ctx -> window -> getView().getSize().x;
-    float height = ctx -> window -> getView().getSize().y;
+    float width = ctx -> p1window -> getView().getSize().x;
+    float height = ctx -> p1window -> getView().getSize().y;
 	double screenRatio = width / 320.0;
     std::cout << "Screen Ratio: " << screenRatio << std::endl;
 	
@@ -1302,7 +1302,7 @@ void AirHockeyGameState::tick() {
 	moveObjects(&puck, &p1paddle, &p2paddle, dt, 10);
 }
 
-void AirHockeyGameState::p1render(sf::RenderWindow& p1window) {
+void AirHockeyGameState::p1render(sf::RenderTexture& p1window) {
     p1window.clear();
 	
 	player1.draw1(&p1window);
@@ -1360,7 +1360,7 @@ void AirHockeyGameState::p1render(sf::RenderWindow& p1window) {
     p1window.draw(*fieldBack); //this covers the wall closest to the player, so the pucks and paddles are correctly obscured from view
 }
 
-void AirHockeyGameState::p2render(sf::RenderWindow& p2window) {
+void AirHockeyGameState::p2render(sf::RenderTexture& p2window) {
     p2window.clear();
 	
 	player1.draw2(&p2window);

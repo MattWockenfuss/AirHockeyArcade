@@ -23,8 +23,8 @@ class TronGameState : public State {
 
         void init(Context* ctx) override;
         void tick() override;
-        void p1render(sf::RenderWindow& p1window) override;
-        void p2render(sf::RenderWindow& p2window) override;
+        void p1render(sf::RenderTexture& p1window) override;
+        void p2render(sf::RenderTexture& p2window) override;
 
         Tron p1;
         Tron p2;
@@ -32,8 +32,8 @@ class TronGameState : public State {
     private:
         float viewWidth = 0;
         float viewHeight = 0;
-        void renderArena(sf::RenderWindow& window);
-        void renderGameEndWindow(sf::RenderWindow& window);
+        void renderArena(sf::RenderTexture& window);
+        void renderGameEndWindow(sf::RenderTexture& window);
         long long sec;
         std::optional<sf::Text> title_text, play_text, seconds_counter, p1score, p2score;
 

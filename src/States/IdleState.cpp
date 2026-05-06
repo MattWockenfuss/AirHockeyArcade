@@ -17,6 +17,14 @@ void IdleState::init(Context* ctx){
     title_text.emplace(ctx -> assets -> getFont("SquareSansSerif"), "B J A M M  DUOCADE", 50);
     play_text.emplace(ctx -> assets -> getFont("SquareSansSerif"), "Press A To Start!", 28);
 
+    // viewWidth = ctx -> p1window -> getView().getSize().x;
+    // viewHeight = ctx -> p1window -> getView().getSize().y;
+    
+    // std::cout << "view.getView() (w x h) = " << viewWidth << " x " << viewHeight << std::endl;
+
+    // viewWidth = ctx -> p1window -> getSize().x;
+    // viewHeight = ctx -> p1window -> getSize().y;
+    // std::cout << "view (w x h) = " << viewWidth << " x " << viewHeight << std::endl;
 
     std::cout << "IdleState Created!" << std::endl;
 
@@ -30,10 +38,13 @@ void IdleState::init(Context* ctx){
 }
 
 void IdleState::tick() {
-    if(ctx -> window -> getView().getSize().x != viewWidth){
+    if(ctx -> p1window -> getView().getSize().x != viewWidth){
         //if the new x is not viewWidth, update the width and height and everything downstream
-        viewWidth = ctx -> window -> getView().getSize().x;
-        viewHeight = ctx -> window -> getView().getSize().y;
+        viewWidth = ctx -> p1window -> getView().getSize().x;
+        viewHeight = ctx -> p1window -> getView().getSize().y;
+
+        std::cout << "[NEW] view (w x h) = " << viewWidth << " x " << viewHeight << std::endl;
+
 
         title_text -> setPosition({viewWidth / 2.0f, viewHeight / 3.0f});
         play_text -> setPosition({viewWidth / 2.0f, viewHeight / 1.3f});
@@ -57,7 +68,7 @@ void IdleState::tick() {
 	}
 }
 
-void IdleState::p1render(sf::RenderWindow& p1window) {
+void IdleState::p1render(sf::RenderTexture& p1window) {
     //render 1 for idlestate
     p1window.draw(*title_text);
     
@@ -66,7 +77,7 @@ void IdleState::p1render(sf::RenderWindow& p1window) {
     }
 }
 
-void IdleState::p2render(sf::RenderWindow& p2window) {
+void IdleState::p2render(sf::RenderTexture& p2window) {
     //render 2 for idlestate
     p2window.draw(*title_text);
     

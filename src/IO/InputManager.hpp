@@ -22,7 +22,7 @@ class InputManager {
 
         void init(Context* ctx);
         void tick();
-        void render(sf::RenderWindow& window);
+        void render(sf::RenderTexture& window);
 
         bool overlay = false;
 
@@ -65,8 +65,8 @@ class InputManager {
 
         bool triggeredFlag = false;
         //A reference to the actual input
-        void renderDebugControllers(sf::RenderWindow& window);
-        void drawSquare(float x, float y, bool isGreen, sf::RenderWindow& window);
+        void renderDebugControllers(sf::RenderTexture& window);
+        void drawSquare(float x, float y, bool isGreen, sf::RenderTexture& window);
         std::optional<sf::Text> textbox;
         sf::RectangleShape rect;
 

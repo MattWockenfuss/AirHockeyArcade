@@ -19,7 +19,7 @@ class GPIOManager : public InputInterface{
     public:
         void init(Context* ctx, InputManager* input) override;
         void tick() override;
-        void render(sf::RenderWindow& window) override;
+        void render(sf::RenderTexture& window) override;
 
         DigitalPin P1A = DigitalPin(3 , 2 , "GPIO-02", "P1A");
         DigitalPin P1B = DigitalPin(5 , 3 , "GPIO-03", "P1B");

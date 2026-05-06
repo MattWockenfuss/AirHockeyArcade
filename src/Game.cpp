@@ -6,7 +6,8 @@
 
 
 Game::Game(){
-    ctx.window = &window;
+    ctx.p1window = &*p1Tex;
+    ctx.p2window = &*p2Tex;
     ctx.assets = &assetManager;
     ctx.keys = &keyManager;
     ctx.input = &input;
@@ -50,6 +51,23 @@ void Game::initialization(){
 
         p1View -> setViewport(sf::FloatRect({0.0f, 0.0f}, {0.5f, 1.0f}));
         p2View -> setViewport(sf::FloatRect({0.5f, 0.0f}, {0.5f, 1.0f}));
+
+
+        /*
+            We create textures and write to them on a small scale, they are then
+            scaled up so we can save a lot on rendering, hopefully massively improving
+            performance
+        */
+
+        p1Tex.emplace(sf::Vector2u{960, 540});
+        p2Tex.emplace(sf::Vector2u{960, 540});
+
+        p1Sprite.emplace(p1Tex -> getTexture());
+        p2Sprite.emplace(p1Tex -> getTexture());
+
+        p1Sprite -> setScale({2.0f, 2.0f});
+        p2Sprite -> setScale({2.0f, 2.0f});
+        p2Sprite -> setPosition({1920.0f, 0.0f});
     }
 
     tpsCounter.emplace(ctx.assets -> getFont("ArcadeNormal"), "", 10);
@@ -140,28 +158,61 @@ void Game::tick(){
 
 }
 void Game::render(){
-    window.clear();
-
     //player 1
-    window.setView(*p1View);
-    if(gsm.getCurrentState() != nullptr){
-        gsm.getCurrentState() -> p1render(window);
-        if(renderPlayer2) gsm.getCurrentState() -> p1render(window);
-    }
-    gsm.p1render(window);
-    input.render(window);
+    p1Tex -> clear();
+
+    //render p1 stuff
+    if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p1render(*p1Tex);
+    gsm.p1render(*p1Tex);
+    input.render(*p1Tex);
     if(renderFPSCounter) window.draw(*tpsCounter);
+    p1Tex -> display();
+
+
 
     //player 2
-    window.setView(*p2View);
-    if(gsm.getCurrentState() != nullptr){
-        gsm.getCurrentState() -> p2render(window);
-        if(renderPlayer2) gsm.getCurrentState() -> p2render(window);
-    }
-    gsm.p2render(window);
+    p2Tex -> clear();
+    
+    //render p1 stuff
+    if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p1render(*p2Tex);
+    gsm.p1render(*p2Tex);
+    input.render(*p2Tex);
     if(renderFPSCounter) window.draw(*tpsCounter);
+    p2Tex -> display();
 
+
+
+
+    //render these sprites to the screen scaled up
+    window.clear();
+    window.setView(window.getDefaultView());
+
+    window.draw(*p1Sprite);
+    window.draw(*p2Sprite);
     window.display();
+
+    
+
+    // //player 1
+    // window.setView(*p1View);
+    // if(gsm.getCurrentState() != nullptr){
+    //     gsm.getCurrentState() -> p1render(window);
+    //     if(renderPlayer2) gsm.getCurrentState() -> p1render(window);
+    // }
+    // gsm.p1render(window);
+    // input.render(window);
+    // if(renderFPSCounter) window.draw(*tpsCounter);
+
+    // //player 2
+    // window.setView(*p2View);
+    // if(gsm.getCurrentState() != nullptr){
+    //     gsm.getCurrentState() -> p2render(window);
+    //     if(renderPlayer2) gsm.getCurrentState() -> p2render(window);
+    // }
+    // gsm.p2render(window);
+    // if(renderFPSCounter) window.draw(*tpsCounter);
+
+    // window.display();
 }
 
 void Game::run(){

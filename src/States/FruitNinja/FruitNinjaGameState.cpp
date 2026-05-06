@@ -36,7 +36,7 @@ void Fruit::move(float dt){
 	frame = (frame + n)%6;
 	time = std::remainder(time,0.075); // bring time back down while including any carry over between time steps
 }
-void Fruit::draw(sf::RenderWindow* window, double screenRatio, sf::Font font){
+void Fruit::draw(sf::RenderTexture* window, double screenRatio, sf::Font font){
 	sf::Sprite sprite(tileSet);
 	sprite.setScale(sf::Vector2f(screenRatio,screenRatio));
 	sprite.setTextureRect(sf::IntRect( sf::Vector2(w*frame,h*state), sf::Vector2(w,h) )); // change this will change image we draw from tile set
@@ -74,7 +74,7 @@ ScorePoint::ScorePoint(int score, int x, int y){
 	this->y = y;
 	this->opacity = 255;
 }
-void ScorePoint::draw(sf::RenderWindow* window, double screenRatio, sf::Font font){
+void ScorePoint::draw(sf::RenderTexture* window, double screenRatio, sf::Font font){
 	std::string points = std::to_string(score)+"0";
 	sf::Text text(font,points,6*screenRatio);
 	sf::FloatRect rect = text.getLocalBounds();
@@ -85,7 +85,7 @@ void ScorePoint::draw(sf::RenderWindow* window, double screenRatio, sf::Font fon
 	window->draw(text);
 }
 
-void FruitNinjaInstance::drawNames(sf::RenderWindow* window, double screenRatio, sf::Font font, std::string oppName, bool opaque){
+void FruitNinjaInstance::drawNames(sf::RenderTexture* window, double screenRatio, sf::Font font, std::string oppName, bool opaque){
 	// player name
 	sf::Text text(font,name,12*screenRatio);
 	text.setPosition(sf::Vector2f(8*screenRatio,0));
@@ -101,7 +101,7 @@ void FruitNinjaInstance::drawNames(sf::RenderWindow* window, double screenRatio,
 	text.setPosition(sf::Vector2f(312*screenRatio,0));
 	window->draw(text);
 }
-void FruitNinjaInstance::drawTotalScores(sf::RenderWindow* window, double screenRatio, sf::Font font, int oppScore, bool opaque){
+void FruitNinjaInstance::drawTotalScores(sf::RenderTexture* window, double screenRatio, sf::Font font, int oppScore, bool opaque){
 	// player score
 	std::string points = std::to_string(totalPoints)+"0";
 	sf::Text text(font,points,12*screenRatio);
@@ -132,8 +132,8 @@ void FruitNinjaGameState::init(Context* ctx){
     std::cout << "Consolas" << &ctx -> assets -> getFont("Consolas") << std::endl;
     std::cout << "ST-SimpleSquare" << &ctx -> assets -> getFont("ST-SimpleSquare") << std::endl;
 	
-	width = ctx -> window -> getView().getSize().x;
-    height = ctx -> window -> getView().getSize().y;
+	width = ctx -> p1window -> getView().getSize().x;
+    height = ctx -> p1window -> getView().getSize().y;
 	screenRatio = width / 320.0;
     //screenRatio = 6;
     std::cout << "Screen Ratio: " << screenRatio << std::endl;
@@ -466,7 +466,7 @@ void FruitNinjaGameState::tick(){
 	}
 }
 
-void FruitNinjaGameState::p1render(sf::RenderWindow& p1window){
+void FruitNinjaGameState::p1render(sf::RenderTexture& p1window){
 	p1window.clear();
 	// background
 	p1window.draw(*back);
@@ -494,7 +494,7 @@ void FruitNinjaGameState::p1render(sf::RenderWindow& p1window){
 	instances[0].drawTotalScores(&p1window,screenRatio,font,instances[1].totalPoints,true);
 }
 
-void FruitNinjaGameState::p2render(sf::RenderWindow& p2window){
+void FruitNinjaGameState::p2render(sf::RenderTexture& p2window){
 	p2window.clear();
 	// background
 	p2window.draw(*back);

@@ -19,8 +19,8 @@ class GameSelectState : public State {
         void init(Context* ctx) override;
 		
         void tick() override;
-        void p1render(sf::RenderWindow& p1render) override;
-		void p2render(sf::RenderWindow& p2render) override; // only one player should be able to select a game, so p2render is just going to call p1render
+        void p1render(sf::RenderTexture& p1render) override;
+		void p2render(sf::RenderTexture& p2render) override; // only one player should be able to select a game, so p2render is just going to call p1render
     private:
 		// screen
 		float width, height;

@@ -124,7 +124,7 @@ void GameStateManager::tick(){
         }
     }
 }   
-void GameStateManager::p1render(sf::RenderWindow& p1window){
+void GameStateManager::p1render(sf::RenderTexture& p1window){
     //std::cout << "RENDERING" << std::to_string(fadeIn) << std::endl;
     //okay so we render a transition
     p1window.getSize().x;
@@ -140,7 +140,7 @@ void GameStateManager::p1render(sf::RenderWindow& p1window){
     //debugLabel -> setPosition({10.0f, 10.0f});
     //p1window.draw(*debugLabel);
 }
-void GameStateManager::p2render(sf::RenderWindow& p2window){
+void GameStateManager::p2render(sf::RenderTexture& p2window){
     //okay so we render a transition
 
     square.setFillColor(sf::Color(0, 0, 0, alphaLeft));
