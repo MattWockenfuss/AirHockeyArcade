@@ -12,8 +12,7 @@
 #include "../../AudioManager.hpp"
 #include "../Leaderboard/LeaderboardInterface.hpp"
 
-Fruit::Fruit(sf::Texture tileSet, int type, int state, int x, int y, int w, int h, double vx, double vy){
-	this->tileSet = tileSet;
+Fruit::Fruit(int type, int state, int x, int y, int w, int h, double vx, double vy){
 	this->type = type;
 	this->state = state;
 	this->x = x;
@@ -36,9 +35,7 @@ void Fruit::move(float dt){
 	frame = (frame + n)%6;
 	time = std::remainder(time,0.075); // bring time back down while including any carry over between time steps
 }
-void Fruit::draw(sf::RenderTexture* window, double screenRatio, sf::Font font){
-	sf::Sprite sprite(tileSet);
-	sprite.setScale(sf::Vector2f(screenRatio,screenRatio));
+void Fruit::draw(sf::RenderTexture* window, double screenRatio, sf::Text& text, sf::Color& color, sf::Sprite& sprite){
 	sprite.setTextureRect(sf::IntRect( sf::Vector2(w*frame,h*state), sf::Vector2(w,h) )); // change this will change image we draw from tile set
 	sprite.setPosition(sf::Vector2f( (27+x-w/2)*screenRatio , y*screenRatio ));
 	window->draw(sprite);
@@ -47,25 +44,23 @@ void Fruit::draw(sf::RenderTexture* window, double screenRatio, sf::Font font){
 		return;
 	
 	// draw button label above fruit
-	sf::Text label(font,"",6*screenRatio);
 	switch(type){ // set the label to the type of fruit
 		case 0:
-			label.setString("A");
+			text.setString("A");
 			break;
 		case 1:
-			label.setString("B");
+			text.setString("B");
 			break;
 		case 2:
-			label.setString("X");
+			text.setString("X");
 			break;
 		case 3:
-			label.setString("Y");
+			text.setString("Y");
 			break;
 	}
-	sf::FloatRect rect = label.getLocalBounds();
-	label.setOrigin(rect.getCenter());
-	label.setPosition(sf::Vector2f( (27+x)*screenRatio , (y-rect.getCenter().y/4)*screenRatio ));
-	window->draw(label);
+	text.setOrigin(text.getLocalBounds().getCenter());
+	text.setPosition(sf::Vector2f( (27+x)*screenRatio , (y-text.getLocalBounds().getCenter().y/4)*screenRatio ));
+	window->draw(text);
 }
 
 ScorePoint::ScorePoint(int score, int x, int y){
@@ -74,25 +69,28 @@ ScorePoint::ScorePoint(int score, int x, int y){
 	this->y = y;
 	this->opacity = 255;
 }
-void ScorePoint::draw(sf::RenderTexture* window, double screenRatio, sf::Font font){
-	std::string points = std::to_string(score)+"0";
-	sf::Text text(font,points,6*screenRatio);
-	sf::FloatRect rect = text.getLocalBounds();
-	text.setOrigin(rect.getCenter());
+void ScorePoint::draw(sf::RenderTexture* window, double screenRatio, sf::Text& text, sf::Color& color){
+	text.setString(std::to_string(score)+"0");
+	text.setOrigin(text.getLocalBounds().getCenter());
 	text.setPosition(sf::Vector2f(x*screenRatio,y*screenRatio));
-	sf::Color color(255,255*(points[0]=='-'?0:1),255*(points[0]=='-'?0:1),opacity);
+	color.g = 255*(score<0?0:1);
+	color.b = 255*(score<0?0:1);
+	color.a = opacity;
 	text.setFillColor(color);
 	window->draw(text);
 }
 
-void FruitNinjaInstance::drawNames(sf::RenderTexture* window, double screenRatio, sf::Font font, std::string oppName, bool opaque){
+FruitNinjaInstance::FruitNinjaInstance(std::string name){
+	this->name = name;
+}
+void FruitNinjaInstance::drawNames(sf::RenderTexture* window, double screenRatio, sf::Text& text, sf::Color& color, std::string oppName){
 	// player name
-	sf::Text text(font,name,12*screenRatio);
+	text.setString(name);
+	text.setOrigin(sf::Vector2f(0,0));
 	text.setPosition(sf::Vector2f(8*screenRatio,0));
-	if(opaque)
-		text.setFillColor(sf::Color(255,255,255,128));
-	else
-		text.setFillColor(sf::Color(255,255,255,255));
+	color.g = 255;
+	color.b = 255;
+	text.setFillColor(color);
 	window->draw(text);
 	
 	// opponent name
@@ -101,26 +99,23 @@ void FruitNinjaInstance::drawNames(sf::RenderTexture* window, double screenRatio
 	text.setPosition(sf::Vector2f(312*screenRatio,0));
 	window->draw(text);
 }
-void FruitNinjaInstance::drawTotalScores(sf::RenderTexture* window, double screenRatio, sf::Font font, int oppScore, bool opaque){
+void FruitNinjaInstance::drawTotalScores(sf::RenderTexture* window, double screenRatio, sf::Text& text, sf::Color& color, int oppScore){
 	// player score
-	std::string points = std::to_string(totalPoints)+"0";
-	sf::Text text(font,points,12*screenRatio);
+	text.setString(std::to_string(totalPoints)+"0");
+	text.setOrigin(sf::Vector2f(0,0));
 	text.setPosition(sf::Vector2f(8*screenRatio,12*screenRatio));
-	if(opaque)
-		text.setFillColor(sf::Color(255,255*(points[0]=='-'?0:1),255*(points[0]=='-'?0:1),128));
-	else
-		text.setFillColor(sf::Color(255,255*(points[0]=='-'?0:1),255*(points[0]=='-'?0:1),255));
+	color.g = 255*(totalPoints<0?0:1);
+	color.b = 255*(totalPoints<0?0:1);
+	text.setFillColor(color);
 	window->draw(text);
 	
 	// opponent score
-	points = std::to_string(oppScore)+"0";
-	text.setString(points);
-	text.setOrigin(sf::Vector2f(text.getLocalBounds().size.x, 0));
+	text.setString(std::to_string(oppScore)+"0");
+	text.setOrigin(sf::Vector2f(text.getLocalBounds().size.x,0));
 	text.setPosition(sf::Vector2f(312*screenRatio,12*screenRatio));
-	if(opaque)
-		text.setFillColor(sf::Color(255,255*(points[0]=='-'?0:1),255*(points[0]=='-'?0:1),128));
-	else
-		text.setFillColor(sf::Color(255,255*(points[0]=='-'?0:1),255*(points[0]=='-'?0:1),255));
+	color.g = 255*(oppScore<0?0:1);
+	color.b = 255*(oppScore<0?0:1);
+	text.setFillColor(color);
 	window->draw(text);
 }
 
@@ -129,8 +124,8 @@ void FruitNinjaGameState::init(Context* ctx){
 	
 	// debugging
     std::cout << "\nFruitNinjaGameState Created!" << std::endl;
-    std::cout << "Consolas" << &ctx -> assets -> getFont("Consolas") << std::endl;
-    std::cout << "ST-SimpleSquare" << &ctx -> assets -> getFont("ST-SimpleSquare") << std::endl;
+    //std::cout << "Consolas" << &ctx -> assets -> getFont("Consolas") << std::endl;
+    //std::cout << "ST-SimpleSquare" << &ctx -> assets -> getFont("ST-SimpleSquare") << std::endl;
 	
 	width = ctx -> p1window -> getView().getSize().x;
     height = ctx -> p1window -> getView().getSize().y;
@@ -138,34 +133,41 @@ void FruitNinjaGameState::init(Context* ctx){
     //screenRatio = 6;
     std::cout << "Screen Ratio: " << screenRatio << std::endl;
 	
-	// textures
-	backTex.emplace(ctx->assets->getAsset("background"));
-	redTex.emplace(ctx->assets->getAsset("redGuy_tileSet"));
-	mellonTex.emplace(ctx->assets->getAsset("mellon_tileSet"));
-	appleTex.emplace(ctx->assets->getAsset("apple_tileSet"));
-	orangeTex.emplace(ctx->assets->getAsset("orange_tileSet"));
-	lemonTex.emplace(ctx->assets->getAsset("lemon_tileSet"));
-	fruitTexs.push_back(*mellonTex);
-	fruitTexs.push_back(*appleTex);
-	fruitTexs.push_back(*orangeTex);
-	fruitTexs.push_back(*lemonTex);
-	back.emplace(*backTex);
-	back->setScale(sf::Vector2f(screenRatio,screenRatio));
-	guy.emplace(*redTex);
+	// sprites
+	background.emplace(ctx->assets->getAsset("background"));
+	background->setScale(sf::Vector2f(screenRatio,screenRatio));
+	guy.emplace(ctx->assets->getAsset("redGuy_tileSet"));
 	guy->setScale(sf::Vector2f(screenRatio,screenRatio));
+	fruitSprites[0].emplace(ctx -> assets -> getAsset("mellon_tileSet"));
+	fruitSprites[1].emplace(ctx -> assets -> getAsset("apple_tileSet"));
+	fruitSprites[2].emplace(ctx -> assets -> getAsset("orange_tileSet"));
+	fruitSprites[3].emplace(ctx -> assets -> getAsset("lemon_tileSet"));
+	for(int i = 0; i<4; i++){
+		fruitSprites[i]->setScale(sf::Vector2f(screenRatio,screenRatio));
+	}
 	
-	// text
-	font = ctx->assets->getFont("ST-SimpleSquare");
-	instances.push_back( *(new FruitNinjaInstance()) );
-	instances.push_back( *(new FruitNinjaInstance()) );
+	// create instances
+	instances.push_back( *(new FruitNinjaInstance("PLR")) );
+	instances.push_back( *(new FruitNinjaInstance("COM")) );
 	if(ctx->p1name!="")
 		instances[0].name = ctx->p1name;
-	else
-		instances[0].name = "PLR";
 	if(ctx->p2name!="")
 		instances[1].name = ctx->p2name;
-	else
-		instances[1].name = "COM";
+	
+	// text
+	text.emplace(ctx -> assets -> getFont("ST-SimpleSquare"), instances[0].name, 12);
+	color.emplace(255,255,255,255);
+	
+	// create object pools
+	for(int i = 0; i<50; i++){ // create scorePoints
+		pointPool.push_back( new ScorePoint(0,0,0) );
+	}
+	for(int i = 0; i<4; i++){ // create fruit
+		fruitPool.push_back( *(new std::vector<Fruit*>) );
+		for(int j = 0; j<30; j++){ // create 30 instances of each kind of fruit
+			fruitPool[i].push_back( new Fruit(i,0,0,(i==0?-16:-12),(i==0?20:8),(i==0?16:8),0,0) );
+		}
+	}
 	
 	// seed random number generator
 	std::srand(std::time(0)); // seed the random numbers based on the current time at kickoff
@@ -212,11 +214,9 @@ void FruitNinjaGameState::init(Context* ctx){
 	
 	// set the initial fruit vars
 	instances[0].fruitDelay = instances[0].fruitSongTimes[0][0];
-	instances[0].fruitNote = 1;
-	instances[0].songDelay = 60.0;
 	instances[1].fruitDelay = instances[1].fruitSongTimes[0][0];
-	instances[1].fruitNote = 1;
-	instances[1].songDelay = 60;
+	
+	std::cout << "END OF FRUIT NINJA INIT" << std::endl;
 }
 
 void FruitNinjaGameState::tick(){	
@@ -467,17 +467,33 @@ void FruitNinjaGameState::tick(){
 }
 
 void FruitNinjaGameState::p1render(sf::RenderTexture& p1window){
+	/* some color and text attributes may be set before any drawing functions are called
+	 * these are constant values that will not change between the items being drawn
+	 * they are set before the drawing loop to reduce the number of operations
+	 *
+	 * color.r and occasionally color.a are commented out because their values don't change between rendering different parts of the screen
+	 */
+	
 	p1window.clear();
 	// background
-	p1window.draw(*back);
+	p1window.draw(*background);
 	
 	// draw name and total points behind fruit
-	instances[0].drawNames(&p1window,screenRatio,font,instances[1].name);
-	instances[0].drawTotalScores(&p1window,screenRatio,font,instances[1].totalPoints);
+	text->setCharacterSize(12);
+	//color->r = 255;
+	color->a = 255;
+	instances[0].drawNames(&p1window,screenRatio,*text,*color,instances[1].name);
+	instances[0].drawTotalScores(&p1window,screenRatio,*text,*color,instances[1].totalPoints);
 	
 	// fruit
+	//color->r = 255;
+	color->g = 255;
+	color->b = 255;
+	//color->a = 255;
+	text->setCharacterSize(6*screenRatio);
+	text->setFillColor(*color);
 	for(int i = 0; i<instances[0].fruits.size(); i++){
-		instances[0].fruits[i]->draw(&p1window, screenRatio, font);
+		instances[0].fruits[i]->draw(&p1window, screenRatio, *text, *color, *(fruitSprites[instances[0].fruits[i]->type]) );
 	}
 	
 	// guy
@@ -486,26 +502,47 @@ void FruitNinjaGameState::p1render(sf::RenderTexture& p1window){
 	p1window.draw(*guy);
 	
 	// points
+	//text->setCharacterSize(6*screenRatio);
+	//color->r = 255;
 	for(int i = 0; i<instances[0].scorePoints.size(); i++)
-		instances[0].scorePoints[i]->draw(&p1window,screenRatio,font);
+		instances[0].scorePoints[i]->draw(&p1window,screenRatio,*text,*color);
 	
 	// draw name and total points in front of fruit
-	instances[0].drawNames(&p1window,screenRatio,font,instances[1].name,true);
-	instances[0].drawTotalScores(&p1window,screenRatio,font,instances[1].totalPoints,true);
+	text->setCharacterSize(12);
+	//color->r = 255;
+	color->a = 128;
+	instances[0].drawNames(&p1window,screenRatio,*text,*color,instances[1].name);
+	instances[0].drawTotalScores(&p1window,screenRatio,*text,*color,instances[1].totalPoints);
 }
 
 void FruitNinjaGameState::p2render(sf::RenderTexture& p2window){
+	/* some color and text attributes may be set before any drawing functions are called
+	 * these are constant values that will not change between the items being drawn
+	 * they are set before the drawing loop to reduce the number of operations
+	 *
+	 * color.r and occasionally color.a are commented out because their values don't change between rendering different parts of the screen
+	 */
+	
 	p2window.clear();
 	// background
-	p2window.draw(*back);
+	p2window.draw(*background);
 	
 	// draw name and total points behind fruit
-	instances[1].drawNames(&p2window,screenRatio,font,instances[0].name);
-	instances[1].drawTotalScores(&p2window,screenRatio,font,instances[0].totalPoints);
+	text->setCharacterSize(12);
+	//color->r = 255;
+	color->a = 255;
+	instances[1].drawNames(&p2window,screenRatio,*text,*color,instances[0].name);
+	instances[1].drawTotalScores(&p2window,screenRatio,*text,*color,instances[0].totalPoints);
 	
 	// fruit
+	//color->r = 255;
+	color->g = 255;
+	color->b = 255;
+	//color->a = 255;
+	text->setCharacterSize(6*screenRatio);
+	text->setFillColor(*color);
 	for(int i = 0; i<instances[1].fruits.size(); i++){
-		instances[1].fruits[i]->draw(&p2window, screenRatio, font);
+		instances[1].fruits[i]->draw(&p2window, screenRatio, *text, *color, *(fruitSprites[instances[1].fruits[i]->type]) );
 	}
 	
 	// guy
@@ -514,10 +551,15 @@ void FruitNinjaGameState::p2render(sf::RenderTexture& p2window){
 	p2window.draw(*guy);
 	
 	// points
+	//text->setCharacterSize(6*screenRatio);
+	//color->r = 255;
 	for(int i = 0; i<instances[1].scorePoints.size(); i++)
-		instances[1].scorePoints[i]->draw(&p2window,screenRatio,font);
+		instances[1].scorePoints[i]->draw(&p2window,screenRatio,*text,*color);
 	
 	// draw name and total points in front of fruit
-	instances[1].drawNames(&p2window,screenRatio,font,instances[0].name,true);
-	instances[1].drawTotalScores(&p2window,screenRatio,font,instances[0].totalPoints,true);
+	text->setCharacterSize(12);
+	//color->r = 255;
+	color->a = 128;
+	instances[1].drawNames(&p2window,screenRatio,*text,*color,instances[0].name);
+	instances[1].drawTotalScores(&p2window,screenRatio,*text,*color,instances[0].totalPoints);
 }

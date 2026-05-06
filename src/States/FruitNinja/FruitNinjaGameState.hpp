@@ -18,11 +18,11 @@ struct Fruit{
 	double vy;
 	int frame;
 	float time;
-	sf::Texture tileSet;
+	//sf::Texture tileSet;
 	
-	Fruit(sf::Texture tileSet, int type, int state, int x, int y, int w, int h, double vx, double vy);
+	Fruit(int type, int state, int x, int y, int w, int h, double vx, double vy);
 	void move(float dt);
-	void draw(sf::RenderTexture* window, double screenRatio, sf::Font font);
+	void draw(sf::RenderTexture* window, double screenRatio, sf::Text& text, sf::Color& color, sf::Sprite& sprite);
 };
 struct ScorePoint{
 	public:
@@ -32,7 +32,7 @@ struct ScorePoint{
 	int opacity;
 	
 	ScorePoint(int score, int x, int y);
-	void draw(sf::RenderTexture* window, double screenRatio, sf::Font font);
+	void draw(sf::RenderTexture* window, double screenRatio, sf::Text& text, sf::Color& color);
 };
 struct FruitNinjaInstance{
 	public:
@@ -49,18 +49,19 @@ struct FruitNinjaInstance{
 		std::vector<std::vector<float>> fruitSongTimes;
 		std::vector<float> fruitSongDelays;
 		int fruitSong = 0;
-		int fruitNote = 0;
+		int fruitNote = 1;
 		float fruitDelay = 0;
-		float songDelay = 0;
+		float songDelay = 60;
 		
 		// scoring
 		std::string name;
 		std::vector<ScorePoint*> scorePoints;
 		int totalPoints = 0;
 		
+		FruitNinjaInstance(std::string name);
 		// score drawing functions
-		void drawNames(sf::RenderTexture* window, double screenRatio, sf::Font font, std::string oppName, bool opaque = false);
-		void drawTotalScores(sf::RenderTexture* window, double screenRatio, sf::Font font, int oppScore, bool opaque = false);
+		void drawNames(sf::RenderTexture* window, double screenRatio, sf::Text& text, sf::Color& color, std::string oppName);
+		void drawTotalScores(sf::RenderTexture* window, double screenRatio, sf::Text& text, sf::Color& color, int oppScore);
 };
 
 class FruitNinjaGameState : public State {
@@ -82,24 +83,21 @@ class FruitNinjaGameState : public State {
 		sf::Time time;
 		float dt;
 		
-		// textures
-		std::optional<sf::Texture> backTex;
-		std::optional<sf::Texture> redTex;
-		std::optional<sf::Texture> mellonTex;
-		std::optional<sf::Texture> appleTex;
-		std::optional<sf::Texture> orangeTex;
-		std::optional<sf::Texture> lemonTex;
-		std::vector<sf::Texture> fruitTexs;
-		
-		std::optional<sf::Sprite> back;
+		// sprites
+		std::optional<sf::Sprite> background;
 		std::optional<sf::Sprite> guy;
+		std::array<std::optional<sf::Sprite>, 4> fruitSprites;
+		
+		// object pools
+		std::vector<std::vector<Fruit*>> fruitPool;
+		std::vector<ScorePoint*> pointPool;
 		
 		// text
-		sf::Font font;
+		std::optional<sf::Text> text;
+		std::optional<sf::Color> color;
 		
 		// game instances
 		std::vector<FruitNinjaInstance> instances;
-		//FruitNinjaInstance p1instance;
 		
 		// random vars
 		int x, y, w, h;
