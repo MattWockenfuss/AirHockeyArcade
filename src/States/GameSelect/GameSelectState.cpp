@@ -64,12 +64,13 @@ void GameSelectState::init(Context* ctx){
 	
 	// game options
 													// this is the longest description we can have before it goes off the screen
-	gameOptions.push_back( GameOption("Air Hockey", "Play first to 11 in this arcade recreation of your favorite game!", ctx->assets->getAsset("AirHockeyIcon"), sf::Color(19,0,223), sf::Color(155,0,0) ));
-	gameOptions.push_back( GameOption("Tron", "Gameplay Coming Soon!", ctx->assets->getAsset("CoffeeIcon"), sf::Color(202,208,210), sf::Color(91,63,50) ));
-	gameOptions.push_back( GameOption("Fruit Warrior", "Cut Fruit To The Rythm, In This Fast-Paced Competition!", ctx->assets->getAsset("FruitIcon"), sf::Color(255,108,5), sf::Color(255,252,0) ));
-	gameOptions.push_back( GameOption("Pong", "Relive old memories and play Pong against your friends!", ctx->assets->getAsset("PongIcon"), sf::Color(222,19,195), sf::Color(12,59,6) ));
-	gameOptions.push_back( GameOption("Leaderboard", "View top scores across all games!", ctx->assets->getAsset("LeaderboardIcon"), sf::Color(250,186,24), sf::Color(205,152,20) ));
-	gameOptions.push_back( GameOption("Exit", "Stop playing for now", ctx->assets->getAsset("ExitIcon"), sf::Color(214,0,0), sf::Color(155,0,0) ));
+	gameOptions.push_back(GameOption("Air Hockey", "Play first to 11 in this arcade recreation of your favorite game!", ctx->assets->getAsset("AirHockeyIcon"), sf::Color(19,0,223), sf::Color(155,0,0) ));
+	gameOptions.push_back(GameOption("Tron", "First to 7!", ctx->assets->getAsset("TronIcon"), sf::Color(202,208,210), sf::Color(91,63,50) ));
+	gameOptions.push_back(GameOption("Tron Retro", "Avoid the Walls!", ctx->assets->getAsset("TronIconV2"), sf::Color(202,208,210), sf::Color(91,63,50) ));
+	gameOptions.push_back(GameOption("Fruit Warrior", "Cut Fruit To The Rythm, In This Fast-Paced Competition!", ctx->assets->getAsset("FruitIcon"), sf::Color(255,108,5), sf::Color(255,252,0) ));
+	gameOptions.push_back(GameOption("Pong", "Relive old memories and play Pong against your friends!", ctx->assets->getAsset("PongIcon"), sf::Color(222,19,195), sf::Color(12,59,6) ));
+	gameOptions.push_back(GameOption("Leaderboard", "View top scores across all games!", ctx->assets->getAsset("LeaderboardIcon"), sf::Color(250,186,24), sf::Color(205,152,20) ));
+	gameOptions.push_back(GameOption("Exit", "Stop playing for now", ctx->assets->getAsset("ExitIcon"), sf::Color(214,0,0), sf::Color(155,0,0) ));
 	size = gameOptions.size();
 	
 	// textures
@@ -120,10 +121,10 @@ void GameSelectState::tick(){
 	// enter games
 	if(state==0 && ctx->input->P1A && animate==0){ // select game, start loading animation
 		switch(selection){ // screens chosen here ignore the exit message, otherwise, they go through the extra animation
-			case 4: // Leaderboard
+			case 5: // Leaderboard
 				ctx -> gsm -> requestStateChange(States::Leaderboard, 1.5f, 1.5f);
 				break;
-			case 5: // Exit
+			case 6: // Exit
 				ctx -> gsm -> requestStateChange(States::Idle, 1.5f, 1.5f);
 				break;
 			default:
@@ -143,19 +144,22 @@ void GameSelectState::tick(){
 					case 0: // air hockey
 						ctx -> gsm -> requestStateChange(States::AirHockey, 1.5f, 1.5f);
 						break;
-					case 1: // Tron
+					case 1: // Briar Tron
+						ctx -> gsm -> requestStateChange(States::bTron, 1.5f, 1.5f);
+						break;
+					case 2: // Tron
 						ctx -> gsm -> requestStateChange(States::Tron, 1.5f, 1.5f);
 						break;
-					case 2: // Fruit Ninja
+					case 3: // Fruit Ninja
 						ctx -> gsm -> requestStateChange(States::FruitNinja, 1.5f, 1.5f);
 						break;
-					case 3: // Pong
+					case 4: // Pong
 						ctx -> gsm -> requestStateChange(States::Pong, 1.5f, 1.5f);
 						break;
-					case 4: // Leaderboard
+					case 5: // Leaderboard
 						ctx -> gsm -> requestStateChange(States::Leaderboard, 1.5f, 1.5f);
 						break;
-					case 5: // Exit
+					case 6: // Exit
 						ctx -> gsm -> requestStateChange(States::Idle, 1.5f, 1.5f);
 						break;
 				}

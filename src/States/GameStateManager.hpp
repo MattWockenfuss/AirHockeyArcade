@@ -27,7 +27,7 @@ inline const std::unordered_map<int, std::string> GAMES = {
     {1, "Pong"},
     {2, "Fruit Ninja"},
     {3, "Tron"},
-    {4, "Tron V2"}
+    {4, "Tron Retro"}
 };
 
 

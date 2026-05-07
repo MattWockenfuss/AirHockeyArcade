@@ -112,8 +112,8 @@ void TronGameState::tick() {
 
             if(player1name == "") player1name = "COM";
             if(player2name == "") player2name = "COM";
-            if(p1won)   ctx -> leaderboard -> addScore(player1name, player2name, p1.score, 0, 3);
-            else        ctx -> leaderboard -> addScore(player1name, player2name, 0, p2.score, 3);
+            if(p1won)   ctx -> leaderboard -> addScore(player1name, player2name, p1.score, 0, 4);
+            else        ctx -> leaderboard -> addScore(player1name, player2name, 0, p2.score, 4);
             ctx -> gsm -> requestStateChange(States::GameSelect, 0.0f, 1.5f);
         }
         return;

@@ -205,17 +205,17 @@ void LeaderboardState::p1render(sf::RenderTexture& p1window) {
     //split into 7ths
 
     float w = viewWidth / 8.0f;
-    float h = 100.0f;
-    float p = 4.0f;
-    float bw = 6.0f;
+    float h = 30.0f;
+    float p = 2.0f;
+    float bw = 3.0f;
 
-    float row_spacing = 36.0f;
+    float row_spacing = 14.0f;
 
     //they are being rendered partially inside the box, kick them down a little
-    float record_field_y_fix = 15.0f;
+    float record_field_y_fix = 3.0f;
 
     //They are hugging the left side to close
-    float record_field_x_offset = 10.0f;
+    float record_field_x_offset = 0.0f;
 
     std::string words[] = {"P1", "P1 Score", "P2 Score", "P2", "Game", "Date"};
 
@@ -243,10 +243,10 @@ void LeaderboardState::p1render(sf::RenderTexture& p1window) {
     p1window.draw(borderSquare);
 
     //render the back button at the top
-    record_text -> setCharacterSize(24);
+    record_text -> setCharacterSize(10);
     record_text -> setString(" <-- Back To Menu (Press B)");
     record_text -> setOrigin({0.0f, 0.0f});
-    record_text -> setPosition({(w + p) * 1  + 50.0f, 50.0f});
+    record_text -> setPosition({(w + p) * 1  + 50.0f, 10.0f});
     record_text -> setFillColor(sf::Color::Yellow);
     p1window.draw(*record_text);
 
@@ -262,7 +262,7 @@ void LeaderboardState::p1render(sf::RenderTexture& p1window) {
 
         
         //make the text is centered in the box
-        record_text -> setCharacterSize(28);
+        record_text -> setCharacterSize(14);
         
         record_text -> setString(words[i - 1]);
         record_text -> setOrigin(record_text -> getLocalBounds().getCenter());
@@ -342,7 +342,7 @@ void LeaderboardState::p1render(sf::RenderTexture& p1window) {
                 break;
             }
             
-            record_text -> setCharacterSize(22);
+            record_text -> setCharacterSize(11);
 
             if(i == 4 || i == 5){
                 record_field_x_offset = 0.0f;
@@ -383,17 +383,17 @@ void LeaderboardState::p2render(sf::RenderTexture& p2window) {
     //split into 7ths
 
     float w = viewWidth / 8.0f;
-    float h = 100.0f;
-    float p = 4.0f;
-    float bw = 6.0f;
+    float h = 30.0f;
+    float p = 2.0f;
+    float bw = 3.0f;
 
-    float row_spacing = 36.0f;
+    float row_spacing = 14.0f;
 
     //they are being rendered partially inside the box, kick them down a little
-    float record_field_y_fix = 15.0f;
+    float record_field_y_fix = 3.0f;
 
     //They are hugging the left side to close
-    float record_field_x_offset = 10.0f;
+    float record_field_x_offset = 0.0f;
 
     std::string words[] = {"P1", "P1 Score", "P2 Score", "P2", "Game", "Date"};
 
@@ -419,10 +419,10 @@ void LeaderboardState::p2render(sf::RenderTexture& p2window) {
     p2window.draw(borderSquare);
 
     //render the back button at the top
-    record_text -> setCharacterSize(24);
+    record_text -> setCharacterSize(10);
     record_text -> setString(" <-- Back To Menu (Press B)");
     record_text -> setOrigin({0.0f, 0.0f});
-    record_text -> setPosition({(w + p) * 1  + 50.0f, 50.0f});
+    record_text -> setPosition({(w + p) * 1  + 50.0f, 10.0f});
     record_text -> setFillColor(sf::Color::Yellow);
     p2window.draw(*record_text);
 
@@ -435,7 +435,7 @@ void LeaderboardState::p2render(sf::RenderTexture& p2window) {
         insideSquare.setPosition({(w + p) * i + bw, h + bw});
         
         //make the text is centered in the box
-        record_text -> setCharacterSize(28);
+        record_text -> setCharacterSize(14);
         
         record_text -> setString(words[i - 1]);
         record_text -> setOrigin(record_text -> getLocalBounds().getCenter());
@@ -494,7 +494,7 @@ void LeaderboardState::p2render(sf::RenderTexture& p2window) {
                 case 5: record_text -> setString(curr -> timestamp.substr(0, 10)); break;
             }
             
-            record_text -> setCharacterSize(22);
+            record_text -> setCharacterSize(11);
 
             if(i == 4 || i == 5){
                 record_field_x_offset = 0.0f;

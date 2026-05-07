@@ -531,8 +531,7 @@ void bTronGameState::moveObjects(Bike* player1, Bike* player2, std::vector<std::
 		
 		if(p1score>=7 || p2score >= 7){
 			//add player scores to the leaderboard
-			ctx -> leaderboard -> addScore(player1->name, player2->name, p1score, p2score, 3);
-
+			ctx -> leaderboard -> addScore(player1 -> name, player2 -> name, p1score, p2score, 3);
 			ctx -> gsm -> requestStateChange(States::GameSelect, 3.0f, 1.5f);
 		}
 	}
