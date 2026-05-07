@@ -573,7 +573,8 @@ void NameEntryState::p2render(sf::RenderTexture& p2window) {
     }
     if(instructionsVisible){
         if(p2ready){
-            charLabel -> setString("Waiting for other players.");
+			if(p1ready) charLabel -> setString("Starting...");
+			else charLabel -> setString("Waiting for other players.");
         }else{
             charLabel -> setString("PRESS 'READY' TO BEGIN");
         }
