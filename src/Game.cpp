@@ -168,8 +168,8 @@ void Game::tick(){
 
 }
 void Game::render(){
-    p1Tex -> clear();
-    p2Tex -> clear();
+    p1Tex -> clear(sf::Color::Red);
+    p2Tex -> clear(sf::Color::Blue);
 
     //render p1 stuff
     if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p1render(*p1Tex);
@@ -185,6 +185,9 @@ void Game::render(){
 
     p1Tex -> display();
     p2Tex -> display();
+
+    p1Sprite -> setTexture(p1Tex -> getTexture());
+    p2Sprite -> setTexture(p2Tex -> getTexture());
 
     window.clear(sf::Color::Yellow);
     window.draw(*p1Sprite);
