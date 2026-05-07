@@ -36,19 +36,17 @@ void Game::initialization(){
     ctx.renderp2 = renderPlayer2;
 
     //setup windows
-    window1.create(sf::VideoMode({1920, 1080}), "p1", sf::Style::None);
-    window2.create(sf::VideoMode({1920, 1080}), "p2", sf::Style::None);
-    
-    window1.setPosition({0, 0});
-    window2.setPosition({1920, 0});
+    window.create(sf::VideoMode({3840, 1080}), "Arcade", sf::Style::None);
+    window.setPosition({0, 0});
 
-    window1.setFramerateLimit(60);
-    window1.setVerticalSyncEnabled(false);
+    p1View.emplace(sf::FloatRect({0.0f, 0.0f}, {960.0f, 540.0f}));
+    p2View.emplace(sf::FloatRect({0.0f, 0.0f}, {960.0f, 540.0f}));
 
-    window2.setFramerateLimit(60);
-    window2.setVerticalSyncEnabled(false);
+    p1View -> setViewport(sf::FloatRect({0.0f, 0.0f}, {0.5f, 1.0f}))
+    p2View -> setViewport(sf::FloatRect({0.5f, 0.0f}, {0.5f, 1.0f}))
 
-
+    window.setFramerateLimit(60);
+    window.setVerticalSyncEnabled(false);
 
     p1Tex.emplace(sf::Vector2u{960, 540});
     p2Tex.emplace(sf::Vector2u{960, 540});
@@ -59,11 +57,11 @@ void Game::initialization(){
     p1Sprite -> setScale({2.0f, 2.0f});
     p2Sprite -> setScale({2.0f, 2.0f});
     p1Sprite -> setPosition({0.0f, 0.0f});
-    p2Sprite -> setPosition({0.0f, 0.0f});
+    p2Sprite -> setPosition({1920.0f, 0.0f});
     
 
-    std::cout << "Window1 Size: " << window1.getSize().x << ", " << window1.getSize().y << std::endl;
-    std::cout << "Window1 Position: " << window1.getPosition().x << ", " << window1.getPosition().y << std::endl;
+    std::cout << "Window Size: " << window.getSize().x << ", " << window.getSize().y << std::endl;
+    std::cout << "Window Position: " << window.getPosition().x << ", " << window.getPosition().y << std::endl;
 
     auto b1 = p1Sprite -> getGlobalBounds();
     auto b2 = p2Sprite -> getGlobalBounds();
@@ -106,8 +104,7 @@ void Game::stop(){
     running = false;
 
     //SFML will close down window and its resources needed
-    window1.close();
-    window2.close();
+    window.close();
 
     //close the database interface
     leaderboardInterface.closeDB();
@@ -131,18 +128,13 @@ void Game::tick(){
     ctx.gsm -> tick();
 
     //process all of the events for both windows
-    while (const auto p1 = window1.pollEvent()) {
+    while (const auto p1 = window.pollEvent()) {
         if (p1 -> is<sf::Event::Closed>()) {
             running = false;
         }
         keyManager.handleEvent(*p1);
     }
-    while (const auto p1 = window2.pollEvent()) {
-        if (p1 -> is<sf::Event::Closed>()) {
-            running = false;
-        }
-        keyManager.handleEvent(*p1);
-    }
+
 
     input.tick();
 
@@ -176,26 +168,26 @@ void Game::tick(){
 
 }
 void Game::render(){
-    //std::cout << "Window Size: " << window1.getSize().x << ", " << window1.getSize().y << std::endl;
-    //std::cout << "Window Position: " << window1.getPosition().x << ", " << window1.getPosition().y << std::endl;
+    std::cout << "Window Size: " << window.getSize().x << ", " << window.getSize().y << std::endl;
+    std::cout << "Window Position: " << window.getPosition().x << ", " << window.getPosition().y << std::endl;
 
-    //std::cout << "view Size: " << window1.getView().getSize().x << ", " << window1.getView().getSize().y << std::endl;
+    std::cout << "view Size: " << window.getView().getSize().x << ", " << window.getView().getSize().y << std::endl;
 
-    p1Tex -> clear();
-    p2Tex -> clear();
+    p1Tex -> clear(sf::Color::Red);
+    p2Tex -> clear(sf::Color::Blue);
     
 
     // //render p1 stuff
-    if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p1render(*p1Tex);
-    gsm.p1render(*p1Tex);
-    input.render(*p1Tex);
-    if(renderFPSCounter) p1Tex -> draw(*tpsCounter);
+    // if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p1render(*p1Tex);
+    // gsm.p1render(*p1Tex);
+    // input.render(*p1Tex);
+    // if(renderFPSCounter) p1Tex -> draw(*tpsCounter);
 
-    //player 2
-    if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p2render(*p2Tex);
-    gsm.p2render(*p2Tex);
-    input.render(*p2Tex);
-    if(renderFPSCounter) p2Tex -> draw(*tpsCounter);
+    // //player 2
+    // if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p2render(*p2Tex);
+    // gsm.p2render(*p2Tex);
+    // input.render(*p2Tex);
+    // if(renderFPSCounter) p2Tex -> draw(*tpsCounter);
 
     p1Tex -> display();
     p2Tex -> display();
@@ -210,18 +202,19 @@ void Game::render(){
     p2Sprite -> setScale({2.0f, 2.0f});
 
     p1Sprite -> setPosition({0.0f, 0.0f});
-    p2Sprite -> setPosition({0.0f, 0.0f});
+    p2Sprite -> setPosition({1920.0f, 0.0f});
+
+
 
     
+    window.setView(sf::View(sf::FloatRect({0.0f, 0.0f}, {3840.0f, 1080.0f})));
 
-    window1.clear();
-    window2.clear();
-
-    window1.draw(*p1Sprite);
-    window2.draw(*p2Sprite);
-
-    window1.display();
-    window2.display();
+    window.clear(sf::Color::Yellow);
+    window.setView(*p1View);
+    window.draw(*p1Sprite);
+    window.setView(*p2View);
+    window.draw(*p2Sprite);
+    window.display();
 }
 
 void Game::run(){
