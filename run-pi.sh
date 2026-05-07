@@ -25,4 +25,4 @@ xsetroot -solid black
 
 sleep 1
 
-./build/game
+./build/game > game.log
