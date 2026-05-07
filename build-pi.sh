@@ -1,6 +1,9 @@
 #!/bin/bash
 
-echo "Building for Linux WITHOUT GPIO access"
+echo "Building for PiOS WITH GPIO access updated!"
+
+
+#compiling for the raspberry pi with GPIO access
 
 mkdir -p build
 
@@ -12,7 +15,7 @@ src/AssetManager.cpp \
 src/AudioManager.cpp \
 src/IO/InputManager.cpp \
 src/KeyManager.cpp \
-src/IO/KeyboardInput.cpp \
+src/IO/GPIOManager.cpp \
 src/States/State.cpp \
 src/States/GameStateManager.cpp \
 src/States/IdleState.cpp \
@@ -32,6 +35,9 @@ build/sqlite3.o \
 -lsfml-system \
 -lsfml-audio \
 -lasound \
+-DHAVE_GPIOD \
+-lgpiod \
+-lgpiodcxx \
 -o build/game
 
-./build/game
+startx ./run-pi.sh
