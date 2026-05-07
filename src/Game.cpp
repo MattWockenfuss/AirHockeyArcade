@@ -165,7 +165,7 @@ void Game::render(){
     if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p1render(*p1Tex);
     gsm.p1render(*p1Tex);
     input.render(*p1Tex);
-    if(renderFPSCounter) window.draw(*tpsCounter);
+    if(renderFPSCounter) p1Tex -> draw(*tpsCounter);
     p1Tex -> display();
 
 
@@ -177,7 +177,7 @@ void Game::render(){
     if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p2render(*p2Tex);
     gsm.p2render(*p2Tex);
     input.render(*p2Tex);
-    if(renderFPSCounter) window.draw(*tpsCounter);
+    if(renderFPSCounter) p2Tex -> draw(*tpsCounter);
     p2Tex -> display();
 
 
