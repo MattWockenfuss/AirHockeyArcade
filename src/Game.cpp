@@ -36,11 +36,19 @@ void Game::initialization(){
     ctx.renderp2 = renderPlayer2;
 
     //setup windows
-    window.create(sf::VideoMode({3840, 1080}), "Arcade", sf::Style::None);
-    window.setPosition({0, 0});
+    window1.create(sf::VideoMode({1920, 1080}), "p1", sf::Style::None);
+    window2.create(sf::VideoMode({1920, 1080}), "p2", sf::Style::None);
+    
+    window1.setPosition({0, 0});
+    window2.setPosition({1920, 0});
 
-    window.setFramerateLimit(60);
-    window.setVerticalSyncEnabled(false);
+    window1.setFramerateLimit(60);
+    window1.setVerticalSyncEnabled(false);
+
+    window2.setFramerateLimit(60);
+    window2.setVerticalSyncEnabled(false);
+
+
 
     p1Tex.emplace(sf::Vector2u{960, 540});
     p2Tex.emplace(sf::Vector2u{960, 540});
@@ -54,8 +62,8 @@ void Game::initialization(){
     p2Sprite -> setPosition({500.0f, 0.0f});
     
 
-    std::cout << "Window Size: " << window.getSize().x << ", " << window.getSize().y << std::endl;
-    std::cout << "Window Position: " << window.getPosition().x << ", " << window.getPosition().y << std::endl;
+    std::cout << "Window1 Size: " << window1.getSize().x << ", " << window1.getSize().y << std::endl;
+    std::cout << "Window1 Position: " << window1.getPosition().x << ", " << window1.getPosition().y << std::endl;
 
     auto b1 = p1Sprite -> getGlobalBounds();
     auto b2 = p2Sprite -> getGlobalBounds();
@@ -98,7 +106,8 @@ void Game::stop(){
     running = false;
 
     //SFML will close down window and its resources needed
-    window.close();
+    window1.close();
+    window2.close();
 
     //close the database interface
     leaderboardInterface.closeDB();
@@ -198,15 +207,16 @@ void Game::render(){
     p1Sprite -> setPosition({0.0f, 0.0f});
     p2Sprite -> setPosition({500.0f, 0.0f});
 
-
-
     
-    window.setView(sf::View(sf::FloatRect({0.0f, 0.0f}, {3840.0f, 1080.0f})));
 
-    window.clear(sf::Color::Yellow);
-    window.draw(*p1Sprite);
-    window.draw(*p2Sprite);
-    window.display();
+    window1.clear(sf::Color::Red);
+    window2.clear(sf::Color::Blue);
+    
+    window1.draw(*p1Sprite);
+    window2.draw(*p2Sprite);
+
+    window1.display();
+    window2.display();
 }
 
 void Game::run(){
