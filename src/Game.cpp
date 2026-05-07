@@ -50,11 +50,11 @@ void Game::initialization(){
         window.setVerticalSyncEnabled(false);
 
         //the views will be automatically be scaled
-        p1View.emplace(sf::FloatRect({0.0f, 0.0f}, {960.0f, 540.0f}));
-        p2View.emplace(sf::FloatRect({0.0f, 0.0f}, {960.0f, 540.0f}));
+        // p1View.emplace(sf::FloatRect({0.0f, 0.0f}, {960.0f, 540.0f}));
+        // p2View.emplace(sf::FloatRect({0.0f, 0.0f}, {960.0f, 540.0f}));
 
-        p1View -> setViewport(sf::FloatRect({0.0f, 0.0f}, {0.5f, 1.0f}));
-        p2View -> setViewport(sf::FloatRect({0.5f, 0.0f}, {0.5f, 1.0f}));
+        // p1View -> setViewport(sf::FloatRect({0.0f, 0.0f}, {0.5f, 1.0f}));
+        // p2View -> setViewport(sf::FloatRect({0.5f, 0.0f}, {0.5f, 1.0f}));
 
 
         /*
@@ -168,33 +168,25 @@ void Game::tick(){
 
 }
 void Game::render(){
-    //player 1
     p1Tex -> clear();
+    p2Tex -> clear();
+
     //render p1 stuff
     if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p1render(*p1Tex);
     gsm.p1render(*p1Tex);
     input.render(*p1Tex);
     if(renderFPSCounter) p1Tex -> draw(*tpsCounter);
-    p1Tex -> display();
-
-
 
     //player 2
-    p2Tex -> clear();
-    
-    //render p2 stuff
     if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p2render(*p2Tex);
     gsm.p2render(*p2Tex);
     input.render(*p2Tex);
     if(renderFPSCounter) p2Tex -> draw(*tpsCounter);
+
+    p1Tex -> display();
     p2Tex -> display();
 
-
-
-
-    //render these sprites to the screen scaled up
     window.clear(sf::Color::Yellow);
-
     window.draw(*p1Sprite);
     window.draw(*p2Sprite);
     window.display();
