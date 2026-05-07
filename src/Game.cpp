@@ -196,7 +196,7 @@ void Game::render(){
     p2Sprite -> setScale({2.0f, 2.0f});
 
     p1Sprite -> setPosition({0.0f, 0.0f});
-    p2Sprite -> setPosition({1920.0f, 0.0f});
+    p2Sprite -> setPosition({500.0f, 0.0f});
 
 
 
