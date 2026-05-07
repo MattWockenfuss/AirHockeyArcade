@@ -176,26 +176,26 @@ void Game::tick(){
 
 }
 void Game::render(){
-    std::cout << "Window Size: " << window1.getSize().x << ", " << window1.getSize().y << std::endl;
-    std::cout << "Window Position: " << window1.getPosition().x << ", " << window1.getPosition().y << std::endl;
+    //std::cout << "Window Size: " << window1.getSize().x << ", " << window1.getSize().y << std::endl;
+    //std::cout << "Window Position: " << window1.getPosition().x << ", " << window1.getPosition().y << std::endl;
 
-    std::cout << "view Size: " << window1.getView().getSize().x << ", " << window1.getView().getSize().y << std::endl;
+    //std::cout << "view Size: " << window1.getView().getSize().x << ", " << window1.getView().getSize().y << std::endl;
 
-    p1Tex -> clear(sf::Color::Red);
-    p2Tex -> clear(sf::Color::Blue);
+    p1Tex -> clear();
+    p2Tex -> clear();
     
 
     // //render p1 stuff
-    // if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p1render(*p1Tex);
-    // gsm.p1render(*p1Tex);
-    // input.render(*p1Tex);
-    // if(renderFPSCounter) p1Tex -> draw(*tpsCounter);
+    if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p1render(*p1Tex);
+    gsm.p1render(*p1Tex);
+    input.render(*p1Tex);
+    if(renderFPSCounter) p1Tex -> draw(*tpsCounter);
 
-    // //player 2
-    // if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p2render(*p2Tex);
-    // gsm.p2render(*p2Tex);
-    // input.render(*p2Tex);
-    // if(renderFPSCounter) p2Tex -> draw(*tpsCounter);
+    //player 2
+    if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p2render(*p2Tex);
+    gsm.p2render(*p2Tex);
+    input.render(*p2Tex);
+    if(renderFPSCounter) p2Tex -> draw(*tpsCounter);
 
     p1Tex -> display();
     p2Tex -> display();
@@ -214,8 +214,8 @@ void Game::render(){
 
     
 
-    window1.clear(sf::Color::Red);
-    window2.clear(sf::Color::Blue);
+    window1.clear();
+    window2.clear();
 
     window1.draw(*p1Sprite);
     window2.draw(*p2Sprite);
