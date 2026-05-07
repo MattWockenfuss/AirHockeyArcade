@@ -72,7 +72,7 @@ void Game::initialization(){
         p1Sprite -> setScale({2.0f, 2.0f});
         p2Sprite -> setScale({2.0f, 2.0f});
         p1Sprite -> setPosition({0.0f, 0.0f});
-        p2Sprite -> setPosition({0.0f, 0.0f});
+        p2Sprite -> setPosition({1920.0f, 0.0f});
     }
 
     tpsCounter.emplace(ctx.assets -> getFont("ArcadeNormal"), "", 10);
@@ -170,7 +170,6 @@ void Game::tick(){
 void Game::render(){
     //player 1
     p1Tex -> clear();
-
     //render p1 stuff
     if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p1render(*p1Tex);
     gsm.p1render(*p1Tex);
@@ -195,7 +194,6 @@ void Game::render(){
 
     //render these sprites to the screen scaled up
     window.clear(sf::Color::Yellow);
-    window.setView(window.getDefaultView());
 
     window.draw(*p1Sprite);
     window.draw(*p2Sprite);
