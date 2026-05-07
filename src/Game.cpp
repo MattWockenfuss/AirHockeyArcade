@@ -186,6 +186,9 @@ void Game::render(){
     p1Tex -> display();
     p2Tex -> display();
 
+    p1Sprite -> setPosition({0.0f, 0.0f});
+    p2Sprite -> setPosition({1920.0f, 0.0f});
+
     p1Sprite -> setTexture(p1Tex -> getTexture());
     p2Sprite -> setTexture(p2Tex -> getTexture());
 
