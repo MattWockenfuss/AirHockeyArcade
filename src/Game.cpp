@@ -63,7 +63,7 @@ void Game::initialization(){
         p2Tex.emplace(sf::Vector2u{960, 540});
 
         p1Sprite.emplace(p1Tex -> getTexture());
-        p2Sprite.emplace(p1Tex -> getTexture());
+        p2Sprite.emplace(p2Tex -> getTexture());
 
         p1Sprite -> setScale({2.0f, 2.0f});
         p2Sprite -> setScale({2.0f, 2.0f});
@@ -173,9 +173,9 @@ void Game::render(){
     //player 2
     p2Tex -> clear();
     
-    //render p1 stuff
-    if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p1render(*p2Tex);
-    gsm.p1render(*p2Tex);
+    //render p2 stuff
+    if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p2render(*p2Tex);
+    gsm.p2render(*p2Tex);
     input.render(*p2Tex);
     if(renderFPSCounter) window.draw(*tpsCounter);
     p2Tex -> display();
