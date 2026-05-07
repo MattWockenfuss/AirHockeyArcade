@@ -169,7 +169,6 @@ void Game::render(){
     std::cout << "Window Position: " << window.getPosition().x << ", " << window.getPosition().y << std::endl;
 
     std::cout << "view Size: " << window.getView().getSize().x << ", " << window.getView().getSize().y << std::endl;
-    std::cout << "view Position: " << window.getView().getPosition().x << ", " << window.getView().getPosition().y << std::endl;
 
     p1Tex -> clear(sf::Color::Red);
     p2Tex -> clear(sf::Color::Blue);
