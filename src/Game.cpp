@@ -35,49 +35,34 @@ void Game::initialization(){
     renderPlayer2 = true;
     ctx.renderp2 = renderPlayer2;
 
+    //setup windows
+    window.create(sf::VideoMode({3840, 1080}), "Arcade", sf::Style::None);
+    window.setPosition({0, 0});
+
+    window.setFramerateLimit(60);
+    window.setVerticalSyncEnabled(false);
+
+    p1Tex.emplace(sf::Vector2u{960, 540});
+    p2Tex.emplace(sf::Vector2u{960, 540});
+
+    p1Sprite.emplace(p1Tex -> getTexture());
+    p2Sprite.emplace(p2Tex -> getTexture());
+
+    p1Sprite -> setScale({2.0f, 2.0f});
+    p2Sprite -> setScale({2.0f, 2.0f});
+    p1Sprite -> setPosition({0.0f, 0.0f});
+    p2Sprite -> setPosition({1920.0f, 0.0f});
     
-    if(!renderPlayer2){
-
-    }else{
-        //then make both windows
-        window.create(sf::VideoMode({3840, 1080}), "Arcade", sf::Style::None);
-        window.setPosition({0, 0});
-
-        window.setFramerateLimit(60);
-        window.setVerticalSyncEnabled(false);
-
-        //the views will be automatically be scaled
-        // p1View.emplace(sf::FloatRect({0.0f, 0.0f}, {960.0f, 540.0f}));
-        // p2View.emplace(sf::FloatRect({0.0f, 0.0f}, {960.0f, 540.0f}));
-
-        // p1View -> setViewport(sf::FloatRect({0.0f, 0.0f}, {0.5f, 1.0f}));
-        // p2View -> setViewport(sf::FloatRect({0.5f, 0.0f}, {0.5f, 1.0f}));
+    std::cout << "Window Size: " << window.getSize().x << ", " << window.getSize().y << std::endl;
+    std::cout << "Window Position: " << window.getPosition().x << ", " << window.getPosition().y << std::endl;
 
 
-        /*
-            We create textures and write to them on a small scale, they are then
-            scaled up so we can save a lot on rendering, hopefully massively improving
-            performance
-        */
-
-        p1Tex.emplace(sf::Vector2u{960, 540});
-        p2Tex.emplace(sf::Vector2u{960, 540});
-
-        p1Sprite.emplace(p1Tex -> getTexture());
-        p2Sprite.emplace(p2Tex -> getTexture());
-
-        p1Sprite -> setScale({2.0f, 2.0f});
-        p2Sprite -> setScale({2.0f, 2.0f});
-        p1Sprite -> setPosition({0.0f, 0.0f});
-        p2Sprite -> setPosition({1920.0f, 0.0f});
-    }
 
     tpsCounter.emplace(ctx.assets -> getFont("ArcadeNormal"), "", 10);
     tpsCounter -> setPosition({10.0f, 10.0f});
     tpsCounter -> setFillColor(sf::Color::Magenta);
 
-    std::cout << "Window Size: " << window.getSize().x << ", " << window.getSize().y << std::endl;
-    std::cout << "Window Position: " << window.getPosition().x << ", " << window.getPosition().y << std::endl;
+
 
 
 
@@ -172,7 +157,7 @@ void Game::render(){
 
     p1Tex -> clear(sf::Color::Red);
     p2Tex -> clear(sf::Color::Blue);
-    window.clear(sf::Color::Yellow);
+    
 
     // //render p1 stuff
     // if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p1render(*p1Tex);
@@ -189,10 +174,8 @@ void Game::render(){
     p1Tex -> display();
     p2Tex -> display();
 
-
-
-    p1Sprite -> setTexture(p1Tex -> getTexture());
-    p2Sprite -> setTexture(p2Tex -> getTexture());
+    p1Sprite -> setTexture(p1Tex -> getTexture(), true);
+    p2Sprite -> setTexture(p2Tex -> getTexture(), true);
 
     p1Sprite -> setScale({2.0f, 2.0f});
     p2Sprite -> setScale({2.0f, 2.0f});
@@ -204,32 +187,11 @@ void Game::render(){
 
     
     window.setView(sf::View(sf::FloatRect({0.0f, 0.0f}, {3840.0f, 1080.0f})));
+
+    window.clear(sf::Color::Yellow);
     window.draw(*p1Sprite);
     window.draw(*p2Sprite);
     window.display();
-
-    
-
-    // //player 1
-    // window.setView(*p1View);
-    // if(gsm.getCurrentState() != nullptr){
-    //     gsm.getCurrentState() -> p1render(window);
-    //     if(renderPlayer2) gsm.getCurrentState() -> p1render(window);
-    // }
-    // gsm.p1render(window);
-    // input.render(window);
-    // if(renderFPSCounter) window.draw(*tpsCounter);
-
-    // //player 2
-    // window.setView(*p2View);
-    // if(gsm.getCurrentState() != nullptr){
-    //     gsm.getCurrentState() -> p2render(window);
-    //     if(renderPlayer2) gsm.getCurrentState() -> p2render(window);
-    // }
-    // gsm.p2render(window);
-    // if(renderFPSCounter) window.draw(*tpsCounter);
-
-    // window.display();
 }
 
 void Game::run(){
