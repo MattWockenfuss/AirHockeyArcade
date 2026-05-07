@@ -190,6 +190,7 @@ void Game::render(){
     p2Sprite -> setTexture(p2Tex -> getTexture());
 
     window.clear(sf::Color::Yellow);
+    window.setView(window.getDefaultView());
     window.draw(*p1Sprite);
     window.draw(*p2Sprite);
     window.display();
