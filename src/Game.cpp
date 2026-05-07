@@ -72,7 +72,7 @@ void Game::initialization(){
         p1Sprite -> setScale({2.0f, 2.0f});
         p2Sprite -> setScale({2.0f, 2.0f});
         p1Sprite -> setPosition({0.0f, 0.0f});
-        p2Sprite -> setPosition({1920.0f, 0.0f});
+        p2Sprite -> setPosition({0.0f, 0.0f});
     }
 
     tpsCounter.emplace(ctx.assets -> getFont("ArcadeNormal"), "", 10);
