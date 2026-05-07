@@ -67,6 +67,7 @@ void Game::initialization(){
 
         p1Sprite -> setScale({2.0f, 2.0f});
         p2Sprite -> setScale({2.0f, 2.0f});
+        p1Sprite -> setPosition({0.0f, 0.0f});
         p2Sprite -> setPosition({0.0f, 0.0f});
     }
 
@@ -184,7 +185,7 @@ void Game::render(){
 
 
     //render these sprites to the screen scaled up
-    window.clear();
+    window.clear(sf::Color::Yellow);
     window.setView(window.getDefaultView());
 
     window.draw(*p1Sprite);
