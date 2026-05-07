@@ -40,7 +40,7 @@ void Game::initialization(){
     }else{
         //then make both windows
         window.create(sf::VideoMode({3840, 1080}), "Arcade", sf::Style::None);
-        window.setPosition({0, 0});
+        window.setPosition({1920, 0});
 
         window.setFramerateLimit(60);
         window.setVerticalSyncEnabled(false);
