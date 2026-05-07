@@ -12,7 +12,10 @@
 
 # next run using 'startx ./run-linux.sh' 
 
-xrandr --output HDMI-1 --primary --mode 1920x1080 --pos 0x0 \
+xrandr --query > output.txt
+
+xrandr --fb 3840x1080 \
+--output HDMI-1 --primary --mode 1920x1080 --pos 0x0 \
 --output HDMI-2 --mode 1920x1080 --pos 1920x0
 
 xset -dpms

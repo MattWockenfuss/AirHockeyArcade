@@ -75,6 +75,11 @@ void Game::initialization(){
     tpsCounter -> setPosition({10.0f, 10.0f});
     tpsCounter -> setFillColor(sf::Color::Magenta);
 
+    std::cout << "Window Size: " << window.getSize().x << ", " << window.getSize().y << std::endl;
+    std::cout << "Window Position: " << window.getPosition().x << ", " << window.getPosition().y << std::endl;
+
+
+
     //open the leaderboard
     leaderboardInterface.openDB();
     leaderboardInterface.printTest();
