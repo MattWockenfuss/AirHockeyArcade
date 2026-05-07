@@ -131,13 +131,18 @@ void Game::tick(){
     ctx.gsm -> tick();
 
     //process all of the events for both windows
-    while (const auto p1 = window.pollEvent()) {
+    while (const auto p1 = window1.pollEvent()) {
         if (p1 -> is<sf::Event::Closed>()) {
             running = false;
         }
         keyManager.handleEvent(*p1);
     }
-
+    while (const auto p1 = window2.pollEvent()) {
+        if (p1 -> is<sf::Event::Closed>()) {
+            running = false;
+        }
+        keyManager.handleEvent(*p1);
+    }
 
     input.tick();
 
@@ -171,10 +176,10 @@ void Game::tick(){
 
 }
 void Game::render(){
-    std::cout << "Window Size: " << window.getSize().x << ", " << window.getSize().y << std::endl;
-    std::cout << "Window Position: " << window.getPosition().x << ", " << window.getPosition().y << std::endl;
+    std::cout << "Window Size: " << window1.getSize().x << ", " << window1.getSize().y << std::endl;
+    std::cout << "Window Position: " << window1.getPosition().x << ", " << window1.getPosition().y << std::endl;
 
-    std::cout << "view Size: " << window.getView().getSize().x << ", " << window.getView().getSize().y << std::endl;
+    std::cout << "view Size: " << window1.getView().getSize().x << ", " << window1.getView().getSize().y << std::endl;
 
     p1Tex -> clear(sf::Color::Red);
     p2Tex -> clear(sf::Color::Blue);
@@ -211,7 +216,7 @@ void Game::render(){
 
     window1.clear(sf::Color::Red);
     window2.clear(sf::Color::Blue);
-    
+
     window1.draw(*p1Sprite);
     window2.draw(*p2Sprite);
 
