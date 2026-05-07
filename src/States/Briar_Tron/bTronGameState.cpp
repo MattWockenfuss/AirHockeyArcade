@@ -1,0 +1,817 @@
+#include "bTronGameState.hpp"
+#include <iostream>
+#include <cmath>
+#include <sstream>
+
+#include "../../Context.hpp"
+#include "../GameStateManager.hpp"
+#include "../../AssetManager.hpp"
+#include "../../KeyManager.hpp"
+#include "../../IO/InputManager.hpp"
+#include "../../AudioManager.hpp"
+#include "../../States/Leaderboard/LeaderboardInterface.hpp"
+
+Bike::Bike(std::string name, int x, int y, int dir){
+	this->name = name;
+	this->score = 0;
+	this->x = x;
+	this->y = y;
+	this->dir = dir;
+	this->speed = 1;
+	this->visOffset = 0;
+	this->virOffset = 0;
+}
+void Bike::draw1(sf::RenderTexture* window1, double screenRatio, sf::RectangleShape& rect, sf::Text& text, sf::Color& color){
+	// player name
+	text.setString(name);
+	text.setCharacterSize(16*screenRatio);
+	color.r = 0;
+	color.g = 0;
+	color.b = 200;
+	color.a = 255;
+	text.setFillColor(color);
+	text.setOrigin(sf::Vector2f(0,0));
+	text.setPosition(sf::Vector2f(2.0*screenRatio , 1.0*screenRatio));
+	window1 -> draw(text);
+	// player score
+	text.setPosition(sf::Vector2f(text.getLocalBounds().size.x + 8*screenRatio, 2*screenRatio));
+	text.setString(std::to_string(score));
+	window1 -> draw(text);
+	
+	// player bike
+	rect.setSize(sf::Vector2f(2.0f*screenRatio,6.0f*screenRatio));
+	color.b = 255;
+	rect.setFillColor(color);
+	if(dir==1 || dir==3)
+		rect.setSize(sf::Vector2f(6.0*screenRatio,2.0*screenRatio));
+	rect.setPosition(sf::Vector2f( 2*(x+8 + (dir==3?-2:0) + (dir%2==1?visOffset:0))*screenRatio , 2*(y+10 + (dir==0?-2:0) + (dir%2==0?visOffset:0))*screenRatio));
+	window1->draw(rect);
+}
+void Bike::draw2(sf::RenderTexture* window2, double screenRatio, sf::RectangleShape& rect, sf::Text& text, sf::Color& color){
+	// player name
+	text.setString(name);
+	text.setCharacterSize(16*screenRatio);
+	color.r = 200;
+	color.g = 0;
+	color.b = 0;
+	color.a = 255;
+	text.setFillColor(color);
+	text.setOrigin(sf::Vector2f(text.getLocalBounds().size.x,0));
+	text.setPosition(sf::Vector2f(310.0*screenRatio , 1.0*screenRatio));
+	window2 -> draw(text);
+	// player score
+	text.setOrigin(sf::Vector2f(text.getLocalBounds().size.x,0));
+	text.setPosition(sf::Vector2f(310.0*screenRatio - text.getLocalBounds().size.x, 2.0*screenRatio));
+	text.setString(std::to_string(score));
+	window2 -> draw(text);
+	
+	// player bike
+	rect.setSize(sf::Vector2f(2*screenRatio,6*screenRatio));
+	color.r = 255;
+	rect.setFillColor(color);
+	if(dir==1 || dir==3)
+		rect.setSize(sf::Vector2f(6*screenRatio,2*screenRatio));
+	rect.setPosition(sf::Vector2f( 2*(x+8 + (dir==3?-2:0) + (dir%2==1?visOffset:0))*screenRatio , 2*(y+10 + (dir==0?-2:0) + (dir%2==0?visOffset:0))*screenRatio));
+	window2->draw(rect);
+}
+
+void bTronGameState::moveObjects(Bike* player1, Bike* player2, std::vector<std::vector<int>> *grid, int gridSX, int gridSY, float dt){
+	// player 1 vars
+	int p1score = player1->score;
+	int p1x = player1->x;
+	int p1y = player1->y;
+	float p1visOffset = player1->visOffset;
+	float p1virOffset = player1->virOffset;
+	int p1dir = player1->dir;
+	float p1speed = player1->speed;
+	// player 2 vars
+	int p2score = player2->score;
+	int p2x = player2->x;
+	int p2y = player2->y;
+	float p2visOffset = player2->visOffset;
+	float p2virOffset = player2->virOffset;
+	int p2dir = player2->dir;
+	float p2speed = player2->speed;
+	// general vars
+	float minSpeed = gridSX/8; // div 8 meaning 8 seconds to cross the field going base speed
+	float maxSpeed = minSpeed*3;
+	float accConst = minSpeed*2; // this should amount to doubling your base speed after 0.5 seconds of acceleration
+	bool p1moved = false;
+	bool p2moved = false;
+	bool turned = false;
+	bool drafting = false;
+	int crash = 0; // 0-none, 1-player1 crashed, 2-player2 crashed, 3-both crashed
+	
+	// check if drafting
+	// p1
+	if(p1dir%2==0){ // dir is 0 or 2, up or down
+		if(p1x>0 && p1x<gridSX-1 && p1y>0 && p1y<gridSY-1){ // player is within bounds to check for immediate walls (WORKS)
+			if( (*grid)[p1x-1][p1y-1]!=0 && (*grid)[p1x-1][p1y]!=0 && (*grid)[p1x-1][p1y+1]!=0 ){ // wall immediately to the left
+				drafting = true;
+			}
+			if( (*grid)[p1x+1][p1y-1]!=0 && (*grid)[p1x+1][p1y]!=0 && (*grid)[p1x+1][p1y+1]!=0 ){ // wall immediately to the right
+				drafting = true;
+			}
+		}
+		if(p1x>1 && p1x<gridSX-2 && p1y>1 && p1y<gridSY-2){ // player is within bounds to check for 1-gap walls
+			if( (*grid)[p1x-2][p1y-1]!=0 && (*grid)[p1x-2][p1y]!=0 && (*grid)[p1x-2][p1y+1]!=0 ){ // wall 1-gap to the left
+				drafting = true;
+			}
+			if( (*grid)[p1x+2][p1y-1]!=0 && (*grid)[p1x+2][p1y]!=0 && (*grid)[p1x+2][p1y+1]!=0 ){ // wall 1-gap to the right
+				drafting = true;
+			}
+		}
+		if(p1x>2 && p1x<gridSX-3 && p1y>2 && p1y<gridSY-3){ // player is within bounds to check for 2-gap walls
+			if( (*grid)[p1x-3][p1y-1]!=0 && (*grid)[p1x-3][p1y]!=0 && (*grid)[p1x-2][p1y+1]!=0 ){ // wall 2-gap to the left
+				drafting = true;
+			}
+			if( (*grid)[p1x+3][p1y-1]!=0 && (*grid)[p1x+3][p1y]!=0 && (*grid)[p1x+2][p1y+1]!=0 ){ // wall 2-gap to the right
+				drafting = true;
+			}
+		}
+	}
+	else{ // dir is 1 or 3, left or right
+		if(p1x>0 && p1x<gridSX-1 && p1y>0 && p1y<gridSY-1){ // player is within bounds to check for immediate walls (WORKS)
+			if( (*grid)[p1x-1][p1y-1]!=0 && (*grid)[p1x][p1y-1]!=0 && (*grid)[p1x+1][p1y-1]!=0 ){ // wall immediately to the top
+				drafting = true;
+			}
+			if( (*grid)[p1x-1][p1y+1]!=0 && (*grid)[p1x][p1y+1]!=0 && (*grid)[p1x+1][p1y+1]!=0 ){ // wall immediately to the bottom
+				drafting = true;
+			}
+		}
+		if(p1x>1 && p1x<gridSX-2 && p1y>1 && p1y<gridSY-2){ // player is within bounds to check for 1-gap walls
+			if( (*grid)[p1x-1][p1y-2]!=0 && (*grid)[p1x][p1y-2]!=0 && (*grid)[p1x+1][p1y-2]!=0 ){ // wall 1-gap to the top
+				drafting = true;
+			}
+			if( (*grid)[p1x-1][p1y+2]!=0 && (*grid)[p1x][p1y+2]!=0 && (*grid)[p1x+1][p1y+2]!=0 ){ // wall 1-gap to the bottom
+				drafting = true;
+			}
+		}
+		if(p1x>2 && p1x<gridSX-3 && p1y>2 && p1y<gridSY-3){ // player is within bounds to check for 2-gap walls
+			if( (*grid)[p1x-1][p1y-3]!=0 && (*grid)[p1x][p1y-3]!=0 && (*grid)[p1x+1][p1y-3]!=0 ){ // wall 2-gap to the top
+				drafting = true;
+			}
+			if( (*grid)[p1x-1][p1y+3]!=0 && (*grid)[p1x][p1y+3]!=0 && (*grid)[p1x+1][p1y+3]!=0 ){ // wall 2-gap to the bottom
+				drafting = true;
+			}
+		}
+	}
+	// accelerate
+	if(drafting)
+		p1speed += accConst*dt;
+	else
+		p1speed -= (accConst/4)*dt; // slow down a quarter as fast to let the speed last longer
+	// keep speed between min and max
+	if(p1speed<minSpeed)
+		p1speed = minSpeed;
+	if(p1speed>maxSpeed)
+		p1speed = maxSpeed;
+	
+	// p2
+	drafting = false;
+	if(p2dir%2==0){ // dir is 0 or 2, up or down
+		if(p2x>0 && p2x<gridSX-1 && p2y>0 && p2y<gridSY-1){ // player is within bounds to check for immediate walls (WORKS)
+			if( (*grid)[p2x-1][p2y-1]!=0 && (*grid)[p2x-1][p2y]!=0 && (*grid)[p2x-1][p2y+1]!=0 ){ // wall immediately to the left
+				drafting = true;
+			}
+			if( (*grid)[p2x+1][p2y-1]!=0 && (*grid)[p2x+1][p2y]!=0 && (*grid)[p2x+1][p2y+1]!=0 ){ // wall immediately to the right
+				drafting = true;
+			}
+		}
+		if(p2x>1 && p2x<gridSX-2 && p2y>1 && p2y<gridSY-2){ // player is within bounds to check for 1-gap walls
+			if( (*grid)[p2x-2][p2y-1]!=0 && (*grid)[p2x-2][p2y]!=0 && (*grid)[p2x-2][p2y+1]!=0 ){ // wall 1-gap to the left
+				drafting = true;
+			}
+			if( (*grid)[p2x+2][p2y-1]!=0 && (*grid)[p2x+2][p2y]!=0 && (*grid)[p2x+2][p2y+1]!=0 ){ // wall 1-gap to the right
+				drafting = true;
+			}
+		}
+		if(p2x>2 && p2x<gridSX-3 && p2y>2 && p2y<gridSY-3){ // player is within bounds to check for 2-gap walls
+			if( (*grid)[p2x-3][p2y-1]!=0 && (*grid)[p2x-3][p2y]!=0 && (*grid)[p2x-2][p2y+1]!=0 ){ // wall 2-gap to the left
+				drafting = true;
+			}
+			if( (*grid)[p2x+3][p2y-1]!=0 && (*grid)[p2x+3][p2y]!=0 && (*grid)[p2x+2][p2y+1]!=0 ){ // wall 2-gap to the right
+				drafting = true;
+			}
+		}
+	}
+	else{ // dir is 1 or 3, left or right
+		if(p2x>0 && p2x<gridSX-1 && p2y>0 && p2y<gridSY-1){ // player is within bounds to check for immediate walls (WORKS)
+			if( (*grid)[p2x-1][p2y-1]!=0 && (*grid)[p2x][p2y-1]!=0 && (*grid)[p2x+1][p2y-1]!=0 ){ // wall immediately to the top
+				drafting = true;
+			}
+			if( (*grid)[p2x-1][p2y+1]!=0 && (*grid)[p2x][p2y+1]!=0 && (*grid)[p2x+1][p2y+1]!=0 ){ // wall immediately to the bottom
+				drafting = true;
+			}
+		}
+		if(p2x>1 && p2x<gridSX-2 && p2y>1 && p2y<gridSY-2){ // player is within bounds to check for 1-gap walls
+			if( (*grid)[p2x-1][p2y-2]!=0 && (*grid)[p2x][p2y-2]!=0 && (*grid)[p2x+1][p2y-2]!=0 ){ // wall 1-gap to the top
+				drafting = true;
+			}
+			if( (*grid)[p2x-1][p2y+2]!=0 && (*grid)[p2x][p2y+2]!=0 && (*grid)[p2x+1][p2y+2]!=0 ){ // wall 1-gap to the bottom
+				drafting = true;
+			}
+		}
+		if(p2x>2 && p2x<gridSX-3 && p2y>2 && p2y<gridSY-3){ // player is within bounds to check for 2-gap walls
+			if( (*grid)[p2x-1][p2y-3]!=0 && (*grid)[p2x][p2y-3]!=0 && (*grid)[p2x+1][p2y-3]!=0 ){ // wall 2-gap to the top
+				drafting = true;
+			}
+			if( (*grid)[p2x-1][p2y+3]!=0 && (*grid)[p2x][p2y+3]!=0 && (*grid)[p2x+1][p2y+3]!=0 ){ // wall 2-gap to the bottom
+				drafting = true;
+			}
+		}
+	}
+	// accelerate
+	if(drafting)
+		p2speed += accConst*dt;
+	else
+		p2speed -= (accConst/4)*dt; // slow down a quarter as fast to let the speed last longer
+	// keep speed between min and max
+	if(p2speed<minSpeed)
+		p2speed = minSpeed;
+	if(p2speed>maxSpeed)
+		p2speed = maxSpeed;
+	
+	/* MOVE BIKE STEPS
+	 * add/sub speed*dt to/from virOffset, this is the distance that the bike wants to move
+	 * in increments of 1 unit, take from virOffset and add to x/y pos
+		* each time, check if the current xy pos contains a wall
+		   * if it does, add the cooresponding player number to the crash flag, escape movement code, and handle crash event (player number is added to the crash flag so that both players can crash separately on the same frame and be scored fairly
+	 * check if there is a wall 1-3 units in front of the player
+		* if so, set visOffset to bring bike back so it is not colliding with the wall (we don't really need to worry about losing any movement within visOffset here, because the moment the player turns to avoid the obstacle, visOffset  and virOffset will be reset to 0
+		* if not, dump rest of virOffset into visOffset to make bike movement smooth
+	 */
+	// p1
+	switch(p1dir){
+		case 0:{
+			p1virOffset -= p1speed*dt;
+			while(p1virOffset<=-1){
+				p1y--;
+				p1virOffset += 1;
+				if( (*grid)[p1x][p1y] != 0){ // we just p1moved into a wall, we crashed
+					crash += 1;
+					break;
+				}
+				p1moved = true;
+			}
+			if(crash>0){ // exit the switch case on crash
+				break;
+			}
+			
+			if(p1y>0 && (*grid)[p1x][p1y-1] != 0){ // there is a wall directly in front of us
+				p1visOffset = 2;
+			}
+			else if(p1y>1 && (*grid)[p1x][p1y-2] != 0){ // there is a wall 1-gap in front of us
+				p1visOffset = 1;
+			}
+			else if(p1y>2 && (*grid)[p1x][p1y-3] != 0){ // there is a wall 2-gap in front of us
+				p1visOffset = 0;
+			}
+			else{ // no wall in front of us
+				p1visOffset = p1virOffset;
+			}
+			break;
+		}
+		case 1:{
+			p1virOffset += p1speed*dt;
+			while(p1virOffset>=1){
+				p1x++;
+				p1virOffset -= 1;
+				if( (*grid)[p1x][p1y] != 0){ // we just p1moved into a wall, we crashed
+					crash += 1;
+					break;
+				}
+				p1moved = true;
+			}
+			if(crash>0){ // exit the switch case on crash
+				break;
+			}
+			
+			if(p1x<gridSX-1 && (*grid)[p1x+1][p1y] != 0){ // there is a wall directly in front of us
+				std::cout<<"immediate collision!"<<std::endl;
+				p1visOffset = -2;
+			}
+			else if(p1x<gridSX-2 && (*grid)[p1x+2][p1y] != 0){ // there is a wall 1-gap in front of us
+				std::cout<<"1-gap collision!"<<std::endl;
+				p1visOffset = -1;
+			}
+			else if(p1x<gridSX-3 && (*grid)[p1x+3][p1y] != 0){ // there is a wall 2-gap in front of us
+				std::cout<<"2-gap collision!"<<std::endl;
+				p1visOffset = 0;
+			}
+			else{ // no wall in front of us
+				p1visOffset = p1virOffset;
+			}
+			break;
+		}
+		case 2:{
+			p1virOffset += p1speed*dt;
+			while(p1virOffset>=1){
+				p1y++;
+				p1virOffset -= 1;
+				if( (*grid)[p1x][p1y] != 0){ // we just p1moved into a wall, we crashed
+					crash += 1;
+					break;
+				}
+				p1moved = true;
+			}
+			if(crash>0){ // exit the switch case on crash
+				break;
+			}
+			
+			if(p1y<gridSY-1 && (*grid)[p1x][p1y+1] != 0){ // there is a wall directly in front of us
+				p1visOffset = -2;
+			}
+			else if(p1y<gridSY-2 && (*grid)[p1x][p1y+2] != 0){ // there is a wall 1-gap in front of us
+				p1visOffset = -1;
+			}
+			else if(p1y<gridSY-3 && (*grid)[p1x][p1y+3] != 0){ // there is a wall 2-gap in front of us
+				p1visOffset = 0;
+			}
+			else{ // no wall in front of us
+				p1visOffset = p1virOffset;
+			}
+			break;
+		}
+		case 3:{
+			p1virOffset -= p1speed*dt;
+			while(p1virOffset<=-1){
+				p1x--;
+				p1virOffset += 1;
+				if( (*grid)[p1x][p1y] != 0){ // we just p1moved into a wall, we crashed
+					crash += 1;
+					break;
+				}
+				p1moved = true;
+			}
+			if(crash>0){ // exit the switch case on crash
+				break;
+			}
+			
+			if(p1x>0 && (*grid)[p1x-1][p1y] != 0){ // there is a wall directly in front of us
+				p1visOffset = 2;
+			}
+			else if(p1x>1 && (*grid)[p1x-2][p1y] != 0){ // there is a wall 1-gap in front of us
+				p1visOffset = 1;
+			}
+			else if(p1x>2 && (*grid)[p1x-3][p1y] != 0){ // there is a wall 2-gap in front of us
+				p1visOffset = 0;
+			}
+			else{ // no wall in front of us
+				p1visOffset = p1virOffset;
+			}
+			break;
+		}
+	}
+	// p2
+	switch(p2dir){
+		case 0:{
+			p2virOffset -= p2speed*dt;
+			while(p2virOffset<=-1){
+				p2y--;
+				p2virOffset += 1;
+				if( (*grid)[p2x][p2y] != 0){ // we just p2moved into a wall, we crashed
+					crash += 2;
+					break;
+				}
+				p2moved = true;
+			}
+			if(crash>1){ // exit the switch case on crash
+				break;
+			}
+			
+			if(p2y>0 && (*grid)[p2x][p2y-1] != 0){ // there is a wall directly in front of us
+				p2visOffset = 2;
+			}
+			else if(p2y>1 && (*grid)[p2x][p2y-2] != 0){ // there is a wall 1-gap in front of us
+				p2visOffset = 1;
+			}
+			else if(p2y>2 && (*grid)[p2x][p2y-3] != 0){ // there is a wall 2-gap in front of us
+				p2visOffset = 0;
+			}
+			else{ // no wall in front of us
+				p2visOffset = p2virOffset;
+			}
+			break;
+		}
+		case 1:{
+			p2virOffset += p2speed*dt;
+			while(p2virOffset>=1){
+				p2x++;
+				p2virOffset -= 1;
+				if( (*grid)[p2x][p2y] != 0){ // we just p2moved into a wall, we crashed
+					crash += 2;
+					break;
+				}
+				p2moved = true;
+			}
+			if(crash>1){ // exit the switch case on crash
+				break;
+			}
+			
+			if(p2x<gridSX-1 && (*grid)[p2x+1][p2y] != 0){ // there is a wall directly in front of us
+				std::cout<<"immediate collision!"<<std::endl;
+				p2visOffset = -2;
+			}
+			else if(p2x<gridSX-2 && (*grid)[p2x+2][p2y] != 0){ // there is a wall 1-gap in front of us
+				std::cout<<"1-gap collision!"<<std::endl;
+				p2visOffset = -1;
+			}
+			else if(p2x<gridSX-3 && (*grid)[p2x+3][p2y] != 0){ // there is a wall 2-gap in front of us
+				std::cout<<"2-gap collision!"<<std::endl;
+				p2visOffset = 0;
+			}
+			else{ // no wall in front of us
+				p2visOffset = p2virOffset;
+			}
+			break;
+		}
+		case 2:{
+			p2virOffset += p2speed*dt;
+			while(p2virOffset>=1){
+				p2y++;
+				p2virOffset -= 1;
+				if( (*grid)[p2x][p2y] != 0){ // we just p2moved into a wall, we crashed
+					crash += 2;
+					break;
+				}
+				p2moved = true;
+			}
+			if(crash>1){ // exit the switch case on crash
+				break;
+			}
+			
+			if(p2y<gridSY-1 && (*grid)[p2x][p2y+1] != 0){ // there is a wall directly in front of us
+				p2visOffset = -2;
+			}
+			else if(p2y<gridSY-2 && (*grid)[p2x][p2y+2] != 0){ // there is a wall 1-gap in front of us
+				p2visOffset = -1;
+			}
+			else if(p2y<gridSY-3 && (*grid)[p2x][p2y+3] != 0){ // there is a wall 2-gap in front of us
+				p2visOffset = 0;
+			}
+			else{ // no wall in front of us
+				p2visOffset = p2virOffset;
+			}
+			break;
+		}
+		case 3:{
+			p2virOffset -= p2speed*dt;
+			while(p2virOffset<=-1){
+				p2x--;
+				p2virOffset += 1;
+				if( (*grid)[p2x][p2y] != 0){ // we just p2moved into a wall, we crashed
+					crash += 2;
+					break;
+				}
+				p2moved = true;
+			}
+			if(crash>1){ // exit the switch case on crash
+				break;
+			}
+			
+			if(p2x>0 && (*grid)[p2x-1][p2y] != 0){ // there is a wall directly in front of us
+				p2visOffset = 2;
+			}
+			else if(p2x>1 && (*grid)[p2x-2][p2y] != 0){ // there is a wall 1-gap in front of us
+				p2visOffset = 1;
+			}
+			else if(p2x>2 && (*grid)[p2x-3][p2y] != 0){ // there is a wall 2-gap in front of us
+				p2visOffset = 0;
+			}
+			else{ // no wall in front of us
+				p2visOffset = p2virOffset;
+			}
+			break;
+		}
+	}
+	
+	// handle crashes
+	if(p1x==p2x && p1y==p2y){ // if players are pixel-perfect, they can drive through each other's bikes without crashing, this should prevent that
+		crash = 3;
+	}
+	if(crash!=0){
+		// reset field
+		for(int i = 0; i<gridSX; i++){
+			for(int j = 0; j<gridSY; j++){
+				if(i==0 || i==gridSX-1 || j==0 || j==gridSY-1){
+					// make the walls of the field match the last player who scored
+					if(crash==1)
+						(*grid)[i][j] = 2;
+					else if(crash==2)
+						(*grid)[i][j] = 1;
+					else
+						(*grid)[i][j] = 3;
+				}
+				else
+					(*grid)[i][j] = 0;
+			}
+		}
+		// reset players
+		p1x = 32;
+		p1y = 37;
+		p1dir = 1;
+		p1speed = 0;
+		p1visOffset = 0;
+		p1virOffset = 0;
+		p2x = 112;
+		p2y = 37;
+		p2dir = 3;
+		p2speed = 0;
+		p2visOffset = 0;
+		p2virOffset = 0;
+		// score players
+		if(crash==1)
+			p2score++;
+		if(crash==2)
+			p1score++;
+		
+		// set variable to manage kickoffs here
+		kickoff = true;
+		
+		if(p1score>=7 || p2score >= 7){
+			//add player scores to the leaderboard
+			ctx -> leaderboard -> addScore(player1->name, player2->name, p1score, p2score, 3);
+
+			ctx -> gsm -> requestStateChange(States::GameSelect, 3.0f, 1.5f);
+		}
+	}
+	
+	// place trail
+	// p1
+	if(p1moved){
+		(*grid)[p1x][p1y] = 1;
+	}
+	// p2
+	if(p2moved){
+		(*grid)[p2x][p2y] = 2;
+	}
+	
+	// turning
+	// p1
+	if(p1moved){
+		while(!turned && player1->queue.size()>0){ // while we haven't turned yet and there are still turn inputs in the queue
+			if(player1->queue[0] != p1dir && player1->queue[0] != (p1dir+2)%4){ // if the direction is not the way we are facing / opposite, then we can use it
+				p1dir = player1->queue[0];
+				p1visOffset = 0;
+				p1virOffset = 0;
+				turned = true;
+			}
+			player1->queue.erase(player1->queue.begin()); // remove the turn input from queue regardless
+		}
+	}
+	// p2
+	if(p2moved){
+		while(!turned && player2->queue.size()>0){ // while we haven't turned yet and there are still turn inputs in the queue
+			if(player2->queue[0] != p2dir && player2->queue[0] != (p2dir+2)%4){ // if the direction is not the way we are facing / opposite, then we can use it
+				p2dir = player2->queue[0];
+				p2visOffset = 0;
+				p2virOffset = 0;
+				turned = true;
+			}
+			player2->queue.erase(player2->queue.begin()); // remove the turn input from queue regardless
+		}
+	}
+	
+	// reinstate vars
+	// player 1
+	player1->score = p1score;
+	player1->x = p1x;
+	player1->y = p1y;
+	player1->visOffset = p1visOffset;
+	player1->virOffset = p1virOffset;
+	player1->dir = p1dir;
+	player1->speed = p1speed;
+	// player 2
+	player2->score = p2score;
+	player2->x = p2x;
+	player2->y = p2y;
+	player2->visOffset = p2visOffset;
+	player2->virOffset = p2virOffset;
+	player2->dir = p2dir;
+	player2->speed = p2speed;
+}
+
+void bTronGameState::init(Context* ctx){
+    State::init(ctx);
+	
+	// debugging
+    std::cout << "\bTronGameState Created!" << std::endl;
+    std::cout << "Consolas" << &ctx -> assets -> getFont("Consolas") << std::endl;
+    std::cout << "ST-SimpleSquare" << &ctx -> assets -> getFont("ST-SimpleSquare") << std::endl;
+    
+    float width = ctx -> p1window -> getSize().x;
+    float height = ctx -> p1window -> getSize().y;
+	screenRatio = width / 320.0;
+    std::cout << "Screen Ratio: " << screenRatio << std::endl;
+	
+	// player names
+	if(ctx -> p1name != "") // set player name while making sure the placeholder is not removed if necessary
+		player1.name = ctx->p1name;
+	if(ctx -> p2name != "")
+		player2.name = ctx->p2name;
+	
+	// set walls of game grid
+	for(int i = 0; i<gridSX; i++){
+		gameGrid.push_back(*(new std::vector<int>));
+		for(int j = 0; j<gridSY; j++){
+			if(i==0 || j==0 || i==gridSX-1 || j==gridSY-1)
+				gameGrid[i].push_back(3);
+			else
+				gameGrid[i].push_back(0);
+		}
+	}
+	
+	
+	// on-screen message initializing
+	text.emplace(ctx->assets->getFont("ST-SimpleSquare"), "", 60*screenRatio);
+	rect.emplace(sf::Vector2f(1,1));
+	color.emplace(255,255,255,255);
+}
+
+void bTronGameState::tick(){
+    time = clock.restart();
+    dt = time.asSeconds();
+	
+	//bike movement (need to virtually unpress keys so only one press is registered at a time
+    // player 1
+	if (ctx -> input -> P1_Up && !W){
+        player1.queue.push_back(0);
+		W = true;
+    }
+    if (!ctx -> input -> P1_Up && W){
+        W = false;
+    }
+    if (ctx -> input -> P1_Down && !S){
+        player1.queue.push_back(2);
+		S = true;
+    }
+    if (!ctx -> input -> P1_Down && S){
+        S = false;
+    }
+    if (ctx -> input -> P1_Left && !A){
+        player1.queue.push_back(3);
+		A = true;
+    }
+    if (!ctx -> input -> P1_Left && A){
+        A = false;
+    }
+    if (ctx -> input -> P1_Right && !D){
+        player1.queue.push_back(1);
+		D = true;
+    }
+    if (!ctx -> input -> P1_Right && D){
+        D = false;
+    }
+    // player 2
+	if (ctx -> input -> P2_Up && !Up){
+        player2.queue.push_back(0);
+		Up = true;
+    }
+    if (!ctx -> input -> P2_Up && Up){
+        Up = false;
+    }
+    if (ctx -> input -> P2_Down && !Down){
+        player2.queue.push_back(2);
+        Down = true;
+    }
+    if (!ctx -> input -> P2_Down && Down){
+        Down = false;
+    }
+    if (ctx -> input -> P2_Left && !Left){
+        player2.queue.push_back(3);
+        Left = true;
+    }
+    if (!ctx -> input -> P2_Left && Left){
+        Left = false;
+    }
+    if (ctx -> input -> P2_Right && !Right){
+        player2.queue.push_back(1);
+        Right = true;
+    }
+    if (!ctx -> input -> P2_Right && Right){
+        Right = false;
+    }
+    
+	// emergency game exit
+	if(ctx->input->P1B && ctx->input->P1Y && ctx->input->P2B && ctx->input->P2X){ // player 1 pressed B and Y, and player 2 pressed B and X at the same time to quit
+		ctx -> gsm -> requestStateChange(States::GameSelect, 3.0f, 1.5f);
+	}
+	
+	if(kickoff){
+		timer += dt;
+		if(timer>=4){
+			kickoff = false;
+			timer = 0;
+		}
+	}
+	else
+		moveObjects(&player1, &player2, &gameGrid, gridSX, gridSY, dt);
+}
+
+void bTronGameState::p1render(sf::RenderTexture& p1window) {
+    p1window.clear();
+	
+	// draw background
+	rect->setSize(sf::Vector2f(2*screenRatio,180*screenRatio));
+	color->r = 45;
+	color->g = 45;
+	color->b = 45;
+	color->a = 255;
+	rect->setFillColor(*color);
+	for(int i = 0; i<320; i++){
+		if(i%16==12){
+			rect->setPosition(sf::Vector2f((i-1)*screenRatio,0));
+			p1window.draw(*rect);
+		}
+	}
+	rect->setSize(sf::Vector2f(320*screenRatio,2*screenRatio));
+	for(int i = 0; i<180; i++){
+		if(i%16==8){
+			rect->setPosition(sf::Vector2f(0,(i-1)*screenRatio));
+			p1window.draw(*rect);
+		}
+	}
+	
+	// trails and walls
+	rect->setSize(sf::Vector2f(2*screenRatio,2*screenRatio));
+	for(int i = 0; i<gridSX; i++){
+		for(int j = 0; j<gridSY; j++){
+			rect->setPosition(sf::Vector2f( (2*i+16)*screenRatio , (2*j+20)*screenRatio ));
+			switch(gameGrid[i][j]){
+				case 1:{
+					color->r = 0;
+					color->g = 0;
+					color->b = 175;
+					rect->setFillColor(*color); // player 1 trail
+					break;
+				}
+				case 2:{
+					color->r = 175;
+					color->g = 0;
+					color->b = 0;
+					rect->setFillColor(*color); // player 2 trail
+					break;
+				}
+				case 3:{
+					color->r = 255;
+					color->g = 255;
+					color->b = 255;
+					rect->setFillColor(*color); // wall
+					break;
+				}
+				default:
+					continue; // not wall, skip drawing
+			}
+			p1window.draw(*rect);
+		}
+	}
+	
+	// bikes / names / scores
+	
+	// player 1 name
+	player1.draw1(&p1window, screenRatio, *rect, *text, *color);
+	player2.draw2(&p1window, screenRatio, *rect, *text, *color);
+	
+	// countdown
+	if(kickoff){
+		if(timer<1){
+			text->setString("3");
+			color->r = 255;
+			color->g = 255;
+			color->b = 255;
+			color->a = 255-(255*timer);
+		}
+		else if(timer<2){
+			text->setString("2");
+			color->r = 255;
+			color->g = 255;
+			color->b = 255;
+			color->a = 255-(255*(timer-1) );
+		}
+		else if(timer<3){
+			text->setString("1");
+			color->r = 255;
+			color->g = 255;
+			color->b = 255;
+			color->a = 255-(255*(timer-2) );
+		}
+		else if(timer<4){
+			text->setString("GO!");
+			color->r = 255;
+			color->g = 255;
+			color->b = 255;
+			color->a = 255-(255*(timer-3) );
+		}
+		text->setFillColor(*color);
+		text->setCharacterSize(40*screenRatio);
+		text->setOrigin(sf::Vector2f( text->getLocalBounds().getCenter().x, text->getLocalBounds().getCenter().y)); // centered horizontally
+		text->setPosition(sf::Vector2f(160*screenRatio , 90*screenRatio));
+		p1window.draw(*text);
+	}
+}
+
+void bTronGameState::p2render(sf::RenderTexture& p2window) {
+    // call p1render because flipping the screen in tron is going to be a LOT of effort
+	p1render(p2window);
+}

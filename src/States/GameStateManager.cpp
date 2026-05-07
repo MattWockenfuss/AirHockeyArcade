@@ -3,6 +3,7 @@
 #include "IdleState.hpp"
 #include "AirHockey/AirHockeyGameState.hpp"
 #include "Tron/TronGameState.hpp"
+#include "Briar_Tron/bTronGameState.hpp"
 #include "FruitNinja/FruitNinjaGameState.hpp"
 #include "NameEntryState.hpp"
 #include "GameSelect/GameSelectState.hpp"
@@ -59,6 +60,10 @@ void GameStateManager::changeState(){
             break;
         case States::Tron:
             currentState = new TronGameState();
+            currentState -> init(ctx);
+            break;
+        case States::bTron:
+            currentState = new bTronGameState();
             currentState -> init(ctx);
             break;
 		case States::FruitNinja:

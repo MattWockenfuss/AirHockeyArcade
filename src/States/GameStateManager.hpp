@@ -14,7 +14,7 @@ class Context;
 
 
 enum class States {
-    Idle, NameEntry, GameSelect, AirHockey, Tron, FruitNinja, Pong, Leaderboard
+    Idle, NameEntry, GameSelect, AirHockey, Tron, bTron, FruitNinja, Pong, Leaderboard
 };
 
 /*
@@ -26,7 +26,8 @@ inline const std::unordered_map<int, std::string> GAMES = {
     {0, "Air Hockey"},
     {1, "Pong"},
     {2, "Fruit Ninja"},
-    {3, "Tron"}
+    {3, "Tron"},
+    {4, "Tron V2"}
 };
 
 
@@ -37,6 +38,7 @@ inline const char* stateToString(States s){
 		case States::GameSelect: return "GameSelect";
         case States::AirHockey: return "AirHockey";
         case States::Tron: return "Tron";
+        case States::bTron: return "bTron";
         case States::Leaderboard: return "Leaderboard";
         case States::FruitNinja: return "FruitNinja";
         case States::Pong: return "Pong";
