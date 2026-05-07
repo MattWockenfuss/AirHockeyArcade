@@ -20,8 +20,8 @@ struct Bike {
 		std::vector<int> queue;
 		
 		Bike(std::string name, int x, int y, int dir);
-		void draw1(sf::RenderWindow* window1, sf::Font font);
-		void draw2(sf::RenderWindow* window2, sf::Font font);
+		void draw1(sf::RenderWindow* window1, double screenRatio, sf::RectangleShape& rect, sf::Text& text, sf::Color& color);
+		void draw2(sf::RenderWindow* window2, double screenRatio, sf::RectangleShape& rect, sf::Text& text, sf::Color& color);
 };
 
 class bTronGameState : public State {
@@ -35,7 +35,9 @@ class bTronGameState : public State {
 		Bike player1 = Bike("PLR",32.0f,37.0f,1);
 		Bike player2 = Bike("COM",112.0f,37.0f,3);
 		
-		std::optional<sf::Text> countdown;
+		std::optional<sf::Text> text;
+		std::optional<sf::RectangleShape> rect;
+		std::optional<sf::Color> color;
 		
         sf::Clock clock;
         sf::Time time;

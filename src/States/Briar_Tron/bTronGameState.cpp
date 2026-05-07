@@ -21,57 +21,58 @@ Bike::Bike(std::string name, int x, int y, int dir){
 	this->visOffset = 0;
 	this->virOffset = 0;
 }
-void Bike::draw1(sf::RenderWindow* window1, sf::Font font){
-	// vars
-	double screenRatio = (double)(window1 -> getSize().x) / 320.0;
+void Bike::draw1(sf::RenderWindow* window1, double screenRatio, sf::RectangleShape& rect, sf::Text& text, sf::Color& color){
 	// player name
-	sf::Text text(font, name, 16*screenRatio);
-	text.setFillColor(sf::Color(0,0,200));
-	sf::FloatRect rect = text.getLocalBounds();
+	text.setString(name);
+	text.setCharacterSize(16*screenRatio);
+	color.r = 0;
+	color.g = 0;
+	color.b = 200;
+	color.a = 255;
+	text.setFillColor(color);
+	text.setOrigin(sf::Vector2f(0,0));
 	text.setPosition(sf::Vector2f(2.0*screenRatio , 1.0*screenRatio));
 	window1 -> draw(text);
 	// player score
+	text.setPosition(sf::Vector2f(text.getLocalBounds().size.x + 8*screenRatio, 2*screenRatio));
 	text.setString(std::to_string(score));
-	text.setPosition(sf::Vector2f(rect.size.x + 8*screenRatio, 2*screenRatio));
 	window1 -> draw(text);
 	
 	// player bike
-	sf::RectangleShape bRect(sf::Vector2f(0.0f,0.0f));
-	bRect.setFillColor(sf::Color(0,0,255));
-	if(dir==0 || dir==2)
-		bRect.setSize(sf::Vector2f(2.0*screenRatio,6.0*screenRatio));
-	else
-		bRect.setSize(sf::Vector2f(6*screenRatio,2*screenRatio));
-	bRect.setPosition(sf::Vector2f( 2*(x+8 + (dir==3?-2:0) + (dir%2==1?visOffset:0))*screenRatio , 2*(y+10 + (dir==0?-2:0) + (dir%2==0?visOffset:0))*screenRatio));
-	window1->draw(bRect);
+	rect.setSize(sf::Vector2f(2.0f*screenRatio,6.0f*screenRatio));
+	color.b = 255;
+	rect.setFillColor(color);
+	if(dir==1 || dir==3)
+		rect.setSize(sf::Vector2f(6.0*screenRatio,2.0*screenRatio));
+	rect.setPosition(sf::Vector2f( 2*(x+8 + (dir==3?-2:0) + (dir%2==1?visOffset:0))*screenRatio , 2*(y+10 + (dir==0?-2:0) + (dir%2==0?visOffset:0))*screenRatio));
+	window1->draw(rect);
 }
-void Bike::draw2(sf::RenderWindow* window2, sf::Font font){
-	// vars
-	double screenRatio = (double)(window2 -> getSize().x) / 320.0;
+void Bike::draw2(sf::RenderWindow* window2, double screenRatio, sf::RectangleShape& rect, sf::Text& text, sf::Color& color){
 	// player name
-	sf::Text text(font, name, 16*screenRatio);
-	text.setFillColor(sf::Color(200,0,0));
-	sf::FloatRect rect = text.getLocalBounds();
-	text.setOrigin(sf::Vector2f(rect.size.x,0));
-	text.setPosition(sf::Vector2f(318.0*screenRatio , 1.0*screenRatio));
+	text.setString(name);
+	text.setCharacterSize(16*screenRatio);
+	color.r = 200;
+	color.g = 0;
+	color.b = 0;
+	color.a = 255;
+	text.setFillColor(color);
+	text.setOrigin(sf::Vector2f(text.getLocalBounds().size.x,0));
+	text.setPosition(sf::Vector2f(310.0*screenRatio , 1.0*screenRatio));
 	window2 -> draw(text);
 	// player score
-	float txPos = 310.0*screenRatio - rect.size.x;
+	text.setOrigin(sf::Vector2f(text.getLocalBounds().size.x,0));
+	text.setPosition(sf::Vector2f(310.0*screenRatio - text.getLocalBounds().size.x, 2.0*screenRatio));
 	text.setString(std::to_string(score));
-	rect = text.getLocalBounds();
-	text.setOrigin(sf::Vector2f(rect.size.x,0));
-	text.setPosition(sf::Vector2f(txPos, 2.0*screenRatio));
 	window2 -> draw(text);
 	
 	// player bike
-	sf::RectangleShape bRect(sf::Vector2f(0.0f,0.0f));
-	bRect.setFillColor(sf::Color(255,0,0));
-	if(dir==0 || dir==2)
-		bRect.setSize(sf::Vector2f(2*screenRatio,6*screenRatio));
-	else
-		bRect.setSize(sf::Vector2f(6*screenRatio,2*screenRatio));
-	bRect.setPosition(sf::Vector2f( 2*(x+8 + (dir==3?-2:0) + (dir%2==1?visOffset:0))*screenRatio , 2*(y+10 + (dir==0?-2:0) + (dir%2==0?visOffset:0))*screenRatio));
-	window2->draw(bRect);
+	rect.setSize(sf::Vector2f(2*screenRatio,6*screenRatio));
+	color.r = 255;
+	rect.setFillColor(color);
+	if(dir==1 || dir==3)
+		rect.setSize(sf::Vector2f(6*screenRatio,2*screenRatio));
+	rect.setPosition(sf::Vector2f( 2*(x+8 + (dir==3?-2:0) + (dir%2==1?visOffset:0))*screenRatio , 2*(y+10 + (dir==0?-2:0) + (dir%2==0?visOffset:0))*screenRatio));
+	window2->draw(rect);
 }
 
 void bTronGameState::moveObjects(Bike* player1, Bike* player2, std::vector<std::vector<int>> *grid, int gridSX, int gridSY, float dt){
@@ -528,7 +529,7 @@ void bTronGameState::moveObjects(Bike* player1, Bike* player2, std::vector<std::
 		// set variable to manage kickoffs here
 		kickoff = true;
 		
-		if(p1score>=11 || p2score >= 11){
+		if(p1score>=7 || p2score >= 7){
 			//add player scores to the leaderboard
 			ctx -> leaderboard -> addScore(player1->name, player2->name, p1score, p2score, 3);
 
@@ -623,10 +624,12 @@ void bTronGameState::init(Context* ctx){
 	
 	
 	// on-screen message initializing
-	countdown.emplace(ctx->assets->getFont("ST-SimpleSquare"), "3", 60*screenRatio);
+	text.emplace(ctx->assets->getFont("ST-SimpleSquare"), "", 60*screenRatio);
+	rect.emplace(sf::Vector2f(1,1));
+	color.emplace(255,255,255,255);
 }
 
-void bTronGameState::tick() {
+void bTronGameState::tick(){
     time = clock.restart();
     dt = time.asSeconds();
 	
@@ -695,100 +698,117 @@ void bTronGameState::tick() {
 		ctx -> gsm -> requestStateChange(States::GameSelect, 3.0f, 1.5f);
 	}
 	
-	// kickoff
-    if(kickoff){
+	if(kickoff){
 		timer += dt;
-		if(timer<1){
-			countdown->setString("3");
-			countdown->setCharacterSize(40*screenRatio);
-			countdown->setFillColor(sf::Color( 255,255,255,255-(255*timer) ));
-			sf::FloatRect rect = countdown->getLocalBounds();
-			countdown->setOrigin(sf::Vector2f( rect.getCenter().x, rect.getCenter().y)); // centered horizontally
-			countdown->setPosition(sf::Vector2f(160*screenRatio , 90*screenRatio));
-		}
-		else if(timer<2){
-			countdown->setString("2");
-			countdown->setCharacterSize(40*screenRatio);
-			countdown->setFillColor(sf::Color( 255,255,255,255-(255*(timer-1)) ));
-			sf::FloatRect rect = countdown->getLocalBounds();
-			countdown->setOrigin(sf::Vector2f( rect.getCenter().x, rect.getCenter().y)); // centered horizontally
-			countdown->setPosition(sf::Vector2f(160*screenRatio , 90*screenRatio));
-		}
-		else if(timer<3){
-			countdown->setString("1");
-			countdown->setCharacterSize(40*screenRatio);
-			countdown->setFillColor(sf::Color( 255,255,255,255-(255*(timer-2)) ));
-			sf::FloatRect rect = countdown->getLocalBounds();
-			countdown->setOrigin(sf::Vector2f( rect.getCenter().x, rect.getCenter().y)); // centered horizontally
-			countdown->setPosition(sf::Vector2f(160*screenRatio , 90*screenRatio));
-		}
-		else if(timer<4){
-			countdown->setString("GO!");
-			countdown->setCharacterSize(40*screenRatio);
-			countdown->setFillColor(sf::Color( 255,255,255,255-(255*(timer-3)) ));
-			sf::FloatRect rect = countdown->getLocalBounds();
-			countdown->setOrigin(sf::Vector2f( rect.getCenter().x, rect.getCenter().y)); // centered horizontally
-			countdown->setPosition(sf::Vector2f(160*screenRatio , 90*screenRatio));
-		}
 		if(timer>=4){
 			kickoff = false;
 			timer = 0;
 		}
 	}
-	else{
+	else
 		moveObjects(&player1, &player2, &gameGrid, gridSX, gridSY, dt);
-	}
 }
 
 void bTronGameState::p1render(sf::RenderWindow& p1window) {
     p1window.clear();
 	
 	// draw background
-	sf::RectangleShape rect(sf::Vector2f(2*screenRatio,180*screenRatio));
-	rect.setFillColor(sf::Color(45,45,45));
+	rect->setSize(sf::Vector2f(2*screenRatio,180*screenRatio));
+	color->r = 45;
+	color->g = 45;
+	color->b = 45;
+	color->a = 255;
+	rect->setFillColor(*color);
 	for(int i = 0; i<320; i++){
 		if(i%16==12){
-			rect.setPosition(sf::Vector2f((i-1)*screenRatio,0));
-			p1window.draw(rect);
+			rect->setPosition(sf::Vector2f((i-1)*screenRatio,0));
+			p1window.draw(*rect);
 		}
 	}
-	rect.setSize(sf::Vector2f(320*screenRatio,2*screenRatio));
+	rect->setSize(sf::Vector2f(320*screenRatio,2*screenRatio));
 	for(int i = 0; i<180; i++){
 		if(i%16==8){
-			rect.setPosition(sf::Vector2f(0,(i-1)*screenRatio));
-			p1window.draw(rect);
+			rect->setPosition(sf::Vector2f(0,(i-1)*screenRatio));
+			p1window.draw(*rect);
 		}
 	}
 	
 	// trails and walls
-	rect.setSize(sf::Vector2f(2*screenRatio,2*screenRatio));
+	rect->setSize(sf::Vector2f(2*screenRatio,2*screenRatio));
 	for(int i = 0; i<gridSX; i++){
 		for(int j = 0; j<gridSY; j++){
-			rect.setPosition(sf::Vector2f( (2*i+16)*screenRatio , (2*j+20)*screenRatio ));
+			rect->setPosition(sf::Vector2f( (2*i+16)*screenRatio , (2*j+20)*screenRatio ));
 			switch(gameGrid[i][j]){
-				case 1:
-					rect.setFillColor(sf::Color(0,0,175)); // player 1 trail
+				case 1:{
+					color->r = 0;
+					color->g = 0;
+					color->b = 175;
+					rect->setFillColor(*color); // player 1 trail
 					break;
-				case 2:
-					rect.setFillColor(sf::Color(175,0,0)); // player 2 trail
+				}
+				case 2:{
+					color->r = 175;
+					color->g = 0;
+					color->b = 0;
+					rect->setFillColor(*color); // player 2 trail
 					break;
-				case 3:
-					rect.setFillColor(sf::Color(255,255,255)); // wall
+				}
+				case 3:{
+					color->r = 255;
+					color->g = 255;
+					color->b = 255;
+					rect->setFillColor(*color); // wall
 					break;
+				}
 				default:
 					continue; // not wall, skip drawing
 			}
-			p1window.draw(rect);
+			p1window.draw(*rect);
 		}
 	}
 	
 	// bikes / names / scores
-	player1.draw1(&p1window, ctx->assets->getFont("ST-SimpleSquare"));
-	player2.draw2(&p1window, ctx->assets->getFont("ST-SimpleSquare"));
+	
+	// player 1 name
+	player1.draw1(&p1window, screenRatio, *rect, *text, *color);
+	player2.draw2(&p1window, screenRatio, *rect, *text, *color);
 	
 	// countdown
-	if(kickoff)
-		p1window.draw(*countdown);
+	if(kickoff){
+		if(timer<1){
+			text->setString("3");
+			color->r = 255;
+			color->g = 255;
+			color->b = 255;
+			color->a = 255-(255*timer);
+		}
+		else if(timer<2){
+			text->setString("2");
+			color->r = 255;
+			color->g = 255;
+			color->b = 255;
+			color->a = 255-(255*(timer-1) );
+		}
+		else if(timer<3){
+			text->setString("1");
+			color->r = 255;
+			color->g = 255;
+			color->b = 255;
+			color->a = 255-(255*(timer-2) );
+		}
+		else if(timer<4){
+			text->setString("GO!");
+			color->r = 255;
+			color->g = 255;
+			color->b = 255;
+			color->a = 255-(255*(timer-3) );
+		}
+		text->setFillColor(*color);
+		text->setCharacterSize(40*screenRatio);
+		text->setOrigin(sf::Vector2f( text->getLocalBounds().getCenter().x, text->getLocalBounds().getCenter().y)); // centered horizontally
+		text->setPosition(sf::Vector2f(160*screenRatio , 90*screenRatio));
+		p1window.draw(*text);
+	}
 }
 
 void bTronGameState::p2render(sf::RenderWindow& p2window) {
