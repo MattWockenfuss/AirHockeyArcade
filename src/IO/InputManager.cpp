@@ -66,7 +66,7 @@ void InputManager::renderDebugControllers(sf::RenderTexture& window){
     //okay so I want to draw a little controller, actually 2 of them, one for each player
     //each one is going to have the 8 squares and render the values accordingly?
 
-    float startX = 200.0f, startY = 200.0f;
+    float startX = 100.0f, startY = 50.0f;
 
 
     //Player 1 Controller
@@ -162,7 +162,7 @@ void InputManager::renderDebugControllers(sf::RenderTexture& window){
 
 
 
-    startX = 200.0f, startY = 500.0f;
+    startX = 100.0f, startY = 300.0f;
     //Player 2 Controller
     bw = 2.0f;
     //base rect
