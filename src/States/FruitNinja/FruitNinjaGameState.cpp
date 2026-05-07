@@ -620,7 +620,7 @@ void FruitNinjaGameState::p1render(sf::RenderTexture& p1window){
 	p1window.draw(*background);
 	
 	// draw name and total points behind fruit
-	text->setCharacterSize(12);
+	text->setCharacterSize(12*screenRatio);
 	//color->r = 255;
 	color->a = 255;
 	instances[0].drawNames(&p1window,screenRatio,*text,*color,instances[1].name);
@@ -649,7 +649,7 @@ void FruitNinjaGameState::p1render(sf::RenderTexture& p1window){
 		instances[0].scorePoints[i]->draw(&p1window,screenRatio,*text,*color);
 	
 	// draw name and total points in front of fruit
-	text->setCharacterSize(12);
+	text->setCharacterSize(12*screenRatio);
 	//color->r = 255;
 	color->a = 128;
 	instances[0].drawNames(&p1window,screenRatio,*text,*color,instances[1].name);
@@ -669,7 +669,7 @@ void FruitNinjaGameState::p2render(sf::RenderTexture& p2window){
 	p2window.draw(*background);
 	
 	// draw name and total points behind fruit
-	text->setCharacterSize(12);
+	text->setCharacterSize(12*screenRatio);
 	//color->r = 255;
 	color->a = 255;
 	instances[1].drawNames(&p2window,screenRatio,*text,*color,instances[0].name);
@@ -698,7 +698,7 @@ void FruitNinjaGameState::p2render(sf::RenderTexture& p2window){
 		instances[1].scorePoints[i]->draw(&p2window,screenRatio,*text,*color);
 	
 	// draw name and total points in front of fruit
-	text->setCharacterSize(12);
+	text->setCharacterSize(12*screenRatio);
 	//color->r = 255;
 	color->a = 128;
 	instances[1].drawNames(&p2window,screenRatio,*text,*color,instances[0].name);
