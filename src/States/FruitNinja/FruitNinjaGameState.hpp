@@ -18,9 +18,9 @@ struct Fruit{
 	double vy;
 	int frame;
 	float time;
-	//sf::Texture tileSet;
 	
 	Fruit(int type, int state, int x, int y, int w, int h, double vx, double vy);
+	void init(int type, int state, int x, int y, int w, int h, double vx, double vy);
 	void move(float dt);
 	void draw(sf::RenderTexture* window, double screenRatio, sf::Text& text, sf::Color& color, sf::Sprite& sprite);
 };
@@ -32,6 +32,7 @@ struct ScorePoint{
 	int opacity;
 	
 	ScorePoint(int score, int x, int y);
+	void init(int score, int x, int y);
 	void draw(sf::RenderTexture* window, double screenRatio, sf::Text& text, sf::Color& color);
 };
 struct FruitNinjaInstance{

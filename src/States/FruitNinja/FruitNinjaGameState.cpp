@@ -24,6 +24,18 @@ Fruit::Fruit(int type, int state, int x, int y, int w, int h, double vx, double 
 	this->frame = 0;
 	this->time = 0.0;
 }
+void Fruit::init(int type, int state, int x, int y, int w, int h, double vx, double vy){
+	this->type = type;
+	this->state = state;
+	this->x = x;
+	this->y = y;
+	this->w = w;
+	this->h = h;
+	this->vx = vx;
+	this->vy = vy;
+	this->frame = 0;
+	this->time = 0.0;
+}
 void Fruit::move(float dt){
 	time += dt;
 	int n = round(time/0.075f); // account for lag where dt may be larger than the 0.075 time step we want
@@ -64,6 +76,12 @@ void Fruit::draw(sf::RenderTexture* window, double screenRatio, sf::Text& text, 
 }
 
 ScorePoint::ScorePoint(int score, int x, int y){
+	this->score = score;
+	this->x = x;
+	this->y = y;
+	this->opacity = 255;
+}
+void ScorePoint::init(int score, int x, int y){
 	this->score = score;
 	this->x = x;
 	this->y = y;
@@ -315,6 +333,36 @@ void FruitNinjaGameState::tick(){
 	}
 	// emergency game exit
 	if(ctx->input->P1B && ctx->input->P1Y && ctx->input->P2B && ctx->input->P2X){ // player 1 pressed B and Y, and player 2 pressed B and X at the same time to quit
+		// delete all object pools first
+		// scorePoints
+		while(pointPool.size()>0){
+			delete pointPool[0];
+			pointPool.erase(pointPool.begin());
+		}
+		while(instances[0].scorePoints.size()>0){
+			delete instances[0].scorePoints[0];
+			instances[0].scorePoints.erase(instances[0].scorePoints.begin());
+		}
+		while(instances[1].scorePoints.size()>0){
+			delete instances[1].scorePoints[0];
+			instances[1].scorePoints.erase(instances[1].scorePoints.begin());
+		}
+		// fruit
+		for(int j = 0; j<4; j++){
+			while(fruitPool[j].size()>0){
+				delete fruitPool[j][0];
+				fruitPool[j].erase(fruitPool[j].begin());
+			}
+		}
+		while(instances[0].fruits.size()>0){
+			delete instances[0].fruits[0];
+			instances[0].fruits.erase(instances[0].fruits.begin());
+		}
+		while(instances[1].fruits.size()>0){
+			delete instances[1].fruits[0];
+			instances[1].fruits.erase(instances[1].fruits.begin());
+		}
+		
 		ctx -> gsm -> requestStateChange(States::GameSelect, 3.0f, 1.5f);
 	}
 	
@@ -341,9 +389,16 @@ void FruitNinjaGameState::tick(){
 								}
 							}
 							score *= 5;
-							instances[i].scorePoints.push_back( new ScorePoint(score,instances[i].x*38+26,120) );
 							instances[i].totalPoints += score;
-							
+							// spawn a point from the pool
+							if(pointPool.size()>0){
+								pointPool[0]->init(score,instances[i].x*38 + 27, 120);
+								instances[i].scorePoints.push_back(pointPool[0]);
+								pointPool.erase(pointPool.begin());
+							}
+							else{ // spawn a new score point entirely
+								instances[i].scorePoints.push_back( new ScorePoint(score,instances[i].x*38+27,120) );
+							}
 							instances[i].cut = 1;
 							break;
 						}
@@ -357,19 +412,46 @@ void FruitNinjaGameState::tick(){
 					y = instances[i].fruits[j]->y;
 					w = instances[i].fruits[j]->w;
 					h = instances[i].fruits[j]->h;
-					if(type==0){ // watermellon width changes when cut, other fruits do not
-						instances[i].fruits.push_back( new Fruit(fruitTexs[type],type,1,x-w/2,y,16,h,-0.5,-1) );
-						instances[i].fruits.push_back( new Fruit(fruitTexs[type],type,2,x+w/2,y,16,h,0.5,-1) );
-					} else {
-						instances[i].fruits.push_back( new Fruit(fruitTexs[type],type,1,x-w/2,y,w,h,-0.5,-1) );
-						instances[i].fruits.push_back( new Fruit(fruitTexs[type],type,2,x+w/2,y,w,h,0.5,-1) );
+					// spawn fruit
+					if(type==0){ // drop mellon
+						// left half (reuse existing fruit)
+						instances[i].fruits[j]->init(type,1,x-w/2,y,16,h,-0.5,-1);
+						// right half
+						if(fruitPool[0].size()>0){
+							fruitPool[0][0]->init(type,2,x-w/2,y,16,h,0.5,-1);
+							instances[i].fruits.push_back(fruitPool[0][0]);
+							fruitPool[0].erase(fruitPool[0].begin());
+						}
+						else{
+							instances[i].fruits.push_back( new Fruit(type,2,x+w/2,y,16,h,0.5,-1) );
+						}
 					}
-					instances[i].fruits[j]->y = 300; // move original fruit off-screen to be deleted
+					else{ // drop other fruit (they are all the same size)
+						// left half (reuse existing fruit)
+						instances[i].fruits[j]->init(type,1,x-w/2,y,w,h,-0.5,-1);
+						// right half
+						if(fruitPool[type].size()>0){
+							fruitPool[type][0]->init(type,2,x-w/2,y,w,h,0.5,-1);
+							instances[i].fruits.push_back(fruitPool[type][0]);
+							fruitPool[type].erase(fruitPool[type].begin());
+						}
+						else{
+							instances[i].fruits.push_back( new Fruit(type,2,x+w/2,y,w,h,0.5,-1) );
+						}
+					}
 				}
 				if(instances[i].cut==-1){ // take away points for a missed fruit
 					score = -2;
-					instances[i].scorePoints.push_back( new ScorePoint(score,instances[i].x*38+27,120) );
 					instances[i].totalPoints += score;
+					// spawn a point from the pool
+					if(pointPool.size()>0){
+						pointPool[0]->init(score,instances[i].x*38 + 27, 170);
+						instances[i].scorePoints.push_back(pointPool[0]);
+						pointPool.erase(pointPool.begin());
+					}
+					else{ // spawn a new score point entirely
+						instances[i].scorePoints.push_back( new ScorePoint(score,instances[i].x*38+27,170) );
+					}
 				}
 			}
 			if(instances[i].frame >= 4 + instances[i].cut==1?1:0){ // stop animation
@@ -404,6 +486,38 @@ void FruitNinjaGameState::tick(){
 			//add player scores to the leaderboard
 			triggerGameEnd = false;
 			ctx -> leaderboard -> addScore(instances[0].name, instances[1].name, instances[0].totalPoints*10, instances[1].totalPoints*10, 2); // points are kept small and artificially increased for performance
+			// free object pools
+			// only one instance will call this, so I need to handle both instances and the global pools here
+			// scorePoints
+			while(pointPool.size()>0){
+				delete pointPool[0];
+				pointPool.erase(pointPool.begin());
+			}
+			while(instances[0].scorePoints.size()>0){
+				delete instances[0].scorePoints[0];
+				instances[0].scorePoints.erase(instances[0].scorePoints.begin());
+			}
+			while(instances[1].scorePoints.size()>0){
+				delete instances[1].scorePoints[0];
+				instances[1].scorePoints.erase(instances[1].scorePoints.begin());
+			}
+			// fruit
+			for(int j = 0; j<4; j++){
+				while(fruitPool[j].size()>0){
+					delete fruitPool[j][0];
+					fruitPool[j].erase(fruitPool[j].begin());
+				}
+			}
+			while(instances[0].fruits.size()>0){
+				delete instances[0].fruits[0];
+				instances[0].fruits.erase(instances[0].fruits.begin());
+			}
+			while(instances[1].fruits.size()>0){
+				delete instances[1].fruits[0];
+				instances[1].fruits.erase(instances[1].fruits.begin());
+			}
+			
+			// quit game
 			ctx -> gsm -> requestStateChange(States::GameSelect, 5.0f, 1.5f);
 		}
 		if(instances[i].fruitDelay <= 0){
@@ -411,10 +525,26 @@ void FruitNinjaGameState::tick(){
 			type = rand()%4;
 			x = rand()%8;
 			// spawn fruit
-			if(type==0)
-				instances[i].fruits.push_back( new Fruit(fruitTexs[type],type,0,x*38,-16,20,16,0,0) ); // drop mellon
-			else
-				instances[i].fruits.push_back( new Fruit(fruitTexs[type],type,0,x*38,-12,8,8,0,0) ); // drop other fruit (they are all the same size)
+			if(type==0){ // drop mellon
+				if(fruitPool[0].size()>0){
+					fruitPool[0][0]->init(type,0,x*38,-16,20,16,0,0);
+					instances[i].fruits.push_back(fruitPool[0][0]);
+					fruitPool[0].erase(fruitPool[0].begin());
+				}
+				else{
+					instances[i].fruits.push_back( new Fruit(type,0,x*38,-16,20,16,0,0) );
+				}
+			}
+			else{ // drop other fruit (they are all the same size)
+				if(fruitPool[type].size()>0){
+					fruitPool[type][0]->init(type,0,x*38,-12,8,8,0,0);
+					instances[i].fruits.push_back(fruitPool[type][0]);
+					fruitPool[type].erase(fruitPool[type].begin());
+				}
+				else{
+					instances[i].fruits.push_back( new Fruit(type,0,x*38,-12,8,8,0,0) );
+				}
+			}
 			
 			// set time delay before next song
 			if(instances[i].fruitNote==1){
@@ -445,9 +575,18 @@ void FruitNinjaGameState::tick(){
 		if(fallenFruit!=-1){
 			if(instances[i].fruits[fallenFruit]->y<300 && instances[i].fruits[fallenFruit]->state==0){ // this fruit was uncut, deduct points
 				score = -2;
-				instances[i].scorePoints.push_back( new ScorePoint(score,instances[i].fruits[fallenFruit]->x + 27,170) );
 				instances[i].totalPoints += score;
+				// bring a score point from the pool
+				if(pointPool.size()>0){
+					pointPool[0]->init(score,instances[i].fruits[fallenFruit]->x + 27, 170);
+					instances[i].scorePoints.push_back(pointPool[0]);
+					pointPool.erase(pointPool.begin());
+				}
+				else{ // spawn a new score point entirely
+					instances[i].scorePoints.push_back( new ScorePoint(score,instances[i].fruits[fallenFruit]->x + 27,170) );
+				}
 			}
+			fruitPool[instances[i].fruits[fallenFruit]->type].push_back(instances[i].fruits[fallenFruit]);
 			instances[i].fruits.erase(instances[i].fruits.begin()+fallenFruit);
 		}
 		
@@ -460,8 +599,10 @@ void FruitNinjaGameState::tick(){
 				erasePoint = j;
 		}
 		// erase score points
-		if(erasePoint!=-1)
+		if(erasePoint!=-1){
+			pointPool.push_back(instances[i].scorePoints[erasePoint]);
 			instances[i].scorePoints.erase(instances[i].scorePoints.begin()+erasePoint);
+		}
 		//break;
 	}
 }
