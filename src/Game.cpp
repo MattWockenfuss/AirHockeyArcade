@@ -232,7 +232,7 @@ void Game::render(){
 
     window.setView(*p2View);
     sf::RectangleShape blue({960.0f, 530.0f});
-    red.setFillColor(sf::Color::Blue);
+    blue.setFillColor(sf::Color::Blue);
     window.draw(blue);
 
     window.display();
