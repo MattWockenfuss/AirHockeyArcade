@@ -53,10 +53,22 @@ void Game::initialization(){
     p1Sprite -> setPosition({0.0f, 0.0f});
     p2Sprite -> setPosition({1920.0f, 0.0f});
     
+
     std::cout << "Window Size: " << window.getSize().x << ", " << window.getSize().y << std::endl;
     std::cout << "Window Position: " << window.getPosition().x << ", " << window.getPosition().y << std::endl;
 
+    auto b1 = p1Sprite -> getGlobalBounds();
+    auto b2 = p2Sprite -> getGlobalBounds();
 
+    std::cout << "p1 pos: " << b1.position.x << ", " << b1.position.y << std::endl;
+    std::cout << "p1 size: " << b1.size.x << "x" << b1.size.y << std::endl;
+
+    std::cout << "p2 pos: " << b2.position.x << ", " << b2.position.y << std::endl;
+    std::cout << "p2 size: " << b2.size.x << "x" << b2.size.y << std::endl;
+
+    //texture sizes
+    std::cout << "p1Tex size: " << p1Tex -> getTexture().getSize().x << "x" << p1Tex -> getTexture().getSize().y << std::endl;
+    std::cout << "p2Tex size: " << p2Tex -> getTexture().getSize().x << "x" << p2Tex -> getTexture().getSize().y << std::endl;
 
     tpsCounter.emplace(ctx.assets -> getFont("ArcadeNormal"), "", 10);
     tpsCounter -> setPosition({10.0f, 10.0f});
@@ -176,6 +188,9 @@ void Game::render(){
 
     p1Sprite -> setTexture(p1Tex -> getTexture(), true);
     p2Sprite -> setTexture(p2Tex -> getTexture(), true);
+
+    p1Sprite -> setTextureRect(sf::IntRect({0, 0}, {960, 540}));
+    p2Sprite -> setTextureRect(sf::IntRect({0, 0}, {960, 540}));
 
     p1Sprite -> setScale({2.0f, 2.0f});
     p2Sprite -> setScale({2.0f, 2.0f});
