@@ -216,13 +216,12 @@ void Game::render(){
     // window.draw(*p2Sprite);
     // window.display();
 
-    auto v1 = p1View -> getViewPort();
-    auto v2 = p2View -> getViewPort();
 
-    std::cout << "p1View Size: " << v1.size.x << "x" << v1.size.y << std::endl;
-    std::cout << "p1View Position: " << v1.position.x << ", " << v1.position.y << std::endl;
-    std::cout << "p2View Size: " << v2.size.x << "x" << v2.size.y << std::endl;
-    std::cout << "p2View Position: " << v2.position.x << ", " << v2.position.y << std::endl;
+
+    std::cout << "p1View Size: " << p1View.size.x << "x" << p1View.size.y << std::endl;
+    std::cout << "p1View Position: " << p1View.position.x << ", " << p1View.position.y << std::endl;
+    std::cout << "p2View Size: " << p2View.size.x << "x" << p2View.size.y << std::endl;
+    std::cout << "p2View Position: " << p2View.position.x << ", " << p2View.position.y << std::endl;
 
 
     window.clear();
