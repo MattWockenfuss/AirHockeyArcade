@@ -186,8 +186,10 @@ void Game::render(){
     // input.render(*p2Tex);
     // if(renderFPSCounter) p2Tex -> draw(*tpsCounter);
 
-    // p1Tex -> display();
-    // p2Tex -> display();
+    p1Tex -> display();
+    p2Tex -> display();
+
+
 
     p1Sprite -> setTexture(p1Tex -> getTexture());
     p2Sprite -> setTexture(p2Tex -> getTexture());
