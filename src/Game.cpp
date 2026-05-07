@@ -18,9 +18,6 @@ Game::Game(){
 
 void Game::initialization(){
     //added because we cant see the top of the monitor
-    for(int i = 0; i < 22; i++){
-        std::cout << "FILLER" << std::endl;
-    }
     ctx.gsm -> init(&ctx);
     ctx.input -> init(&ctx);
 
@@ -168,31 +165,43 @@ void Game::tick(){
 
 }
 void Game::render(){
+    std::cout << "Window Size: " << window.getSize().x << ", " << window.getSize().y << std::endl;
+    std::cout << "Window Position: " << window.getPosition().x << ", " << window.getPosition().y << std::endl;
+
+    std::cout << "view Size: " << window.getView().getSize().x << ", " << window.getView().getSize().y << std::endl;
+    std::cout << "view Position: " << window.getView().getPosition().x << ", " << window.getView().getPosition().y << std::endl;
+
     p1Tex -> clear(sf::Color::Red);
     p2Tex -> clear(sf::Color::Blue);
+    window.clear(sf::Color::Yellow);
 
-    //render p1 stuff
-    if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p1render(*p1Tex);
-    gsm.p1render(*p1Tex);
-    input.render(*p1Tex);
-    if(renderFPSCounter) p1Tex -> draw(*tpsCounter);
+    // //render p1 stuff
+    // if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p1render(*p1Tex);
+    // gsm.p1render(*p1Tex);
+    // input.render(*p1Tex);
+    // if(renderFPSCounter) p1Tex -> draw(*tpsCounter);
 
-    //player 2
-    if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p2render(*p2Tex);
-    gsm.p2render(*p2Tex);
-    input.render(*p2Tex);
-    if(renderFPSCounter) p2Tex -> draw(*tpsCounter);
+    // //player 2
+    // if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p2render(*p2Tex);
+    // gsm.p2render(*p2Tex);
+    // input.render(*p2Tex);
+    // if(renderFPSCounter) p2Tex -> draw(*tpsCounter);
 
-    p1Tex -> display();
-    p2Tex -> display();
-
-    p1Sprite -> setPosition({0.0f, 0.0f});
-    p2Sprite -> setPosition({1920.0f, 0.0f});
+    // p1Tex -> display();
+    // p2Tex -> display();
 
     p1Sprite -> setTexture(p1Tex -> getTexture());
     p2Sprite -> setTexture(p2Tex -> getTexture());
 
-    window.clear(sf::Color::Yellow);
+    p1Sprite -> setScale({2.0f, 2.0f});
+    p2Sprite -> setScale({2.0f, 2.0f});
+
+    p1Sprite -> setPosition({0.0f, 0.0f});
+    p2Sprite -> setPosition({1920.0f, 0.0f});
+
+
+
+    
     window.setView(sf::View(sf::FloatRect({0.0f, 0.0f}, {3840.0f, 1080.0f})));
     window.draw(*p1Sprite);
     window.draw(*p2Sprite);
