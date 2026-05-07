@@ -57,12 +57,12 @@ void Bike::draw2(sf::RenderTexture* window2, double screenRatio, sf::RectangleSh
 	color.a = 255;
 	text.setFillColor(color);
 	text.setOrigin(sf::Vector2f(text.getLocalBounds().size.x,0));
-	text.setPosition(sf::Vector2f(310.0*screenRatio , 1.0*screenRatio));
+	text.setPosition(sf::Vector2f(318.0*screenRatio , 1.0*screenRatio));
 	window2 -> draw(text);
 	// player score
-	text.setOrigin(sf::Vector2f(text.getLocalBounds().size.x,0));
 	text.setPosition(sf::Vector2f(310.0*screenRatio - text.getLocalBounds().size.x, 2.0*screenRatio));
 	text.setString(std::to_string(score));
+	text.setOrigin(sf::Vector2f(text.getLocalBounds().size.x,0));
 	window2 -> draw(text);
 	
 	// player bike
