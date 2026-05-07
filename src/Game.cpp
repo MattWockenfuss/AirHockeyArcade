@@ -17,6 +17,10 @@ Game::Game(){
 }
 
 void Game::initialization(){
+    //added because we cant see the top of the monitor
+    for(int i = 0; i < 12; i++){
+        std::cout << "FILLER" << std::endl;
+    }
     ctx.gsm -> init(&ctx);
     ctx.input -> init(&ctx);
 
