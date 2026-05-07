@@ -168,53 +168,77 @@ void Game::tick(){
 
 }
 void Game::render(){
-    std::cout << "Window Size: " << window.getSize().x << ", " << window.getSize().y << std::endl;
-    std::cout << "Window Position: " << window.getPosition().x << ", " << window.getPosition().y << std::endl;
+    // std::cout << "Window Size: " << window.getSize().x << ", " << window.getSize().y << std::endl;
+    // std::cout << "Window Position: " << window.getPosition().x << ", " << window.getPosition().y << std::endl;
 
-    std::cout << "view Size: " << window.getView().getSize().x << ", " << window.getView().getSize().y << std::endl;
+    // std::cout << "view Size: " << window.getView().getSize().x << ", " << window.getView().getSize().y << std::endl;
 
-    p1Tex -> clear(sf::Color::Red);
-    p2Tex -> clear(sf::Color::Blue);
+    // p1Tex -> clear(sf::Color::Red);
+    // p2Tex -> clear(sf::Color::Blue);
     
 
-    // //render p1 stuff
-    // if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p1render(*p1Tex);
-    // gsm.p1render(*p1Tex);
-    // input.render(*p1Tex);
-    // if(renderFPSCounter) p1Tex -> draw(*tpsCounter);
+    // // //render p1 stuff
+    // // if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p1render(*p1Tex);
+    // // gsm.p1render(*p1Tex);
+    // // input.render(*p1Tex);
+    // // if(renderFPSCounter) p1Tex -> draw(*tpsCounter);
 
-    // //player 2
-    // if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p2render(*p2Tex);
-    // gsm.p2render(*p2Tex);
-    // input.render(*p2Tex);
-    // if(renderFPSCounter) p2Tex -> draw(*tpsCounter);
+    // // //player 2
+    // // if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p2render(*p2Tex);
+    // // gsm.p2render(*p2Tex);
+    // // input.render(*p2Tex);
+    // // if(renderFPSCounter) p2Tex -> draw(*tpsCounter);
 
-    p1Tex -> display();
-    p2Tex -> display();
+    // p1Tex -> display();
+    // p2Tex -> display();
 
-    p1Sprite -> setTexture(p1Tex -> getTexture(), true);
-    p2Sprite -> setTexture(p2Tex -> getTexture(), true);
+    // p1Sprite -> setTexture(p1Tex -> getTexture(), true);
+    // p2Sprite -> setTexture(p2Tex -> getTexture(), true);
 
-    p1Sprite -> setTextureRect(sf::IntRect({0, 0}, {960, 540}));
-    p2Sprite -> setTextureRect(sf::IntRect({0, 0}, {960, 540}));
+    // p1Sprite -> setTextureRect(sf::IntRect({0, 0}, {960, 540}));
+    // p2Sprite -> setTextureRect(sf::IntRect({0, 0}, {960, 540}));
 
-    p1Sprite -> setScale({2.0f, 2.0f});
-    p2Sprite -> setScale({2.0f, 2.0f});
+    // p1Sprite -> setScale({2.0f, 2.0f});
+    // p2Sprite -> setScale({2.0f, 2.0f});
 
-    p1Sprite -> setPosition({0.0f, 0.0f});
-    p2Sprite -> setPosition({0.0f, 0.0f});
+    // p1Sprite -> setPosition({0.0f, 0.0f});
+    // p2Sprite -> setPosition({0.0f, 0.0f});
 
 
 
     
-    window.setView(sf::View(sf::FloatRect({0.0f, 0.0f}, {3840.0f, 1080.0f})));
+    // window.setView(sf::View(sf::FloatRect({0.0f, 0.0f}, {3840.0f, 1080.0f})));
 
-    window.clear(sf::Color::Yellow);
+    // window.clear(sf::Color::Yellow);
+    // window.setView(*p1View);
+    // window.draw(*p1Sprite);
+    // window.setView(*p2View);
+    // window.draw(*p2Sprite);
+    // window.display();
+
+    auto v1 = p1View -> getViewPort();
+    auto v2 = p2View -> getViewPort();
+
+    std::cout << "p1View Size: " << v1.size.x << "x" << v1.size.y << std::endl;
+    std::cout << "p1View Position: " << v1.position.x << ", " << v1.position.y << std::endl;
+    std::cout << "p2View Size: " << v2.size.x << "x" << v2.size.y << std::endl;
+    std::cout << "p2View Position: " << v2.position.x << ", " << v2.position.y << std::endl;
+
+
+    window.clear();
     window.setView(*p1View);
-    window.draw(*p1Sprite);
+    sf::RectangleShape red({960.0f, 530.0f});
+    red.setFillColor(sf::Color::Red);
+    window.draw(red);
+
     window.setView(*p2View);
-    window.draw(*p2Sprite);
+    sf::RectangleShape blue({960.0f, 530.0f});
+    red.setFillColor(sf::Color::Blue);
+    window.draw(blue);
+
     window.display();
+
+
 }
 
 void Game::run(){
