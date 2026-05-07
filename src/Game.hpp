@@ -40,7 +40,7 @@ class Game {
         Context ctx;
 
         
-        sf::RenderWindow window1, window2;
+        sf::RenderWindow window;
 
         AssetManager assetManager;
         KeyManager keyManager;
