@@ -42,8 +42,8 @@ void Game::initialization(){
     p1View.emplace(sf::FloatRect({0.0f, 0.0f}, {960.0f, 540.0f}));
     p2View.emplace(sf::FloatRect({0.0f, 0.0f}, {960.0f, 540.0f}));
 
-    p1View -> setViewport(sf::FloatRect({0.0f, 0.0f}, {0.5f, 1.0f}))
-    p2View -> setViewport(sf::FloatRect({0.5f, 0.0f}, {0.5f, 1.0f}))
+    p1View -> setViewport(sf::FloatRect({0.0f, 0.0f}, {0.5f, 1.0f}));
+    p2View -> setViewport(sf::FloatRect({0.5f, 0.0f}, {0.5f, 1.0f}));
 
     window.setFramerateLimit(60);
     window.setVerticalSyncEnabled(false);
@@ -57,7 +57,7 @@ void Game::initialization(){
     p1Sprite -> setScale({2.0f, 2.0f});
     p2Sprite -> setScale({2.0f, 2.0f});
     p1Sprite -> setPosition({0.0f, 0.0f});
-    p2Sprite -> setPosition({1920.0f, 0.0f});
+    p2Sprite -> setPosition({0.0f, 0.0f});
     
 
     std::cout << "Window Size: " << window.getSize().x << ", " << window.getSize().y << std::endl;
@@ -202,7 +202,7 @@ void Game::render(){
     p2Sprite -> setScale({2.0f, 2.0f});
 
     p1Sprite -> setPosition({0.0f, 0.0f});
-    p2Sprite -> setPosition({1920.0f, 0.0f});
+    p2Sprite -> setPosition({0.0f, 0.0f});
 
 
 
