@@ -63,8 +63,8 @@ void GPIOManager::init(Context* ctx, InputManager* input){
         std::abort();
     }
 
-    inPins  = { 2, 3, 4, 17, 27, 22, 10, 9 };     // 8 button GPIOs (BCM)
-    outPins = { 14, 15, 18, 23, 24, 25, 8, 7 };   // 8 LED GPIOs (BCM)
+    inPins = {2, 3, 4, 17, 27, 22, 10, 9, 11, 0, 5, 6, 13, 19, 26, 14}; // 8 button GPIOs (BCM)
+    outPins = {15, 18, 23, 24, 25, 8, 7, 1}; // 8 LED GPIOs (BCM)
 
     // ---------- INPUT REQUEST (all 8 lines at once) ----------
     gpiod_line_settings* inSettings = gpiod_line_settings_new();
@@ -132,6 +132,16 @@ void GPIOManager::tick(){
     P2X.read(inReq);
     P2Y.read(inReq);
 
+    P1_Up.read(inReq);
+    P1_Left.read(inReq);
+    P1_Down.read(inReq);
+    P1_Right.read(inReq);
+
+    P2_Up.read(inReq);
+    P2_Left.read(inReq);
+    P2_Down.read(inReq);
+    P2_Right.read(inReq);
+
     P1A_LED.write(outReq, P1A_LED.lastKnownValue);
     P1B_LED.write(outReq, P1B_LED.lastKnownValue);
     P1X_LED.write(outReq, P1X_LED.lastKnownValue);
@@ -143,10 +153,6 @@ void GPIOManager::tick(){
     P2Y_LED.write(outReq, P2Y_LED.lastKnownValue);
 
     //Movement
-    //input -> P1_Up = ctx -> keys -> W;
-    //input -> P1_Left = ctx -> keys -> A;
-    //input -> P1_Down = ctx -> keys -> S;
-    //input -> P1_Right = ctx -> keys -> D;
     
     //Buttons
     input -> P1A = P1A.lastKnownValue;
@@ -154,39 +160,21 @@ void GPIOManager::tick(){
     input -> P1X = P1X.lastKnownValue;
     input -> P1Y = P1Y.lastKnownValue;
 
-    //Player 2
-    //Movement
-    //input -> P2_Up = ctx -> keys -> Up;
-    //input -> P2_Left = ctx -> keys -> Left;
-    //input -> P2_Down = ctx -> keys -> Down;
-    //input -> P2_Right = ctx -> keys -> Right;
-
-    //Buttons
     input -> P2A = P2A.lastKnownValue;
     input -> P2B = P2B.lastKnownValue;
     input -> P2X = P2X.lastKnownValue;
     input -> P2Y = P2Y.lastKnownValue;
 
+    //joy sticks
+    input -> P1_Up = P1_Up.lastKnownValue;
+    input -> P1_Left = P1_Left.lastKnownValue;
+    input -> P1_Down = P1_Down.lastKnownValue;
+    input -> P1_Right = P1_Right.lastKnownValue;
 
-    /*
-        okay what is the best way to structure this? we have a bunch of booleans we need to write to based on reading signals
-        we also need to be able to write to some of them, so we should add that to the input Manager?
-
-        //if not GPIO it just ignores its
-
-        //what if we want to trigger the lights and such?
-
-        //okay so how can we structure this?
-        //we no longer need the digital pin abstraction, preferably get rid of it
-
-    
-    
-    */
-
-
-
-
-
+    input -> P2_Up = P2_Up.lastKnownValue;
+    input -> P2_Left = P2_Left.lastKnownValue;
+    input -> P2_Down = P2_Down.lastKnownValue;
+    input -> P2_Right = P2_Right.lastKnownValue;
 }
 
 void GPIOManager::render(sf::RenderTexture& window){

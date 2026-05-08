@@ -33,16 +33,31 @@ class GPIOManager : public InputInterface{
         DigitalPin P2X = DigitalPin(19, 10, "GPIO-10", "P2X");
         DigitalPin P2Y = DigitalPin(21, 9 , "GPIO-09", "P2Y");
 
-        //these are for writing
-        DigitalPin P1A_LED = DigitalPin(8 , 14, "GPIO-14", "P1A_LED");
-        DigitalPin P1B_LED = DigitalPin(10, 15, "GPIO-15", "P1B_LED");
-        DigitalPin P1X_LED = DigitalPin(12, 18, "GPIO-18", "P1X_LED");
-        DigitalPin P1Y_LED = DigitalPin(16, 23, "GPIO-23", "P1Y_LED");
+        DigitalPin P1_Up =      DigitalPin(23, 11, "GPIO-11", "P1_UP");
+        DigitalPin P1_Left =    DigitalPin(27, 0,  "GPIO-00", "P1_LEFT");
+        DigitalPin P1_Down =    DigitalPin(29, 5,  "GPIO-05", "P1_DOWN");
+        DigitalPin P1_Right =   DigitalPin(31, 6 , "GPIO-06", "P1_RIGHT");
 
-        DigitalPin P2A_LED = DigitalPin(18, 24, "GPIO-24", "P2A_LED");
-        DigitalPin P2B_LED = DigitalPin(22, 25, "GPIO-25", "P2B_LED");
-        DigitalPin P2X_LED = DigitalPin(24, 8 , "GPIO-08", "P2X_LED");
-        DigitalPin P2Y_LED = DigitalPin(26, 7 , "GPIO-07", "P2Y_LED");
+        DigitalPin P2_Up =      DigitalPin(33, 13, "GPIO-13", "P2_UP");
+        DigitalPin P2_Left =    DigitalPin(35, 19, "GPIO-19", "P2_LEFT");
+        DigitalPin P2_Down =    DigitalPin(37, 26, "GPIO-26", "P2_DOWN");
+        DigitalPin P2_Right =   DigitalPin(8,  14, "GPIO-14", "P2_RIGHT");
+
+        
+
+        //these are for writing
+        DigitalPin P1A_LED = DigitalPin(10, 15, "GPIO-15", "P1A_LED");
+        DigitalPin P1B_LED = DigitalPin(12, 18, "GPIO-18", "P1B_LED");
+        DigitalPin P1X_LED = DigitalPin(16, 23, "GPIO-23", "P1X_LED");
+        DigitalPin P1Y_LED = DigitalPin(18, 24, "GPIO-24", "P1Y_LED");
+
+        DigitalPin P2A_LED = DigitalPin(22, 25, "GPIO-25", "P2A_LED");
+        DigitalPin P2B_LED = DigitalPin(24, 8 , "GPIO-08", "P2B_LED");
+        DigitalPin P2X_LED = DigitalPin(26, 7 , "GPIO-07", "P2X_LED");
+        DigitalPin P2Y_LED = DigitalPin(28, 1 , "GPIO-01", "P2Y_LED");
+
+        
+
 
         ~GPIOManager();
     private:
