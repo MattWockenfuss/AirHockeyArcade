@@ -16,12 +16,12 @@ void GPIOManager::init(Context* ctx, InputManager* input){
     this -> input = input;
     // auto& font = ctx.assets -> getFont("Consolas");
 
-    pinout_text.emplace(ctx -> assets -> getFont("Consolas"), "", 28);
+    pinout_text.emplace(ctx -> assets -> getFont("Consolas"), "", 14);
     pinout_text -> setPosition({10.f, 10.f});
     pinout_text -> setFillColor(sf::Color::Yellow);
 
     
-    i_text.emplace(ctx -> assets -> getFont("Consolas"), "", 30);
+    i_text.emplace(ctx -> assets -> getFont("Consolas"), "", 15);
     i_text -> setPosition({500.0f, 10.0f});
     i_text -> setFillColor(sf::Color::Magenta);
 
