@@ -176,7 +176,7 @@ void GPIOManager::tick(){
     input -> P2_Down = P2_Down.lastKnownValue;
     input -> P2_Right = P2_Right.lastKnownValue;
 
-    std::cout << "P1A value: " << P1A.lastKnownValue << std::endl;
+    std::cout << "P1X value: " << P1X.lastKnownValue << std::endl;
 }
 
 void GPIOManager::render(sf::RenderTexture& window){
