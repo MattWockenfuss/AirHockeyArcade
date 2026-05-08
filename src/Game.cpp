@@ -223,17 +223,32 @@ void Game::render(){
     //std::cout << "p2View Size: " << p2View.size.x << "x" << p2View.size.y << std::endl;
     //std::cout << "p2View Position: " << p2View.position.x << ", " << p2View.position.y << std::endl;
 
+    window.setActive(true);
 
-    window.clear();
-    window.setView(*p1View);
-    sf::RectangleShape red({960.0f, 530.0f});
-    red.setFillColor(sf::Color::Red);
-    window.draw(red);
+    glEnable(GL_SCISSOR_TEST);
 
-    window.setView(*p2View);
-    sf::RectangleShape blue({960.0f, 530.0f});
-    blue.setFillColor(sf::Color::Blue);
-    window.draw(blue);
+    //left half
+    glScissor(0, 0, 1920, 1080);
+    glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    //right half
+    glScissor(1920, 0, 1920, 1080);
+    glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glDisable(GL_SCISSOR_TEST);
+    window.resetGLStates();
+
+    // window.setView(*p1View);
+    // sf::RectangleShape red({960.0f, 530.0f});
+    // red.setFillColor(sf::Color::Red);
+    // window.draw(red);
+
+    // window.setView(*p2View);
+    // sf::RectangleShape blue({960.0f, 530.0f});
+    // blue.setFillColor(sf::Color::Blue);
+    // window.draw(blue);
 
     window.display();
 
