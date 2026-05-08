@@ -254,8 +254,8 @@ void InputManager::renderDebugControllers(sf::RenderTexture& window){
 }
 void InputManager::drawSquare(float x, float y, bool isGreen, sf::RenderTexture& window){
     //this function will draw a square with a border centered and x ,y of width 30 and a border width of 1 px
-    int borderWidth = 2;
-    float width = 30.0f;
+    int borderWidth = 2 * SCALE;
+    float width = 30.0f * SCALE;
     rect.setPosition({x, y});
     rect.setSize({width + (borderWidth * 2), width + (borderWidth * 2)});
     rect.setOrigin({(width + (borderWidth * 2)) / 2, (width + (borderWidth * 2)) / 2});
