@@ -66,95 +66,95 @@ void InputManager::renderDebugControllers(sf::RenderTexture& window){
     //okay so I want to draw a little controller, actually 2 of them, one for each player
     //each one is going to have the 8 squares and render the values accordingly?
 
-    float startX = 100.0f, startY = 50.0f;
+    float startX = 100.0f * SCALE, startY = 250.0f * SCALE;
 
 
     //Player 1 Controller
-    float bw = 2.0f;
+    float bw = 2.0f * SCALE;
     //base rect
     //border
-    rect.setSize({420.0f + (bw * 2), 200.0f + (bw * 2)});
+    rect.setSize({420.0f * SCALE + (bw * 2), 200.0f * SCALE + (bw * 2)});
     rect.setPosition({startX - bw, startY - bw});
     rect.setFillColor(sf::Color(74, 74, 74, 255));
     window.draw(rect);
     //actual
-    rect.setSize({420.0f, 200.0f});
+    rect.setSize({420.0f * SCALE, 200.0f * SCALE});
     rect.setPosition({startX, startY});
     rect.setFillColor(sf::Color(173, 216, 230, 255));
     window.draw(rect);
 
     //player title text rect
     //border
-    rect.setSize({210.0f + (bw * 2), 40.0f + (bw * 2)});
-    rect.setPosition({startX + 105.0f - bw, startY - 40.0f - bw});
+    rect.setSize({210.0f * SCALE + (bw * 2), 40.0f * SCALE + (bw * 2)});
+    rect.setPosition({startX + 105.0f * SCALE - bw, startY - 40.0f * SCALE - bw});
     rect.setFillColor(sf::Color(74, 74, 74, 255));
     window.draw(rect);
     //actual
-    rect.setSize({210.0f, 40.0f});
-    rect.setPosition({startX + 105.0f, startY - 40.0f});
+    rect.setSize({210.0f * SCALE, 40.0f * SCALE});
+    rect.setPosition({startX + 105.0f * SCALE, startY - 40.0f * SCALE});
     rect.setFillColor(sf::Color(173, 216, 230, 255));
     window.draw(rect);
 
 
     textbox -> setFont(ctx -> assets -> getFont("Consolas"));
-    textbox -> setCharacterSize(36);
+    textbox -> setCharacterSize(18);
     textbox -> setFillColor(sf::Color::Black);
     //textbox -> setOrigin({});
 
 
 
-    textbox -> setPosition({startX + 110.0f, startY - 58.0f});
+    textbox -> setPosition({startX + 110.0f * SCALE, startY - 58.0f * SCALE});
     textbox -> setString("Player 1");
     //text.setStyle(sf::Text::Bold | sf::Text::Underlined);
     textbox -> setStyle(sf::Text::Bold);
     window.draw(*textbox);
     textbox -> setStyle(sf::Text::Regular);
-    textbox -> setCharacterSize(24);
+    textbox -> setCharacterSize(12);
     
 
     //up down left right
-    drawSquare(120.0f + startX, 40.0f + startY, P1_Up, window);
-    drawSquare(85.0f + startX, 75.0f + startY, P1_Left, window);
-    drawSquare(120.0f + startX, 110.0f + startY, P1_Down, window);
-    drawSquare(155.0f + startX, 75.0f + startY, P1_Right, window);
+    drawSquare(120.0f * SCALE + startX, 40.0f * SCALE + startY, P1_Up, window);
+    drawSquare(85.0f * SCALE + startX, 75.0f * SCALE + startY, P1_Left, window);
+    drawSquare(120.0f * SCALE + startX, 110.0f * SCALE + startY, P1_Down, window);
+    drawSquare(155.0f * SCALE + startX, 75.0f * SCALE + startY, P1_Right, window);
 
     //A B X Y
-    drawSquare(320.0f + startX, 50.0f + startY, P1A, window);
-    drawSquare(370.0f + startX, 55.0f + startY, P1B, window);
-    drawSquare(305.0f + startX, 95.0f + startY, P1X, window);
-    drawSquare(355.0f + startX, 100.0f + startY, P1Y, window);
+    drawSquare(320.0f * SCALE + startX, 50.0f * SCALE + startY, P1A, window);
+    drawSquare(370.0f * SCALE + startX, 55.0f * SCALE + startY, P1B, window);
+    drawSquare(305.0f * SCALE + startX, 95.0f * SCALE + startY, P1X, window);
+    drawSquare(355.0f * SCALE + startX, 100.0f * SCALE + startY, P1Y, window);
 
     //up down left right
-    textbox -> setPosition({120.0f + startX - 15.0f, 40.0f + startY - 50.0f});
+    textbox -> setPosition({120.0f * SCALE + startX - 15.0f * SCALE, 40.0f * SCALE + startY - 50.0f * SCALE});
     textbox -> setString("Up");
     window.draw(*textbox);
 
-    textbox -> setPosition({85.0f + startX - 80.0f, 75.0f + startY - 15.0f});
+    textbox -> setPosition({85.0f * SCALE + startX - 80.0f * SCALE, 75.0f * SCALE + startY - 15.0f * SCALE});
     textbox -> setString("Left");
     window.draw(*textbox);
 
-    textbox -> setPosition({120.0f + startX - 25.0f, 110.0f + startY + 20.0f});
+    textbox -> setPosition({120.0f * SCALE + startX - 25.0f * SCALE, 110.0f * SCALE + startY + 20.0f * SCALE});
     textbox -> setString("Down");
     window.draw(*textbox);
 
-    textbox -> setPosition({155.0f + startX + 25.0f, 75.0f + startY - 15.0f});
+    textbox -> setPosition({155.0f * SCALE + startX + 25.0f * SCALE, 75.0f * SCALE + startY - 15.0f * SCALE});
     textbox -> setString("Right");
     window.draw(*textbox);
 
     //A B X Y
-    textbox -> setPosition({320.0f + startX - 6.5f, 50.0f + startY - 44.0f});
+    textbox -> setPosition({320.0f * SCALE + startX - 6.5f * SCALE, 50.0f * SCALE + startY - 44.0f * SCALE});
     textbox -> setString("A");
     window.draw(*textbox);
 
-    textbox -> setPosition({370.0f + startX - 6.5f, 55.0f + startY - 44.0f});
+    textbox -> setPosition({370.0f * SCALE + startX - 6.5f * SCALE, 55.0f * SCALE + startY - 44.0f * SCALE});
     textbox -> setString("B");
     window.draw(*textbox);
 
-    textbox -> setPosition({305.0f + startX - 6.5f, 95.0f + startY + 11.0f});
+    textbox -> setPosition({305.0f * SCALE + startX - 6.5f * SCALE, 95.0f * SCALE + startY + 11.0f * SCALE});
     textbox -> setString("X");
     window.draw(*textbox);
 
-    textbox -> setPosition({355.0f + startX - 6.5f, 100.0f + startY + 11.0f});
+    textbox -> setPosition({355.0f * SCALE + startX - 6.5f * SCALE, 100.0f * SCALE + startY + 11.0f * SCALE});
     textbox -> setString("Y");
     window.draw(*textbox);
 
@@ -162,100 +162,100 @@ void InputManager::renderDebugControllers(sf::RenderTexture& window){
 
 
 
-    startX = 100.0f, startY = 300.0f;
+    startX = 100.0f * SCALE, startY = 750.0f * SCALE;
     //Player 2 Controller
-    bw = 2.0f;
+    bw = 2.0f * SCALE;
     //base rect
     //border
-    rect.setSize({420.0f + (bw * 2), 200.0f + (bw * 2)});
+    rect.setSize({420.0f * SCALE + (bw * 2), 200.0f * SCALE + (bw * 2)});
     rect.setPosition({startX - bw, startY - bw});
     rect.setFillColor(sf::Color(74, 74, 74, 255));
     window.draw(rect);
     //actual
-    rect.setSize({420.0f, 200.0f});
+    rect.setSize({420.0f * SCALE, 200.0f * SCALE});
     rect.setPosition({startX, startY});
     rect.setFillColor(sf::Color(255, 255, 224, 255));
     window.draw(rect);
 
     //player title text rect
     //border
-    rect.setSize({210.0f + (bw * 2), 40.0f + (bw * 2)});
-    rect.setPosition({startX + 105.0f - bw, startY - 40.0f - bw});
+    rect.setSize({210.0f * SCALE + (bw * 2), 40.0f * SCALE + (bw * 2)});
+    rect.setPosition({startX + 105.0f * SCALE - bw, startY - 40.0f * SCALE - bw});
     rect.setFillColor(sf::Color(74, 74, 74, 255));
     window.draw(rect);
     //actual
-    rect.setSize({210.0f, 40.0f});
-    rect.setPosition({startX + 105.0f, startY - 40.0f});
+    rect.setSize({210.0f * SCALE, 40.0f * SCALE});
+    rect.setPosition({startX + 105.0f * SCALE, startY - 40.0f * SCALE});
     rect.setFillColor(sf::Color(255, 255, 224, 255));
     window.draw(rect);
 
 
     textbox -> setFont(ctx -> assets -> getFont("Consolas"));
-    textbox -> setCharacterSize(36);
+    textbox -> setCharacterSize(18);
     textbox -> setFillColor(sf::Color::Black);
     //textbox -> setOrigin({});
 
 
 
-    textbox -> setPosition({startX + 110.0f, startY - 58.0f});
+    textbox -> setPosition({startX + 110.0f * SCALE, startY - 58.0f * SCALE});
     textbox -> setString("Player 2");
     //text.setStyle(sf::Text::Bold | sf::Text::Underlined);
     textbox -> setStyle(sf::Text::Bold);
     window.draw(*textbox);
     textbox -> setStyle(sf::Text::Regular);
-    textbox -> setCharacterSize(24);
+    textbox -> setCharacterSize(12);
     
 
     //up down left right
-    drawSquare(120.0f + startX, 40.0f + startY, P2_Up, window);
-    drawSquare(85.0f + startX, 75.0f + startY, P2_Left, window);
-    drawSquare(120.0f + startX, 110.0f + startY, P2_Down, window);
-    drawSquare(155.0f + startX, 75.0f + startY, P2_Right, window);
+    drawSquare(120.0f * SCALE + startX, 40.0f * SCALE + startY, P2_Up, window);
+    drawSquare(85.0f * SCALE + startX, 75.0f * SCALE + startY, P2_Left, window);
+    drawSquare(120.0f * SCALE + startX, 110.0f * SCALE + startY, P2_Down, window);
+    drawSquare(155.0f * SCALE + startX, 75.0f * SCALE + startY, P2_Right, window);
 
     //A B X Y
-    drawSquare(320.0f + startX, 50.0f + startY, P2A, window);
-    drawSquare(370.0f + startX, 55.0f + startY, P2B, window);
-    drawSquare(305.0f + startX, 95.0f + startY, P2X, window);
-    drawSquare(355.0f + startX, 100.0f + startY, P2Y, window);
+    drawSquare(320.0f * SCALE + startX, 50.0f * SCALE + startY, P2A, window);
+    drawSquare(370.0f * SCALE + startX, 55.0f * SCALE + startY, P2B, window);
+    drawSquare(305.0f * SCALE + startX, 95.0f * SCALE + startY, P2X, window);
+    drawSquare(355.0f * SCALE + startX, 100.0f * SCALE + startY, P2Y, window);
 
     //up down left right
-    textbox -> setPosition({120.0f + startX - 15.0f, 40.0f + startY - 50.0f});
+    textbox -> setPosition({120.0f * SCALE + startX - 15.0f * SCALE, 40.0f * SCALE + startY - 50.0f * SCALE});
     textbox -> setString("Up");
     window.draw(*textbox);
 
-    textbox -> setPosition({85.0f + startX - 80.0f, 75.0f + startY - 15.0f});
+    textbox -> setPosition({85.0f * SCALE + startX - 80.0f * SCALE, 75.0f * SCALE + startY - 15.0f * SCALE});
     textbox -> setString("Left");
     window.draw(*textbox);
 
-    textbox -> setPosition({120.0f + startX - 25.0f, 110.0f + startY + 20.0f});
+    textbox -> setPosition({120.0f * SCALE + startX - 25.0f * SCALE, 110.0f * SCALE + startY + 20.0f * SCALE});
     textbox -> setString("Down");
     window.draw(*textbox);
 
-    textbox -> setPosition({155.0f + startX + 25.0f, 75.0f + startY - 15.0f});
+    textbox -> setPosition({155.0f * SCALE + startX + 25.0f * SCALE, 75.0f * SCALE + startY - 15.0f * SCALE});
     textbox -> setString("Right");
     window.draw(*textbox);
 
     //A B X Y
-    textbox -> setPosition({320.0f + startX - 6.5f, 50.0f + startY - 44.0f});
+    textbox -> setPosition({320.0f * SCALE + startX - 6.5f * SCALE, 50.0f * SCALE + startY - 44.0f * SCALE});
     textbox -> setString("A");
     window.draw(*textbox);
 
-    textbox -> setPosition({370.0f + startX - 6.5f, 55.0f + startY - 44.0f});
+    textbox -> setPosition({370.0f * SCALE + startX - 6.5f * SCALE, 55.0f * SCALE + startY - 44.0f * SCALE});
     textbox -> setString("B");
     window.draw(*textbox);
 
-    textbox -> setPosition({305.0f + startX - 6.5f, 95.0f + startY + 11.0f});
+    textbox -> setPosition({305.0f * SCALE + startX - 6.5f * SCALE, 95.0f * SCALE + startY + 11.0f * SCALE});
     textbox -> setString("X");
     window.draw(*textbox);
 
-    textbox -> setPosition({355.0f + startX - 6.5f, 100.0f + startY + 11.0f});
+    textbox -> setPosition({355.0f * SCALE + startX - 6.5f * SCALE, 100.0f * SCALE + startY + 11.0f * SCALE});
     textbox -> setString("Y");
     window.draw(*textbox);
 }
 void InputManager::drawSquare(float x, float y, bool isGreen, sf::RenderTexture& window){
     //this function will draw a square with a border centered and x ,y of width 30 and a border width of 1 px
-    int borderWidth = 2;
-    float width = 30.0f;
+    int borderWidth = 2 * SCALE;
+    float width = 30.0f * SCALE;
     rect.setPosition({x, y});
     rect.setSize({width + (borderWidth * 2), width + (borderWidth * 2)});
     rect.setOrigin({(width + (borderWidth * 2)) / 2, (width + (borderWidth * 2)) / 2});

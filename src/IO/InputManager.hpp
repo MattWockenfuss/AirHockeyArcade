@@ -20,6 +20,8 @@ class InputManager {
         InputManager();
         ~InputManager();
 
+        float SCALE = 0.5f;
+
         void init(Context* ctx);
         void tick();
         void render(sf::RenderTexture& window);

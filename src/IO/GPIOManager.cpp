@@ -16,12 +16,12 @@ void GPIOManager::init(Context* ctx, InputManager* input){
     this -> input = input;
     // auto& font = ctx.assets -> getFont("Consolas");
 
-    pinout_text.emplace(ctx -> assets -> getFont("Consolas"), "", 28);
+    pinout_text.emplace(ctx -> assets -> getFont("Consolas"), "", 14);
     pinout_text -> setPosition({10.f, 10.f});
     pinout_text -> setFillColor(sf::Color::Yellow);
 
     
-    i_text.emplace(ctx -> assets -> getFont("Consolas"), "", 30);
+    i_text.emplace(ctx -> assets -> getFont("Consolas"), "", 15);
     i_text -> setPosition({500.0f, 10.0f});
     i_text -> setFillColor(sf::Color::Magenta);
 
@@ -63,8 +63,8 @@ void GPIOManager::init(Context* ctx, InputManager* input){
         std::abort();
     }
 
-    inPins  = { 2, 3, 4, 17, 27, 22, 10, 9 };     // 8 button GPIOs (BCM)
-    outPins = { 14, 15, 18, 23, 24, 25, 8, 7 };   // 8 LED GPIOs (BCM)
+    inPins = {2, 3, 4, 17, 27, 22, 10, 9, 11, 0, 5, 6, 13, 19, 26, 14}; // 8 button GPIOs (BCM)
+    outPins = {15, 18, 23, 24, 25, 8, 7, 1}; // 8 LED GPIOs (BCM)
 
     // ---------- INPUT REQUEST (all 8 lines at once) ----------
     gpiod_line_settings* inSettings = gpiod_line_settings_new();
@@ -132,6 +132,16 @@ void GPIOManager::tick(){
     P2X.read(inReq);
     P2Y.read(inReq);
 
+    P1_Up.read(inReq);
+    P1_Left.read(inReq);
+    P1_Down.read(inReq);
+    P1_Right.read(inReq);
+
+    P2_Up.read(inReq);
+    P2_Left.read(inReq);
+    P2_Down.read(inReq);
+    P2_Right.read(inReq);
+
     P1A_LED.write(outReq, P1A_LED.lastKnownValue);
     P1B_LED.write(outReq, P1B_LED.lastKnownValue);
     P1X_LED.write(outReq, P1X_LED.lastKnownValue);
@@ -143,73 +153,53 @@ void GPIOManager::tick(){
     P2Y_LED.write(outReq, P2Y_LED.lastKnownValue);
 
     //Movement
-    //input -> P1_Up = ctx -> keys -> W;
-    //input -> P1_Left = ctx -> keys -> A;
-    //input -> P1_Down = ctx -> keys -> S;
-    //input -> P1_Right = ctx -> keys -> D;
     
     //Buttons
-    input -> P1A = P1A.lastKnownValue;
-    input -> P1B = P1B.lastKnownValue;
-    input -> P1X = P1X.lastKnownValue;
-    input -> P1Y = P1Y.lastKnownValue;
+    input -> P1A = !P1A.lastKnownValue;
+    input -> P1B = !P1B.lastKnownValue;
+    input -> P1X = !P1X.lastKnownValue;
+    input -> P1Y = !P1Y.lastKnownValue;
 
-    //Player 2
-    //Movement
-    //input -> P2_Up = ctx -> keys -> Up;
-    //input -> P2_Left = ctx -> keys -> Left;
-    //input -> P2_Down = ctx -> keys -> Down;
-    //input -> P2_Right = ctx -> keys -> Right;
+    input -> P2A = !P2A.lastKnownValue;
+    input -> P2B = !P2B.lastKnownValue;
+    input -> P2X = !P2X.lastKnownValue;
+    input -> P2Y = !P2Y.lastKnownValue;
 
-    //Buttons
-    input -> P2A = P2A.lastKnownValue;
-    input -> P2B = P2B.lastKnownValue;
-    input -> P2X = P2X.lastKnownValue;
-    input -> P2Y = P2Y.lastKnownValue;
+    //joy sticks
+    input -> P1_Up = !P1_Up.lastKnownValue;
+    input -> P1_Left = !P1_Left.lastKnownValue;
+    input -> P1_Down = !P1_Down.lastKnownValue;
+    input -> P1_Right = !P1_Right.lastKnownValue;
 
+    input -> P2_Up = !P2_Up.lastKnownValue;
+    input -> P2_Left = !P2_Left.lastKnownValue;
+    input -> P2_Down = !P2_Down.lastKnownValue;
+    input -> P2_Right = !P2_Right.lastKnownValue;
 
-    /*
-        okay what is the best way to structure this? we have a bunch of booleans we need to write to based on reading signals
-        we also need to be able to write to some of them, so we should add that to the input Manager?
-
-        //if not GPIO it just ignores its
-
-        //what if we want to trigger the lights and such?
-
-        //okay so how can we structure this?
-        //we no longer need the digital pin abstraction, preferably get rid of it
-
-    
-    
-    */
-
-
-
-
-
+    std::cout << "P1X value: " << P1X.lastKnownValue << std::endl;
 }
 
 void GPIOManager::render(sf::RenderTexture& window){
     if(!input -> overlay) return;  //only render if the overlay is up
     
-    float startX = 800.0f;
-    float startY = 100.0f;
+    float startX = 800.0f * SCALE;
+    float startY = 100.0f * SCALE;
     
-    float baseWidth = 370.0f;
-    float baseHeight = 710.0f;
+    float baseWidth = 370.0f * SCALE;
+    float baseHeight = 710.0f * SCALE;
     
     int row = 0;
-    float padding = 35.0f;
+    float padding = 35.0f * SCALE;
 
 
     //base background border
-    square_background = sf::RectangleShape(sf::Vector2f(baseWidth + 12.0f, baseHeight + 12.0f));
-    square_background.setPosition({startX - 15.0f - 6.0f, startY - 6.0f});
+    square_background = sf::RectangleShape(sf::Vector2f(baseWidth + 12.0f * SCALE, baseHeight + 12.0f * SCALE));
+    square_background.setPosition({startX - 15.0f * SCALE - 6.0f * SCALE, startY - 6.0f * SCALE});
     square_background.setFillColor(sf::Color(139, 107, 0));
     window.draw(square_background);
 
     square_background = sf::RectangleShape(sf::Vector2f(baseWidth, baseHeight));
-    square_background.setPosition({startX - 15.0f, startY});
+    square_background.setPosition({startX - 15.0f * SCALE, startY});
     square_background.setFillColor(sf::Color(255, 240, 102));
     window.draw(square_background);
 
@@ -219,11 +209,11 @@ void GPIOManager::render(sf::RenderTexture& window){
         std::ostringstream ss;
         ss << "(" << i << ")" << std::endl;
 
-        sf::RectangleShape pinSqr = sf::RectangleShape(sf::Vector2f(30.f, 30.f));
+        sf::RectangleShape pinSqr = sf::RectangleShape(sf::Vector2f(30.f * SCALE, 30.f * SCALE));
         pinSqr.setFillColor(sf::Color::Black);
         
 
-        sf::RectangleShape pinSqrInside = sf::RectangleShape(sf::Vector2f(26.0f, 26.0f));
+        sf::RectangleShape pinSqrInside = sf::RectangleShape(sf::Vector2f(26.0f * SCALE, 26.0f * SCALE));
         pinSqrInside.setFillColor(sf::Color::Red);
         
         //this is a horrible way to do it.
@@ -290,17 +280,17 @@ void GPIOManager::render(sf::RenderTexture& window){
 
         if(i % 2 == 0){
             //then its even, rightside,
-                i_text -> setPosition({startX + 210.0f, startY + (row * padding)});
-                pinSqr.setPosition({startX + 170.0f, startY + (row * padding) + 7.0f});
-                pinSqrInside.setPosition({startX + 170.0f + 2.0f, startY + (row * padding) + 7.0f + 2.0f}); //The 7 is to match the font, the 2 is because they are inside the other square, giving a border
+                i_text -> setPosition({startX + 210.0f * SCALE, startY + (row * padding)});
+                pinSqr.setPosition({startX + 170.0f * SCALE, startY + (row * padding) + 7.0f * SCALE});
+                pinSqrInside.setPosition({startX + 170.0f * SCALE + 2.0f * SCALE, startY + (row * padding) + 7.0f * SCALE + 2.0f * SCALE}); //The 7 is to match the font, the 2 is because they are inside the other square, giving a border
                 window.draw(pinSqr);
                 window.draw(pinSqrInside);
             row++;
         }else{
             //then its odd, left side
-            i_text -> setPosition({startX + 1.0f, startY + (row * padding)});
-            pinSqr.setPosition({startX + 130.0f, startY + (row * padding) + 7.0f});
-            pinSqrInside.setPosition({startX + 130.0f + 2.0f, startY + (row * padding) + 7.0f + 2.0f});
+            i_text -> setPosition({startX + 1.0f * SCALE, startY + (row * padding)});
+            pinSqr.setPosition({startX + 130.0f * SCALE, startY + (row * padding) + 7.0f * SCALE});
+            pinSqrInside.setPosition({startX + 130.0f * SCALE + 2.0f * SCALE, startY + (row * padding) + 7.0f * SCALE + 2.0f * SCALE});
             window.draw(pinSqr);
             window.draw(pinSqrInside);
         }
