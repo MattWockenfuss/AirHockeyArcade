@@ -155,26 +155,26 @@ void GPIOManager::tick(){
     //Movement
     
     //Buttons
-    input -> !P1A = P1A.lastKnownValue;
-    input -> !P1B = P1B.lastKnownValue;
-    input -> !P1X = P1X.lastKnownValue;
-    input -> !P1Y = P1Y.lastKnownValue;
+    input -> P1A = !P1A.lastKnownValue;
+    input -> P1B = !P1B.lastKnownValue;
+    input -> P1X = !P1X.lastKnownValue;
+    input -> P1Y = !P1Y.lastKnownValue;
 
-    input -> !P2A = P2A.lastKnownValue;
-    input -> !P2B = P2B.lastKnownValue;
-    input -> !P2X = P2X.lastKnownValue;
-    input -> !P2Y = P2Y.lastKnownValue;
+    input -> P2A = !P2A.lastKnownValue;
+    input -> P2B = !P2B.lastKnownValue;
+    input -> P2X = !P2X.lastKnownValue;
+    input -> P2Y = !P2Y.lastKnownValue;
 
     //joy sticks
-    input -> !P1_Up = P1_Up.lastKnownValue;
-    input -> !P1_Left = P1_Left.lastKnownValue;
-    input -> !P1_Down = P1_Down.lastKnownValue;
-    input -> !P1_Right = P1_Right.lastKnownValue;
+    input -> P1_Up = !P1_Up.lastKnownValue;
+    input -> P1_Left = !P1_Left.lastKnownValue;
+    input -> P1_Down = !P1_Down.lastKnownValue;
+    input -> P1_Right = !P1_Right.lastKnownValue;
 
-    input -> !P2_Up = P2_Up.lastKnownValue;
-    input -> !P2_Left = P2_Left.lastKnownValue;
-    input -> !P2_Down = P2_Down.lastKnownValue;
-    input -> !P2_Right = P2_Right.lastKnownValue;
+    input -> P2_Up = !P2_Up.lastKnownValue;
+    input -> P2_Left = !P2_Left.lastKnownValue;
+    input -> P2_Down = !P2_Down.lastKnownValue;
+    input -> P2_Right = !P2_Right.lastKnownValue;
 
 
 }
