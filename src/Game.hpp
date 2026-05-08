@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <SFML/Audio.hpp>
+#include <SFML/OpenGL.hpp>
 #include "Context.hpp"
 #include "States/GameStateManager.hpp"
 #include "AssetManager.hpp"

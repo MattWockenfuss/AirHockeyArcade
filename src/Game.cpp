@@ -17,6 +17,7 @@ Game::Game(){
 }
 
 void Game::initialization(){
+    //added because we cant see the top of the monitor
     ctx.gsm -> init(&ctx);
     ctx.input -> init(&ctx);
 
@@ -34,45 +35,54 @@ void Game::initialization(){
     renderPlayer2 = true;
     ctx.renderp2 = renderPlayer2;
 
+    //setup windows
+    window.create(sf::VideoMode({3840, 1080}), "Arcade", sf::Style::None);
+    window.setPosition({0, 0});
+
+    p1View.emplace(sf::FloatRect({0.0f, 0.0f}, {960.0f, 540.0f}));
+    p2View.emplace(sf::FloatRect({0.0f, 0.0f}, {960.0f, 540.0f}));
+
+    p1View -> setViewport(sf::FloatRect({0.0f, 0.0f}, {0.5f, 1.0f}));
+    p2View -> setViewport(sf::FloatRect({0.5f, 0.0f}, {0.5f, 1.0f}));
+
+    window.setFramerateLimit(60);
+    window.setVerticalSyncEnabled(false);
+
+    p1Tex.emplace(sf::Vector2u{960, 540});
+    p2Tex.emplace(sf::Vector2u{960, 540});
+
+    p1Sprite.emplace(p1Tex -> getTexture());
+    p2Sprite.emplace(p2Tex -> getTexture());
+
+    p1Sprite -> setScale({2.0f, 2.0f});
+    p2Sprite -> setScale({2.0f, 2.0f});
+    p1Sprite -> setPosition({0.0f, 0.0f});
+    p2Sprite -> setPosition({0.0f, 0.0f});
     
-    if(!renderPlayer2){
 
-    }else{
-        //then make both windows
-        window.create(sf::VideoMode({3840, 1080}), "Arcade", sf::Style::None);
-        window.setPosition({-1920, 0});
+    std::cout << "Window Size: " << window.getSize().x << ", " << window.getSize().y << std::endl;
+    std::cout << "Window Position: " << window.getPosition().x << ", " << window.getPosition().y << std::endl;
 
-        window.setFramerateLimit(60);
-        window.setVerticalSyncEnabled(false);
+    auto b1 = p1Sprite -> getGlobalBounds();
+    auto b2 = p2Sprite -> getGlobalBounds();
 
-        //the views will be automatically be scaled
-        p1View.emplace(sf::FloatRect({0.0f, 0.0f}, {960.0f, 540.0f}));
-        p2View.emplace(sf::FloatRect({0.0f, 0.0f}, {960.0f, 540.0f}));
+    std::cout << "p1 pos: " << b1.position.x << ", " << b1.position.y << std::endl;
+    std::cout << "p1 size: " << b1.size.x << "x" << b1.size.y << std::endl;
 
-        p1View -> setViewport(sf::FloatRect({0.0f, 0.0f}, {0.5f, 1.0f}));
-        p2View -> setViewport(sf::FloatRect({0.5f, 0.0f}, {0.5f, 1.0f}));
+    std::cout << "p2 pos: " << b2.position.x << ", " << b2.position.y << std::endl;
+    std::cout << "p2 size: " << b2.size.x << "x" << b2.size.y << std::endl;
 
-
-        /*
-            We create textures and write to them on a small scale, they are then
-            scaled up so we can save a lot on rendering, hopefully massively improving
-            performance
-        */
-
-        p1Tex.emplace(sf::Vector2u{960, 540});
-        p2Tex.emplace(sf::Vector2u{960, 540});
-
-        p1Sprite.emplace(p1Tex -> getTexture());
-        p2Sprite.emplace(p2Tex -> getTexture());
-
-        p1Sprite -> setScale({2.0f, 2.0f});
-        p2Sprite -> setScale({2.0f, 2.0f});
-        p2Sprite -> setPosition({1920.0f, 0.0f});
-    }
+    //texture sizes
+    std::cout << "p1Tex size: " << p1Tex -> getTexture().getSize().x << "x" << p1Tex -> getTexture().getSize().y << std::endl;
+    std::cout << "p2Tex size: " << p2Tex -> getTexture().getSize().x << "x" << p2Tex -> getTexture().getSize().y << std::endl;
 
     tpsCounter.emplace(ctx.assets -> getFont("ArcadeNormal"), "", 10);
     tpsCounter -> setPosition({10.0f, 10.0f});
     tpsCounter -> setFillColor(sf::Color::Magenta);
+
+
+
+
 
     //open the leaderboard
     leaderboardInterface.openDB();
@@ -158,61 +168,91 @@ void Game::tick(){
 
 }
 void Game::render(){
-    //player 1
-    p1Tex -> clear();
+    // std::cout << "Window Size: " << window.getSize().x << ", " << window.getSize().y << std::endl;
+    // std::cout << "Window Position: " << window.getPosition().x << ", " << window.getPosition().y << std::endl;
 
-    //render p1 stuff
-    if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p1render(*p1Tex);
-    gsm.p1render(*p1Tex);
-    input.render(*p1Tex);
-    if(renderFPSCounter) p1Tex -> draw(*tpsCounter);
-    p1Tex -> display();
+    // std::cout << "view Size: " << window.getView().getSize().x << ", " << window.getView().getSize().y << std::endl;
 
-
-
-    //player 2
-    p2Tex -> clear();
+    // p1Tex -> clear(sf::Color::Red);
+    // p2Tex -> clear(sf::Color::Blue);
     
-    //render p2 stuff
-    if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p2render(*p2Tex);
-    gsm.p2render(*p2Tex);
-    input.render(*p2Tex);
-    if(renderFPSCounter) p2Tex -> draw(*tpsCounter);
-    p2Tex -> display();
+
+    // // //render p1 stuff
+    // // if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p1render(*p1Tex);
+    // // gsm.p1render(*p1Tex);
+    // // input.render(*p1Tex);
+    // // if(renderFPSCounter) p1Tex -> draw(*tpsCounter);
+
+    // // //player 2
+    // // if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p2render(*p2Tex);
+    // // gsm.p2render(*p2Tex);
+    // // input.render(*p2Tex);
+    // // if(renderFPSCounter) p2Tex -> draw(*tpsCounter);
+
+    // p1Tex -> display();
+    // p2Tex -> display();
+
+    // p1Sprite -> setTexture(p1Tex -> getTexture(), true);
+    // p2Sprite -> setTexture(p2Tex -> getTexture(), true);
+
+    // p1Sprite -> setTextureRect(sf::IntRect({0, 0}, {960, 540}));
+    // p2Sprite -> setTextureRect(sf::IntRect({0, 0}, {960, 540}));
+
+    // p1Sprite -> setScale({2.0f, 2.0f});
+    // p2Sprite -> setScale({2.0f, 2.0f});
+
+    // p1Sprite -> setPosition({0.0f, 0.0f});
+    // p2Sprite -> setPosition({0.0f, 0.0f});
 
 
 
+    
+    // window.setView(sf::View(sf::FloatRect({0.0f, 0.0f}, {3840.0f, 1080.0f})));
 
-    //render these sprites to the screen scaled up
-    window.clear();
-    window.setView(window.getDefaultView());
+    // window.clear(sf::Color::Yellow);
+    // window.setView(*p1View);
+    // window.draw(*p1Sprite);
+    // window.setView(*p2View);
+    // window.draw(*p2Sprite);
+    // window.display();
 
-    window.draw(*p1Sprite);
-    window.draw(*p2Sprite);
+
+
+    //std::cout << "p1View Size: " << p1View.size.x << "x" << p1View.size.y << std::endl;
+    //std::cout << "p1View Position: " << p1View.position.x << ", " << p1View.position.y << std::endl;
+    //std::cout << "p2View Size: " << p2View.size.x << "x" << p2View.size.y << std::endl;
+    //std::cout << "p2View Position: " << p2View.position.x << ", " << p2View.position.y << std::endl;
+
+    window.setActive(true);
+
+    glEnable(GL_SCISSOR_TEST);
+
+    //left half
+    glScissor(0, 0, 1920, 1080);
+    glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    //right half
+    glScissor(1920, 0, 1920, 1080);
+    glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glDisable(GL_SCISSOR_TEST);
+    window.resetGLStates();
+
+    // window.setView(*p1View);
+    // sf::RectangleShape red({960.0f, 530.0f});
+    // red.setFillColor(sf::Color::Red);
+    // window.draw(red);
+
+    // window.setView(*p2View);
+    // sf::RectangleShape blue({960.0f, 530.0f});
+    // blue.setFillColor(sf::Color::Blue);
+    // window.draw(blue);
+
     window.display();
 
-    
 
-    // //player 1
-    // window.setView(*p1View);
-    // if(gsm.getCurrentState() != nullptr){
-    //     gsm.getCurrentState() -> p1render(window);
-    //     if(renderPlayer2) gsm.getCurrentState() -> p1render(window);
-    // }
-    // gsm.p1render(window);
-    // input.render(window);
-    // if(renderFPSCounter) window.draw(*tpsCounter);
-
-    // //player 2
-    // window.setView(*p2View);
-    // if(gsm.getCurrentState() != nullptr){
-    //     gsm.getCurrentState() -> p2render(window);
-    //     if(renderPlayer2) gsm.getCurrentState() -> p2render(window);
-    // }
-    // gsm.p2render(window);
-    // if(renderFPSCounter) window.draw(*tpsCounter);
-
-    // window.display();
 }
 
 void Game::run(){

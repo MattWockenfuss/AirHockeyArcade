@@ -12,9 +12,17 @@
 
 # next run using 'startx ./run-linux.sh' 
 
+xrandr --query > output.txt
+
+xrandr --fb 3840x1080 \
+--output HDMI-1 --primary --mode 1920x1080 --pos 0x0 \
+--output HDMI-2 --mode 1920x1080 --pos 1920x0
+
 xset -dpms
 xset s off
 xset s noblank
 xsetroot -solid black
 
-./build/game
+sleep 1
+
+./build/game > game.log 2>&1
