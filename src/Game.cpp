@@ -59,7 +59,7 @@ void Game::initialization(){
     p1Sprite -> setScale({2.0f, 2.0f});
     p2Sprite -> setScale({2.0f, 2.0f});
     p1Sprite -> setPosition({0.0f, 0.0f});
-    p2Sprite -> setPosition({500.0f, 0.0f});
+    p2Sprite -> setPosition({0.0f, 0.0f});
     
 
     std::cout << "Window1 Size: " << window1.getSize().x << ", " << window1.getSize().y << std::endl;
@@ -213,9 +213,8 @@ void Game::render(){
     p2Sprite -> setScale({2.0f, 2.0f});
 
     p1Sprite -> setPosition({0.0f, 0.0f});
-    p2Sprite -> setPosition({500.0f, 0.0f});
+    p2Sprite -> setPosition({0.0f, 0.0f});
 
-    p2Tex -> clear();
 
     window1.setActive(true);
     window1.clear();
