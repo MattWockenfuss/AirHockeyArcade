@@ -43,9 +43,9 @@ void Game::initialization(){
     window2.setPosition({1920, 0});
 
     window1.setFramerateLimit(60);
-    window1.setVerticalSyncEnabled(false);
+    window2.setFramerateLimit(0);
 
-    window2.setFramerateLimit(60);
+    window1.setVerticalSyncEnabled(false);
     window2.setVerticalSyncEnabled(false);
 
 
@@ -182,15 +182,18 @@ void Game::render(){
     //std::cout << "view Size: " << window1.getView().getSize().x << ", " << window1.getView().getSize().y << std::endl;
 
     p1Tex -> clear();
-    p2Tex -> clear();
     
-
+    
+    window1.setActive(true);
+    window2.setActive(false);
     // //render p1 stuff
     if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p1render(*p1Tex);
     gsm.p1render(*p1Tex);
     input.render(*p1Tex);
     if(renderFPSCounter) p1Tex -> draw(*tpsCounter);
 
+    window1.setActive(false);
+    window2.setActive(true);
     //player 2
     if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p2render(*p2Tex);
     gsm.p2render(*p2Tex);
@@ -212,15 +215,16 @@ void Game::render(){
     p1Sprite -> setPosition({0.0f, 0.0f});
     p2Sprite -> setPosition({500.0f, 0.0f});
 
-    
+    p2Tex -> clear();
 
+    window1.setActive(true);
     window1.clear();
-    window2.clear();
-
     window1.draw(*p1Sprite);
-    window2.draw(*p2Sprite);
-
     window1.display();
+
+    window2.setActive(true);
+    window2.clear();
+    window2.draw(*p2Sprite);
     window2.display();
 }
 
