@@ -35,49 +35,54 @@ void Game::initialization(){
     renderPlayer2 = true;
     ctx.renderp2 = renderPlayer2;
 
-    //setup windows
-    window.create(sf::VideoMode({3840, 1080}), "Arcade", sf::Style::None);
-    window.setPosition({0, 0});
+    if(renderPlayer2){
+        //setup windows
+        window1.create(sf::VideoMode({1920, 1080}), "p1", sf::Style::None);
+        window2.create(sf::VideoMode({1920, 1080}), "p2", sf::Style::None);
 
-    p1View.emplace(sf::FloatRect({0.0f, 0.0f}, {960.0f, 540.0f}));
-    p2View.emplace(sf::FloatRect({0.0f, 0.0f}, {960.0f, 540.0f}));
+        window1.setPosition({0, 0});
+        window2.setPosition({1920, 0});
 
-    p1View -> setViewport(sf::FloatRect({0.0f, 0.0f}, {0.5f, 1.0f}));
-    p2View -> setViewport(sf::FloatRect({0.5f, 0.0f}, {0.5f, 1.0f}));
+        window1.setFramerateLimit(60);
+        window2.setFramerateLimit(0);
 
-    window.setFramerateLimit(60);
-    window.setVerticalSyncEnabled(false);
+        window1.setVerticalSyncEnabled(false);
+        window2.setVerticalSyncEnabled(false);
 
-    p1Tex.emplace(sf::Vector2u{960, 540});
-    p2Tex.emplace(sf::Vector2u{960, 540});
+        p1Tex.emplace(sf::Vector2u{960, 540});
+        p2Tex.emplace(sf::Vector2u{960, 540});
 
-    p1Sprite.emplace(p1Tex -> getTexture());
-    p2Sprite.emplace(p2Tex -> getTexture());
+        p1Sprite.emplace(p1Tex -> getTexture());
+        p2Sprite.emplace(p2Tex -> getTexture());
 
-    p1Sprite -> setScale({2.0f, 2.0f});
-    p2Sprite -> setScale({2.0f, 2.0f});
-    p1Sprite -> setPosition({0.0f, 0.0f});
-    p2Sprite -> setPosition({0.0f, 0.0f});
-    
+        p1Sprite -> setScale({2.0f, 2.0f});
+        p2Sprite -> setScale({2.0f, 2.0f});
+        p1Sprite -> setPosition({0.0f, 0.0f});
+        p2Sprite -> setPosition({0.0f, 0.0f});
 
-    std::cout << "Window Size: " << window.getSize().x << ", " << window.getSize().y << std::endl;
-    std::cout << "Window Position: " << window.getPosition().x << ", " << window.getPosition().y << std::endl;
+        std::cout << "Window1 Size: " << window1.getSize().x << ", " << window1.getSize().y << std::endl;
+        std::cout << "Window1 Position: " << window1.getPosition().x << ", " << window1.getPosition().y << std::endl;
 
-    auto b1 = p1Sprite -> getGlobalBounds();
-    auto b2 = p2Sprite -> getGlobalBounds();
+        auto b1 = p1Sprite -> getGlobalBounds();
+        auto b2 = p2Sprite -> getGlobalBounds();
 
-    std::cout << "p1 pos: " << b1.position.x << ", " << b1.position.y << std::endl;
-    std::cout << "p1 size: " << b1.size.x << "x" << b1.size.y << std::endl;
+        //p1 sprite position and size
+        std::cout << "p1 pos: " << b1.position.x << ", " << b1.position.y << std::endl;
+        std::cout << "p1 size: " << b1.size.x << "x" << b1.size.y << std::endl;
 
-    std::cout << "p2 pos: " << b2.position.x << ", " << b2.position.y << std::endl;
-    std::cout << "p2 size: " << b2.size.x << "x" << b2.size.y << std::endl;
+        //p2
+        std::cout << "p2 pos: " << b2.position.x << ", " << b2.position.y << std::endl;
+        std::cout << "p2 size: " << b2.size.x << "x" << b2.size.y << std::endl;
 
-    //texture sizes
-    std::cout << "p1Tex size: " << p1Tex -> getTexture().getSize().x << "x" << p1Tex -> getTexture().getSize().y << std::endl;
-    std::cout << "p2Tex size: " << p2Tex -> getTexture().getSize().x << "x" << p2Tex -> getTexture().getSize().y << std::endl;
+        //texture sizes
+        std::cout << "p1Tex size: " << p1Tex -> getTexture().getSize().x << "x" << p1Tex -> getTexture().getSize().y << std::endl;
+        std::cout << "p2Tex size: " << p2Tex -> getTexture().getSize().x << "x" << p2Tex -> getTexture().getSize().y << std::endl;
+    }
+
+
 
     tpsCounter.emplace(ctx.assets -> getFont("ArcadeNormal"), "", 10);
-    tpsCounter -> setPosition({10.0f, 10.0f});
+    tpsCounter -> setPosition({10.0f, 80.0f});
     tpsCounter -> setFillColor(sf::Color::Magenta);
 
 
@@ -104,14 +109,14 @@ void Game::stop(){
     running = false;
 
     //SFML will close down window and its resources needed
-    window.close();
+    window1.close();
+    window2.close();
 
     //close the database interface
     leaderboardInterface.closeDB();
 }
 
 void Game::tick(){
-    tpsCounter -> setString("ticks:  " + std::to_string(ticksLastSecond) + "\nframes: " + std::to_string(framesLastSecond));
     /*
         This loop processes all pending window events by repeatedly calling window.pollEvent(), which returns an std::optional containing 
         an event if one is available. For each event, it checks whether the event is of type sf::Event::Closed using the templated is<>()
@@ -123,44 +128,30 @@ void Game::tick(){
 
         This comment was written by ChatGPT
     */
+   
+    tpsCounter -> setString("ticks:  " + std::to_string(ticksLastSecond) + "\nframes: " + std::to_string(framesLastSecond));
+    
 
     ctx.keys -> tick();
     ctx.gsm -> tick();
 
     //process all of the events for both windows
-    while (const auto p1 = window.pollEvent()) {
-        if (p1 -> is<sf::Event::Closed>()) {
-            running = false;
-        }
+    while (const auto p1 = window1.pollEvent()) {
+        if (p1 -> is<sf::Event::Closed>()) running = false;
+        keyManager.handleEvent(*p1);
+    }
+
+    while (const auto p1 = window2.pollEvent()) {
+        if (p1 -> is<sf::Event::Closed>()) running = false;
         keyManager.handleEvent(*p1);
     }
 
 
     input.tick();
 
-    //handle state changes
-	if(ctx.keys -> F2){
-		ctx.gsm -> requestStateChange(States::NameEntry, 1.5f, 1.5f);
-	}
-    if(ctx.keys -> F3){
-        ctx.gsm -> requestStateChange(States::Tron, 1.5f, 1.5f);
-    }
-    if(ctx.keys -> F4){
-        ctx.gsm -> requestStateChange(States::AirHockey, 1.5f, 1.5f);
-    }
-	if(ctx.keys -> F5){
-        ctx.gsm -> requestStateChange(States::FruitNinja, 1.5f, 1.5f);
-    }
-    if(ctx.keys -> F8){
-        ctx.gsm -> requestStateChange(States::Pong, 1.5f, 1.5f);
-    }
     
     if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> tick();
 
-    // if(gsm.pendingStateChange){
-    //     gsm.changeState();
-    //     gsm.pendingStateChange = false;
-    // }
 
     if(ctx.keys -> ESC){
         running = false;
@@ -168,91 +159,48 @@ void Game::tick(){
 
 }
 void Game::render(){
-    // std::cout << "Window Size: " << window.getSize().x << ", " << window.getSize().y << std::endl;
-    // std::cout << "Window Position: " << window.getPosition().x << ", " << window.getPosition().y << std::endl;
-
-    // std::cout << "view Size: " << window.getView().getSize().x << ", " << window.getView().getSize().y << std::endl;
-
-    // p1Tex -> clear(sf::Color::Red);
-    // p2Tex -> clear(sf::Color::Blue);
+    /*
+        The render of the game is done in 4 steps
+        (1) Clear the textures
+        (2) Draw all sprites to each associated played texture
+        (3) Draw those textures to the appropriate window
     
+    */
 
-    // // //render p1 stuff
-    // // if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p1render(*p1Tex);
-    // // gsm.p1render(*p1Tex);
-    // // input.render(*p1Tex);
-    // // if(renderFPSCounter) p1Tex -> draw(*tpsCounter);
+    //(1) Clear the textures
+    p1Tex -> clear();
+    p2Tex -> clear();
 
-    // // //player 2
-    // // if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p2render(*p2Tex);
-    // // gsm.p2render(*p2Tex);
-    // // input.render(*p2Tex);
-    // // if(renderFPSCounter) p2Tex -> draw(*tpsCounter);
+    //(2) Draw all sprites to each associated played texture
+    //render p1
+    (void) window1.setActive(true);
+    (void) window2.setActive(false);
+    if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p1render(*p1Tex);
+    gsm.p1render(*p1Tex);
+    input.render(*p1Tex);
+    if(renderFPSCounter) p1Tex -> draw(*tpsCounter);
 
-    // p1Tex -> display();
-    // p2Tex -> display();
+    //render p2
+    (void) window1.setActive(false);
+    (void) window2.setActive(true);
+    if(gsm.getCurrentState() != nullptr) gsm.getCurrentState() -> p2render(*p2Tex);
+    gsm.p2render(*p2Tex);
+    input.render(*p2Tex);
+    if(renderFPSCounter) p2Tex -> draw(*tpsCounter);
 
-    // p1Sprite -> setTexture(p1Tex -> getTexture(), true);
-    // p2Sprite -> setTexture(p2Tex -> getTexture(), true);
+    p1Tex -> display();
+    p2Tex -> display();
 
-    // p1Sprite -> setTextureRect(sf::IntRect({0, 0}, {960, 540}));
-    // p2Sprite -> setTextureRect(sf::IntRect({0, 0}, {960, 540}));
+    //(3) Draw those textures to the appropriate window
+    (void) window1.setActive(true);
+    //window1.clear();
+    window1.draw(*p1Sprite);
+    window1.display();
 
-    // p1Sprite -> setScale({2.0f, 2.0f});
-    // p2Sprite -> setScale({2.0f, 2.0f});
-
-    // p1Sprite -> setPosition({0.0f, 0.0f});
-    // p2Sprite -> setPosition({0.0f, 0.0f});
-
-
-
-    
-    // window.setView(sf::View(sf::FloatRect({0.0f, 0.0f}, {3840.0f, 1080.0f})));
-
-    // window.clear(sf::Color::Yellow);
-    // window.setView(*p1View);
-    // window.draw(*p1Sprite);
-    // window.setView(*p2View);
-    // window.draw(*p2Sprite);
-    // window.display();
-
-
-
-    //std::cout << "p1View Size: " << p1View.size.x << "x" << p1View.size.y << std::endl;
-    //std::cout << "p1View Position: " << p1View.position.x << ", " << p1View.position.y << std::endl;
-    //std::cout << "p2View Size: " << p2View.size.x << "x" << p2View.size.y << std::endl;
-    //std::cout << "p2View Position: " << p2View.position.x << ", " << p2View.position.y << std::endl;
-
-    window.setActive(true);
-
-    glEnable(GL_SCISSOR_TEST);
-
-    //left half
-    glScissor(0, 0, 1920, 1080);
-    glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    //right half
-    glScissor(1920, 0, 1920, 1080);
-    glClearColor(0.0f, 0.0f, 1.0f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    glDisable(GL_SCISSOR_TEST);
-    window.resetGLStates();
-
-    // window.setView(*p1View);
-    // sf::RectangleShape red({960.0f, 530.0f});
-    // red.setFillColor(sf::Color::Red);
-    // window.draw(red);
-
-    // window.setView(*p2View);
-    // sf::RectangleShape blue({960.0f, 530.0f});
-    // blue.setFillColor(sf::Color::Blue);
-    // window.draw(blue);
-
-    window.display();
-
-
+    (void) window2.setActive(true);
+    //window2.clear();
+    window2.draw(*p2Sprite);
+    window2.display();
 }
 
 void Game::run(){
