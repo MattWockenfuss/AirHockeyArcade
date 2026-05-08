@@ -21,6 +21,8 @@ class GPIOManager : public InputInterface{
         void tick() override;
         void render(sf::RenderTexture& window) override;
 
+        float SCALE = 0.5f;
+
         DigitalPin P1A = DigitalPin(3 , 2 , "GPIO-02", "P1A");
         DigitalPin P1B = DigitalPin(5 , 3 , "GPIO-03", "P1B");
         DigitalPin P1X = DigitalPin(7 , 4 , "GPIO-04", "P1X");

@@ -192,24 +192,24 @@ void GPIOManager::tick(){
 void GPIOManager::render(sf::RenderTexture& window){
     if(!input -> overlay) return;  //only render if the overlay is up
     
-    float startX = 800.0f;
-    float startY = 100.0f;
+    float startX = 800.0f * SCALE;
+    float startY = 100.0f * SCALE;
     
-    float baseWidth = 370.0f;
-    float baseHeight = 710.0f;
+    float baseWidth = 370.0f * SCALE;
+    float baseHeight = 710.0f * SCALE;
     
     int row = 0;
-    float padding = 35.0f;
+    float padding = 35.0f * SCALE;
 
 
     //base background border
-    square_background = sf::RectangleShape(sf::Vector2f(baseWidth + 12.0f, baseHeight + 12.0f));
-    square_background.setPosition({startX - 15.0f - 6.0f, startY - 6.0f});
+    square_background = sf::RectangleShape(sf::Vector2f(baseWidth + 12.0f * SCALE, baseHeight + 12.0f * SCALE));
+    square_background.setPosition({startX - 15.0f * SCALE - 6.0f * SCALE, startY - 6.0f * SCALE});
     square_background.setFillColor(sf::Color(139, 107, 0));
     window.draw(square_background);
 
     square_background = sf::RectangleShape(sf::Vector2f(baseWidth, baseHeight));
-    square_background.setPosition({startX - 15.0f, startY});
+    square_background.setPosition({startX - 15.0f * SCALE, startY});
     square_background.setFillColor(sf::Color(255, 240, 102));
     window.draw(square_background);
 
@@ -219,11 +219,11 @@ void GPIOManager::render(sf::RenderTexture& window){
         std::ostringstream ss;
         ss << "(" << i << ")" << std::endl;
 
-        sf::RectangleShape pinSqr = sf::RectangleShape(sf::Vector2f(30.f, 30.f));
+        sf::RectangleShape pinSqr = sf::RectangleShape(sf::Vector2f(30.f * SCALE, 30.f * SCALE));
         pinSqr.setFillColor(sf::Color::Black);
         
 
-        sf::RectangleShape pinSqrInside = sf::RectangleShape(sf::Vector2f(26.0f, 26.0f));
+        sf::RectangleShape pinSqrInside = sf::RectangleShape(sf::Vector2f(26.0f * SCALE, 26.0f * SCALE));
         pinSqrInside.setFillColor(sf::Color::Red);
         
         //this is a horrible way to do it.
@@ -290,17 +290,17 @@ void GPIOManager::render(sf::RenderTexture& window){
 
         if(i % 2 == 0){
             //then its even, rightside,
-                i_text -> setPosition({startX + 210.0f, startY + (row * padding)});
-                pinSqr.setPosition({startX + 170.0f, startY + (row * padding) + 7.0f});
-                pinSqrInside.setPosition({startX + 170.0f + 2.0f, startY + (row * padding) + 7.0f + 2.0f}); //The 7 is to match the font, the 2 is because they are inside the other square, giving a border
+                i_text -> setPosition({startX + 210.0f * SCALE, startY + (row * padding)});
+                pinSqr.setPosition({startX + 170.0f * SCALE, startY + (row * padding) + 7.0f * SCALE});
+                pinSqrInside.setPosition({startX + 170.0f * SCALE + 2.0f * SCALE, startY + (row * padding) + 7.0f * SCALE + 2.0f * SCALE}); //The 7 is to match the font, the 2 is because they are inside the other square, giving a border
                 window.draw(pinSqr);
                 window.draw(pinSqrInside);
             row++;
         }else{
             //then its odd, left side
-            i_text -> setPosition({startX + 1.0f, startY + (row * padding)});
-            pinSqr.setPosition({startX + 130.0f, startY + (row * padding) + 7.0f});
-            pinSqrInside.setPosition({startX + 130.0f + 2.0f, startY + (row * padding) + 7.0f + 2.0f});
+            i_text -> setPosition({startX + 1.0f * SCALE, startY + (row * padding)});
+            pinSqr.setPosition({startX + 130.0f * SCALE, startY + (row * padding) + 7.0f * SCALE});
+            pinSqrInside.setPosition({startX + 130.0f * SCALE + 2.0f * SCALE, startY + (row * padding) + 7.0f * SCALE + 2.0f * SCALE});
             window.draw(pinSqr);
             window.draw(pinSqrInside);
         }
