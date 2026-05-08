@@ -31,5 +31,6 @@ build/sqlite3.o \
 -lsfml-window \
 -lsfml-system \
 -lsfml-audio \
+-lGL \
 -lasound \
 -o build/game
