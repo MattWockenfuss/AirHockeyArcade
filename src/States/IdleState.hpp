@@ -16,8 +16,11 @@ class IdleState : public State {
     private:
         float viewWidth = 0;
         float viewHeight = 0;
+		double screenRatio;
         long long sec;
+		float slide;
         std::optional<sf::Text> title_text, play_text;
+		std::optional<sf::Sprite> mask, shader;
 
         sf::RectangleShape square;
         float x, y;

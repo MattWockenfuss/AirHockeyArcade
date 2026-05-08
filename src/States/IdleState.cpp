@@ -16,6 +16,9 @@ void IdleState::init(Context* ctx){
 
     title_text.emplace(ctx -> assets -> getFont("SquareSansSerif"), "B J A M M  DUOCADE", 50);
     play_text.emplace(ctx -> assets -> getFont("SquareSansSerif"), "Press A To Start!", 28);
+	
+	float width = ctx -> p1window -> getView().getSize().x;
+	screenRatio = width / 320.0;
 
     // viewWidth = ctx -> p1window -> getView().getSize().x;
     // viewHeight = ctx -> p1window -> getView().getSize().y;
@@ -35,6 +38,10 @@ void IdleState::init(Context* ctx){
 	const sf::FloatRect textRect = play_text -> getLocalBounds();
 	play_text -> setOrigin(textRect.getCenter());
 	
+	mask.emplace(ctx -> assets -> getAsset("idleMask"));
+	mask->setScale(sf::Vector2f(screenRatio,screenRatio));
+	shader.emplace(ctx -> assets -> getAsset("idleShader"));
+	shader->setScale(sf::Vector2f(screenRatio,screenRatio));
 }
 
 void IdleState::tick() {
@@ -50,38 +57,44 @@ void IdleState::tick() {
         play_text -> setPosition({viewWidth / 2.0f, viewHeight / 1.3f});
     }
 
-    
-    
-
     if(ctx -> input -> P1A || ctx -> input -> P2A){
         ctx -> audio -> playSound(ctx -> assets -> getSound("Boot"));
 		ctx -> gsm -> requestStateChange(States::NameEntry, 1.5f, 1.5f);
 	}
-
-
+	
 	
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     std::chrono::duration elapsed = end - start;
-    sec = std::chrono::duration_cast<std::chrono::seconds>(elapsed).count();
-	if(sec>=255){ // prevent difference in time from getting too big
+    sec = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count();
+	if(sec>=4000){ // prevent difference in time from getting too big
 		start = std::chrono::steady_clock::now();
 	}
+	
+	slide = sec/1000.0;
+	if(slide<3)
+		shader->setPosition(sf::Vector2f(-130*screenRatio,0));
+	else
+		shader->setPosition(sf::Vector2f( ((448*(slide-3))-128)*screenRatio, 0));
 }
 
 void IdleState::p1render(sf::RenderTexture& p1window) {
     //render 1 for idlestate
+	p1window.draw(*shader);
+	p1window.draw(*mask);
     p1window.draw(*title_text);
     
-    if ((sec = static_cast<unsigned int>(sec)) % 2 == 0) {
+    if ( ((sec = static_cast<unsigned int>(sec))/1000) % 2 == 0) {
         p1window.draw(*play_text);
     }
 }
 
 void IdleState::p2render(sf::RenderTexture& p2window) {
     //render 2 for idlestate
+	p2window.draw(*shader);
+	p2window.draw(*mask);
     p2window.draw(*title_text);
     
-    if ((sec = static_cast<unsigned int>(sec)) % 2 == 0) {
+    if ( ((sec = static_cast<unsigned int>(sec))/1000) % 2 == 0) {
         p2window.draw(*play_text);
     }
 }

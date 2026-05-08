@@ -108,6 +108,10 @@ AssetManager::AssetManager(){
 	loadAsset("gameSelectArrow_L2","gameSelectArrow_L2.png");
 	loadAsset("gameSelectArrow_R1","gameSelectArrow_R1.png");
 	loadAsset("gameSelectArrow_R2","gameSelectArrow_R2.png");
+	
+	// idle screen images
+	loadAsset("idleMask","idle_mask.png");
+	loadAsset("idleShader","idle_shader.png");
 
     //fonts
     loadFont("Consolas", "Consolas-Regular.ttf");   
