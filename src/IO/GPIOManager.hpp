@@ -72,7 +72,7 @@ class GPIOManager : public InputInterface{
         gpiod_line_request* inReq = nullptr;
         gpiod_line_request* outReq = nullptr;
 
-        std::array<unsigned int, 8> inPins{};
+        std::array<unsigned int, 16> inPins{};
         std::array<unsigned int, 8> outPins{};
 
         std::array<std::string, 40> GPIO_Labels{}; 
